@@ -1,0 +1,20 @@
+# Flutter/Dart
+mirrorbooth/.dart_tool/
+mirrorbooth/build/
+mirrorbooth/.flutter-plugins
+mirrorbooth/.flutter-plugins-dependencies
+mirrorbooth/pubspec.lock
+
+# Android
+mirrorbooth/android/.gradle/
+mirrorbooth/android/local.properties
+mirrorbooth/android/key.properties
+
+# iOS
+mirrorbooth/ios/Pods/
+mirrorbooth/ios/.symlinks/
+
+# macOS/IDE
+.DS_Store
+.idea/
+*.iml
