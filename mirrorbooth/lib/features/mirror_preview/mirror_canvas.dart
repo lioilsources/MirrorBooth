@@ -49,8 +49,8 @@ class MirrorCanvas extends StatelessWidget {
       // Clamped to [-1, 1] so it degrades gracefully if camW ≤ 2·panelW.
       final double denominator = max(camW - panelW, 1.0);
       final double alignX = side.isLeft
-          ? (panelW / denominator).clamp(-1.0, 1.0)
-          : -(panelW / denominator).clamp(-1.0, 1.0);
+          ? -(panelW / denominator).clamp(-1.0, 1.0)
+          : (panelW / denominator).clamp(-1.0, 1.0);
       final alignment = Alignment(alignX, 0);
 
       Widget panel({required bool flip}) {
