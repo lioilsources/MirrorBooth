@@ -4,6 +4,8 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>MirrorBooth uses the front camera to create your symmetric mirror preview.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>MirrorBooth saves your mirror photo to the photo library.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>MirrorBooth uses the microphone for FaceTimeMirrorBooth calls.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

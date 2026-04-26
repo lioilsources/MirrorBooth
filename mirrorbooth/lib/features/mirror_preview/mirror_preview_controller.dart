@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../core/mirror_side.dart';
 
@@ -62,6 +63,7 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     try {
       await controller.initialize();
       state = state.copyWith(controller: controller, isReady: true);
+      WakelockPlus.enable();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -82,6 +84,7 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
     if (state == AppLifecycleState.inactive) {
       controller.dispose();
+      WakelockPlus.disable();
       this.state = this.state.copyWith(isReady: false);
     } else if (state == AppLifecycleState.resumed) {
       _init();
@@ -92,6 +95,7 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     state.controller?.dispose();
+    WakelockPlus.disable();
     super.dispose();
   }
 }
