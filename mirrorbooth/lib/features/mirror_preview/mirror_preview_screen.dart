@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math' show pi;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,21 +6,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
-import 'package:sensors_plus/sensors_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import 'mirror_canvas.dart';
 import 'mirror_preview_controller.dart';
 import 'side_toggle_button.dart';
 
-// ── Isolate data (only primitives + Uint8List to ensure safe transfer) ───────
+// ── Isolate payload (only primitives + Uint8List, safe across isolate) ───────
 
 class _PhotoJob {
   final Uint8List jpegBytes;
   final bool sideIsLeft;
-  final double displayAspect;
-  final bool flipForIos;    // iOS takePicture() = raw sensor; preview is mirrored
-  final int   rotateCcwDeg; // extra CCW rotation for landscape (0, 90, or 270)
+  final double displayAspect; // portrait W/H (< 1)
+  final bool flipForIos;      // iOS takePicture() = un-mirrored sensor
+  final int rotateCcwDeg;     // 0/90/180/270 — match preview rotation
 
   const _PhotoJob({
     required this.jpegBytes,
@@ -32,17 +29,14 @@ class _PhotoJob {
   });
 }
 
-/// All CPU-heavy work runs inside a single [compute] isolate so no complex
-/// objects cross the isolate boundary.
 Uint8List _processPhoto(_PhotoJob job) {
   var src = img.decodeImage(job.jpegBytes);
-  if (src == null) throw Exception('Could not decode camera image');
+  if (src == null) throw Exception('decodeImage returned null');
 
-  // iOS: live preview is shown mirrored, but takePicture() returns raw sensor
   if (job.flipForIos) src = img.flipHorizontal(src);
 
-  // Compensate for physical device rotation
-  if (job.rotateCcwDeg == 90)  src = img.copyRotate(src, angle: 90);
+  if (job.rotateCcwDeg == 90) src = img.copyRotate(src, angle: 90);
+  if (job.rotateCcwDeg == 180) src = img.copyRotate(src, angle: 180);
   if (job.rotateCcwDeg == 270) src = img.copyRotate(src, angle: 270);
 
   // Crop to display aspect ratio (BoxFit.cover equivalent)
@@ -61,30 +55,26 @@ Uint8List _processPhoto(_PhotoJob job) {
   }
   src = img.copyCrop(src, x: cropX, y: cropY, width: cropW, height: cropH);
 
-  // Mirror composition: both panels show the same face half, one flipped
+  // Mirror split: both panels show same face half, one flipped
   final panelW = cropW ~/ 2;
-  final srcX   = job.sideIsLeft ? 0 : cropW - panelW;
-  final panel  = img.copyCrop(src, x: srcX, y: 0, width: panelW, height: cropH);
+  if (panelW < 1) throw Exception('panelW=$panelW after crop ${cropW}x$cropH');
+  final srcX = job.sideIsLeft ? 0 : cropW - panelW;
+  final panel = img.copyCrop(src, x: srcX, y: 0, width: panelW, height: cropH);
   final mirror = img.flipHorizontal(panel);
 
   final output = img.Image(width: cropW, height: cropH);
   if (job.sideIsLeft) {
-    img.compositeImage(output, panel,  dstX: 0);
+    img.compositeImage(output, panel, dstX: 0);
     img.compositeImage(output, mirror, dstX: panelW);
   } else {
     img.compositeImage(output, mirror, dstX: 0);
-    img.compositeImage(output, panel,  dstX: panelW);
+    img.compositeImage(output, panel, dstX: panelW);
   }
 
   return Uint8List.fromList(img.encodeJpg(output, quality: 92));
 }
 
 // ── Screen ───────────────────────────────────────────────────────────────────
-
-/// Degrees of CCW rotation applied to camera preview to correct for the phone
-/// being held landscape. 0 = portrait (normal), 90 = phone tilted CW (camera
-/// on left), 270 = phone tilted CCW (camera on right).
-enum _CamTilt { portrait, cw, ccw }
 
 class MirrorPreviewScreen extends ConsumerStatefulWidget {
   const MirrorPreviewScreen({super.key});
@@ -98,12 +88,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   late final AnimationController _flashController;
   late final Animation<double> _flashOpacity;
   bool _isSaving = false;
-
-  _CamTilt _tilt = _CamTilt.portrait;
-  // Raw stream subscription; listen with a debounce to avoid flutter between states.
-  late final _accelSub = accelerometerEventStream(
-    samplingPeriod: SensorInterval.normalInterval,
-  ).listen(_onAccel);
+  bool _showDebug = true;
+  final List<String> _debugLog = <String>[];
 
   @override
   void initState() {
@@ -119,70 +105,81 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   @override
   void dispose() {
-    _accelSub.cancel();
     _flashController.dispose();
     super.dispose();
   }
 
-  void _onAccel(AccelerometerEvent e) {
-    // Threshold: |x| must dominate |y| by at least 3 m/s² for a stable read.
-    final _CamTilt next;
-    if (e.x.abs() > e.y.abs() + 3.0) {
-      // Phone tilted: camera goes left (CW rotation) or right (CCW rotation)
-      next = e.x > 0 ? _CamTilt.cw : _CamTilt.ccw;
-    } else if (e.y.abs() > e.x.abs() + 3.0) {
-      next = _CamTilt.portrait;
-    } else {
-      return; // ambiguous zone, hold current
-    }
-    if (next != _tilt) setState(() => _tilt = next);
+  void _log(String msg) {
+    debugPrint('[MirrorBooth] $msg');
+    if (!mounted) return;
+    setState(() {
+      final ts = DateTime.now().toIso8601String().substring(11, 19);
+      _debugLog.insert(0, '$ts  $msg');
+      while (_debugLog.length > 8) {
+        _debugLog.removeLast();
+      }
+    });
   }
 
   // ── Capture ──────────────────────────────────────────────────────────────
 
   Future<void> _captureAndSave() async {
-    if (_isSaving) return;
+    if (_isSaving) {
+      _log('tap ignored — already saving');
+      return;
+    }
     setState(() => _isSaving = true);
+    _log('TAP');
 
     File? tempFile;
     try {
-      final state      = ref.read(mirrorPreviewProvider);
-      final xfile      = await state.controller!.takePicture();
-      final rawBytes   = await xfile.readAsBytes();
+      final state = ref.read(mirrorPreviewProvider);
+      if (state.controller == null) {
+        _log('controller is null');
+        return;
+      }
+
+      _log('takePicture()…');
+      final xfile = await state.controller!.takePicture();
+      _log('xfile: ${xfile.path.split('/').last}');
+
+      final rawBytes = await xfile.readAsBytes();
+      _log('read ${rawBytes.length} B');
 
       if (!mounted) return;
       final mq = MediaQuery.of(context);
+      // Portrait W/H (< 1). Screen stays portrait regardless of physical phone tilt.
+      final displayAspect = mq.size.width / mq.size.height;
 
-      // When phone is landscape the display aspect ratio seen by the user is
-      // still "portrait" (we keep portrait lock), so always use portrait ratio.
-      final displayAspect = mq.size.height / mq.size.width;
-
+      _log('compose rot=${state.rotationDeg}…');
       final job = _PhotoJob(
-        jpegBytes:    rawBytes,
-        sideIsLeft:   state.side.isLeft,
+        jpegBytes: rawBytes,
+        sideIsLeft: state.side.isLeft,
         displayAspect: displayAspect,
-        flipForIos:   Platform.isIOS,
-        rotateCcwDeg: _tilt == _CamTilt.cw  ? 90
-                    : _tilt == _CamTilt.ccw ? 270
-                    : 0,
+        flipForIos: Platform.isIOS,
+        rotateCcwDeg: state.rotationDeg,
       );
-
       final outBytes = await compute(_processPhoto, job);
+      _log('composed ${outBytes.length} B');
 
       final dir = await getTemporaryDirectory();
-      tempFile  = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      tempFile = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await tempFile.writeAsBytes(outBytes);
+      _log('wrote temp');
 
-      if (await Permission.storage.request().isGranted) {
-        await Gal.putImage(tempFile.path);
-      } else {
-        _showError('Storage permission denied');
-      }
+      // gal handles the platform permission internally; don't pre-check with
+      // permission_handler — Permission.storage is deprecated/blocked on
+      // Android 13+, manual checks just cause silent failures.
+      await Gal.putImage(tempFile.path);
+      _log('Gal.putImage OK ✓');
 
       _flashController.forward(from: 0.0);
     } on GalException catch (e) {
-      _showError(e.type.message);
-    } catch (e) {
+      _log('GalException: ${e.type.code}');
+      _showError('${e.type.code}: ${e.type.message}');
+    } catch (e, st) {
+      _log('ERROR: $e');
+      debugPrint(st.toString());
       _showError(e.toString());
     } finally {
       tempFile?.delete().ignore();
@@ -198,7 +195,10 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         title: const Text('Could not save photo'),
         content: Text(msg),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
         ],
       ),
     );
@@ -208,7 +208,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   @override
   Widget build(BuildContext context) {
-    final state    = ref.watch(mirrorPreviewProvider);
+    final state = ref.watch(mirrorPreviewProvider);
     final notifier = ref.read(mirrorPreviewProvider.notifier);
 
     return Scaffold(
@@ -222,7 +222,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text(state.error!, style: const TextStyle(color: Colors.white70), textAlign: TextAlign.center),
+          child: Text(
+            state.error!,
+            style: const TextStyle(color: Colors.white70),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -233,23 +237,126 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     return Stack(
       fit: StackFit.expand,
       children: [
-        GestureDetector(
-          onTap: _captureAndSave,
-          child: _cameraView(context, state),
+        // Camera + mirror — rotation applied INSIDE each panel so the seam stays vertical.
+        MirrorCanvas(
+          controller: state.controller!,
+          side: state.side,
+          cameraRotationDeg: state.rotationDeg,
         ),
+
+        // Vertical seam indicator
         Center(child: Container(width: 1, color: Colors.white12)),
-        Positioned(
-          bottom: 60, left: 0, right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [SideToggleButton(current: state.side, onToggle: notifier.toggleSide)],
+
+        // Top-level tap target — reliable hit testing regardless of inner transforms.
+        // Sits BELOW the controls in the stack so they capture their own taps first.
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _captureAndSave,
           ),
         ),
+
+        // Bottom controls
+        Positioned(
+          bottom: 60,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SideToggleButton(current: state.side, onToggle: notifier.toggleSide),
+              const SizedBox(width: 16),
+              _RotateButton(
+                deg: state.rotationDeg,
+                onTap: notifier.cycleRotation,
+              ),
+            ],
+          ),
+        ),
+
+        // Top-right: call button + debug toggle
         Positioned(
           top: MediaQuery.of(context).padding.top + 16,
           right: 20,
-          child: _CallButton(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _CallButton(),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () => setState(() => _showDebug = !_showDebug),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white24, width: 1),
+                  ),
+                  child: Icon(
+                    _showDebug ? Icons.bug_report : Icons.bug_report_outlined,
+                    color: _showDebug ? Colors.greenAccent : Colors.white54,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+
+        // Debug overlay (top-left)
+        if (_showDebug)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 16,
+            left: 12,
+            right: 80,
+            child: IgnorePointer(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'rot=${state.rotationDeg}°  side=${state.side.label}  ${_isSaving ? "SAVING…" : "ready"}',
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (_debugLog.isEmpty)
+                      const Text(
+                        'tap anywhere to take a photo',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 10,
+                          fontFamily: 'monospace',
+                        ),
+                      )
+                    else
+                      ..._debugLog.map((l) => Text(
+                            l,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+        // Flash overlay
         IgnorePointer(
           child: FadeTransition(
             opacity: _flashOpacity,
@@ -264,41 +371,47 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       ],
     );
   }
+}
 
-  /// Wraps [MirrorCanvas] with a corrective rotation when the phone is held
-  /// landscape, so the face always appears upright in the portrait frame.
-  ///
-  /// Rotation logic (portrait frame W × H, H > W):
-  ///   - Rotate content 90° → it becomes visually H × W
-  ///   - Scale by H/W so height fills the portrait screen (width overflows → clipped)
-  Widget _cameraView(BuildContext context, MirrorPreviewState state) {
-    final canvas = MirrorCanvas(controller: state.controller!, side: state.side);
-    if (_tilt == _CamTilt.portrait) return canvas;
+// ── Small helpers ────────────────────────────────────────────────────────────
 
-    final size  = MediaQuery.of(context).size;
-    final scale = size.height / size.width; // > 1 for portrait screen
-    // CW tilt (camera went to the left) → rotate preview CCW (-90°) to correct
-    // CCW tilt (camera went to the right) → rotate preview CW (+90°) to correct
-    final angle = _tilt == _CamTilt.cw ? -pi / 2 : pi / 2;
+class _RotateButton extends StatelessWidget {
+  final int deg;
+  final VoidCallback onTap;
+  const _RotateButton({required this.deg, required this.onTap});
 
-    return ClipRect(
-      child: OverflowBox(
-        maxWidth: double.infinity,
-        maxHeight: double.infinity,
-        alignment: Alignment.center,
-        child: Transform.rotate(
-          angle: angle,
-          child: Transform.scale(
-            scale: scale,
-            child: SizedBox(width: size.width, height: size.height, child: canvas),
-          ),
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 64,
+        height: 64,
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white30, width: 1.5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.screen_rotation_rounded, color: Colors.white, size: 22),
+            const SizedBox(height: 2),
+            Text(
+              '$deg°',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 class _CallButton extends StatelessWidget {
   @override
@@ -306,7 +419,8 @@ class _CallButton extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/call'),
       child: Container(
-        width: 52, height: 52,
+        width: 52,
+        height: 52,
         decoration: BoxDecoration(
           color: Colors.black54,
           shape: BoxShape.circle,

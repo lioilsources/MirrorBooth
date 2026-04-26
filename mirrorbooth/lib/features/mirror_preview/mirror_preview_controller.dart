@@ -11,12 +11,15 @@ class MirrorPreviewState {
   final MirrorSide side;
   final bool isReady;
   final String? error;
+  /// 0, 90, 180, 270 — applied to camera content (preview + capture)
+  final int rotationDeg;
 
   const MirrorPreviewState({
     this.controller,
     this.side = MirrorSide.left,
     this.isReady = false,
     this.error,
+    this.rotationDeg = 0,
   });
 
   MirrorPreviewState copyWith({
@@ -24,12 +27,14 @@ class MirrorPreviewState {
     MirrorSide? side,
     bool? isReady,
     String? error,
+    int? rotationDeg,
   }) =>
       MirrorPreviewState(
         controller: controller ?? this.controller,
         side: side ?? this.side,
         isReady: isReady ?? this.isReady,
         error: error ?? this.error,
+        rotationDeg: rotationDeg ?? this.rotationDeg,
       );
 }
 
@@ -75,6 +80,15 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
   void setSide(MirrorSide side) {
     state = state.copyWith(side: side);
+  }
+
+  /// Cycle: 0° → 90° → 180° → 270° → 0°. Used by manual rotate button.
+  void cycleRotation() {
+    state = state.copyWith(rotationDeg: (state.rotationDeg + 90) % 360);
+  }
+
+  void setRotation(int deg) {
+    state = state.copyWith(rotationDeg: deg % 360);
   }
 
   @override
