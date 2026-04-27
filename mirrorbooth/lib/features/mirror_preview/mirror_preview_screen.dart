@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -10,7 +9,9 @@ import 'package:gal/gal.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 
-import 'mirror_canvas.dart';
+import '../../core/shader_provider.dart';
+import 'filter_strip.dart';
+import 'filtered_mirror_canvas.dart';
 import 'mirror_preview_controller.dart';
 import 'side_toggle_button.dart';
 
@@ -168,14 +169,29 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   Widget build(BuildContext context) {
     final state = ref.watch(mirrorPreviewProvider);
     final notifier = ref.read(mirrorPreviewProvider.notifier);
+    final shaderCacheAsync = ref.watch(shaderCacheProvider);
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: _body(context, state, notifier),
+    return shaderCacheAsync.when(
+      loading: () => const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      ),
+      error: (e, _) => Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text('Shader load error: $e',
+              style: const TextStyle(color: Colors.white70)),
+        ),
+      ),
+      data: (shaderCache) => Scaffold(
+        backgroundColor: Colors.black,
+        body: _body(context, state, notifier, shaderCache),
+      ),
     );
   }
 
-  Widget _body(BuildContext context, MirrorPreviewState state, MirrorPreviewController notifier) {
+  Widget _body(BuildContext context, MirrorPreviewState state,
+      MirrorPreviewController notifier, ShaderCache shaderCache) {
     if (state.error != null) {
       return Center(
         child: Padding(
@@ -196,12 +212,16 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       fit: StackFit.expand,
       children: [
         // Camera + mirror wrapped in RepaintBoundary for screenshot capture.
+        // FilteredMirrorCanvas applies the active GLSL shader inside the boundary
+        // so the filter is automatically baked into saved photos.
         RepaintBoundary(
           key: _canvasKey,
-          child: MirrorCanvas(
+          child: FilteredMirrorCanvas(
             controller: state.controller!,
             side: state.side,
             cameraRotationDeg: state.rotationDeg,
+            filter: state.selectedFilter,
+            shaderCache: shaderCache,
           ),
         ),
 
@@ -214,6 +234,17 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _captureAndSave,
+          ),
+        ),
+
+        // Filter selector strip
+        Positioned(
+          bottom: 136,
+          left: 0,
+          right: 0,
+          child: FilterStrip(
+            selected: state.selectedFilter,
+            onSelect: notifier.setFilter,
           ),
         ),
 

@@ -31,3 +31,8 @@ flutter:
   uses-material-design: true
   shaders:
     - shaders/mirror.frag
+    - shaders/filter_pencil.frag
+    - shaders/filter_comic.frag
+    - shaders/filter_cel_shade.frag
+    - shaders/filter_glitch.frag
+    - shaders/filter_pixel_art.frag

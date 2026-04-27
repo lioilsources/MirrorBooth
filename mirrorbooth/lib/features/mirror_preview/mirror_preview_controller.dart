@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../../core/mirror_filter.dart';
 import '../../core/mirror_side.dart';
 
 class MirrorPreviewState {
@@ -13,6 +14,7 @@ class MirrorPreviewState {
   final String? error;
   /// 0, 90, 180, 270 — applied to camera content (preview + capture)
   final int rotationDeg;
+  final MirrorFilter selectedFilter;
 
   const MirrorPreviewState({
     this.controller,
@@ -20,6 +22,7 @@ class MirrorPreviewState {
     this.isReady = false,
     this.error,
     this.rotationDeg = 0,
+    this.selectedFilter = MirrorFilter.none,
   });
 
   MirrorPreviewState copyWith({
@@ -28,6 +31,7 @@ class MirrorPreviewState {
     bool? isReady,
     String? error,
     int? rotationDeg,
+    MirrorFilter? selectedFilter,
   }) =>
       MirrorPreviewState(
         controller: controller ?? this.controller,
@@ -35,6 +39,7 @@ class MirrorPreviewState {
         isReady: isReady ?? this.isReady,
         error: error ?? this.error,
         rotationDeg: rotationDeg ?? this.rotationDeg,
+        selectedFilter: selectedFilter ?? this.selectedFilter,
       );
 }
 
@@ -89,6 +94,10 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
   void setRotation(int deg) {
     state = state.copyWith(rotationDeg: deg % 360);
+  }
+
+  void setFilter(MirrorFilter filter) {
+    state = state.copyWith(selectedFilter: filter);
   }
 
   @override
