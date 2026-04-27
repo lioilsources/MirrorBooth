@@ -36,3 +36,11 @@ flutter:
     - shaders/filter_cel_shade.frag
     - shaders/filter_glitch.frag
     - shaders/filter_pixel_art.frag
+    - shaders/filter_neon.frag
+    - shaders/filter_watercolor.frag
+    - shaders/filter_charcoal.frag
+    - shaders/filter_halftone.frag
+    - shaders/filter_thermal.frag
+    - shaders/filter_psychedelic.frag
+    - shaders/filter_oil.frag
+    - shaders/filter_crt.frag

@@ -109,7 +109,7 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
             painter: _FilterShaderPainter(
               image: frame,
               program: program,
-              isGlitch: widget.filter == MirrorFilter.glitch,
+              needsTime: widget.filter.needsTime,
               time: (_stopwatch.elapsedMilliseconds / 1000.0) % 100.0,
             ),
           ),
@@ -121,13 +121,13 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
 class _FilterShaderPainter extends CustomPainter {
   final ui.Image image;
   final ui.FragmentProgram program;
-  final bool isGlitch;
+  final bool needsTime;
   final double time;
 
   _FilterShaderPainter({
     required this.image,
     required this.program,
-    required this.isGlitch,
+    required this.needsTime,
     required this.time,
   });
 
@@ -137,7 +137,7 @@ class _FilterShaderPainter extends CustomPainter {
     shader.setImageSampler(0, image);
     shader.setFloat(0, size.width);
     shader.setFloat(1, size.height);
-    if (isGlitch) shader.setFloat(2, time);
+    if (needsTime) shader.setFloat(2, time);
     canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
   }
 
@@ -145,5 +145,5 @@ class _FilterShaderPainter extends CustomPainter {
   bool shouldRepaint(_FilterShaderPainter old) =>
       old.image != image ||
       old.program != program ||
-      (isGlitch && old.time != time);
+      (needsTime && old.time != time);
 }
