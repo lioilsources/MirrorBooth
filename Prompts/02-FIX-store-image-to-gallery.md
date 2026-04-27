@@ -14,21 +14,25 @@ nezávislých příčin, které musely být opraveny současně.
 **První pokus:** obalit `MirrorCanvas` v `RepaintBoundary` a zachytit ho přes
 `RenderRepaintBoundary.toImage()` → PNG → `Gal.putImageBytes`.
 
-**Proč selhalo:** `CameraPreview` se vykresluje skrze platformovou GPU texturu
-(SurfaceTexture na Androidu, IOSurface na iOS). Flutter compositor ji čte
-přímo z GPU bez prostředníka. `RepaintBoundary.toImage()` ale platformové
+**Proč selhalo (Android):** `CameraPreview` se vykresluje skrze platformovou GPU texturu
+(SurfaceTexture na Androidu). Flutter compositor ji čte
+přímo z GPU bez prostředníka. `RepaintBoundary.toImage()` na Androidu platformové
 textury **nezachytí** — výstupem je černý nebo prázdný obrázek.
 
 ```dart
-// NEFUNGUJE pro CameraPreview:
+// NEFUNGUJE pro CameraPreview na Androidu:
 final boundary = key.currentContext.findRenderObject() as RenderRepaintBoundary;
 final image = await boundary.toImage(pixelRatio: 3.0);
 // → black/empty image
 ```
 
-**Řešení:** použít `controller.takePicture()` který si přímo z native vrstvy
+**Řešení (fáze 1):** použít `controller.takePicture()` který si přímo z native vrstvy
 vyžádá JPEG snapshot kamery. Mirror efekt se musí dopočítat softwarově
 post-hoc.
+
+> **Poznámka (viz Fix 9):** Na iOS s Metal/Impeller renderem `RepaintBoundary.toImage()`
+> platformové textury (IOSurface) **zachytí spolehlivě**. Finální architektura
+> proto tuto cestu na iOS znovu využívá.
 
 ```dart
 final xfile = await state.controller!.takePicture();
@@ -234,6 +238,107 @@ if (Platform.isIOS) src = img.flipHorizontal(src);
 
 ---
 
+## Fix 9: iOS — `permission_handler` macros chybějí v Podfile
+
+**Symptom:** kamera vždy vrací `PermissionStatus.denied` i po schválení
+dialogu. Error "Camera permission denied" se zobrazí hned při startu.
+
+**Příčina:** `permission_handler` plugin pro iOS je zkompilovaný s feature
+flags. Bez explicitního opt-in v `GCC_PREPROCESSOR_DEFINITIONS` v Podfile
+plugin při buildu vyřadí celou implementaci dané permission — vrací vždy
+`denied` bez ohledu na `Info.plist` nebo dialog.
+
+**Řešení:** do `post_install` bloku Podfile přidat preprocessor definice pro
+každou permission, kterou aplikace používá:
+
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_CAMERA=1',
+        'PERMISSION_MICROPHONE=1',
+        'PERMISSION_PHOTOS=1',
+        'PERMISSION_PHOTOS_ADD_ONLY=1',
+      ]
+    end
+  end
+end
+```
+
+Po změně nutno spustit `pod install` (ne jen `flutter pub get`).
+
+---
+
+## Fix 10: iOS 13 — chybí `NSPhotoLibraryUsageDescription`
+
+**Symptom:** `Gal.putImage` crashi na iOS 13 zařízení s:
+`"This app has crashed because it attempted to access privacy-sensitive data
+without a usage description."`
+
+**Příčina:** Pro iOS 14+ stačí `NSPhotoLibraryAddUsageDescription` (write-only
+access). Ale pro iOS 13 (minimum deployment target projektu = 13.0) API ještě
+nezná `.addOnly` access level — potřebuje plnou `NSPhotoLibraryUsageDescription`.
+
+**Řešení:** přidat oba klíče do `ios/Runner/Info.plist`:
+
+```xml
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>MirrorBooth saves your mirror photo to the photo library.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>MirrorBooth saves your mirror photo to the photo library.</string>
+```
+
+---
+
+## Fix 11: Compositing neodpovídal preview — přechod na `RepaintBoundary.toImage()`
+
+**Symptom (iOS):** uložená fotka neodpovídala tomu, co bylo na obrazovce.
+Dvě poloviny image neseděly na spoji.
+
+**Příčina:** `_processPhoto` pipeline měla několik provázaných problémů:
+1. `img.decodeImage()` v balíčku `image` 4.x **neaplikuje EXIF orientaci
+   automaticky** — pixely zůstávají v nativní landscape orientaci senzoru.
+   Bez explicitního `img.bakeOrientation()` se obraz zpracovával nastojato
+   a split probíhal na špatné ose (nahoře/dole místo vlevo/vpravo).
+2. Jakákoli drobná odchylka v `displayAspect`, crop math nebo pixel rounding
+   způsobila posunutí split bodu mimo střed obličeje.
+
+```dart
+// ŠPATNĚ — EXIF se neaplikuje automaticky:
+var src = img.decodeImage(jpegBytes);
+// src je stále v landscape orientaci senzoru!
+
+// SPRÁVNĚ by bylo:
+src = img.bakeOrientation(src);  // nutné volat explicitně
+```
+
+**Finální řešení:** na iOS s Metal/Impeller renderem
+`RepaintBoundary.toImage()` **zachytí i platformové IOSurface textury**
+(na rozdíl od Androidu, kde to nefunguje). Proto celý `_processPhoto`
+pipeline byl nahrazen přímým screenshotem widgetu — zaručeně pixel-perfect
+shoda s preview, nulová matematika orientací/cropů.
+
+```dart
+final boundary =
+    _canvasKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+final uiImage = await boundary.toImage(pixelRatio: pixelRatio);
+final byteData = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
+// → encode to JPEG in compute isolate
+```
+
+Seam indicator (bílá čára uprostřed) je umístěn **mimo** `RepaintBoundary`
+ve Stacku — do uložené fotky se nedostane.
+
+> **Import:** `RenderRepaintBoundary` vyžaduje explicitní
+> `import 'package:flutter/rendering.dart';` — přes `material.dart` samo
+> se nevytáhne při buildu.
+
+---
+
 ## Diagnostika: on-screen debug overlay
 
 Protože všechny předchozí silent failures byly skryté za chytaným
@@ -242,53 +347,48 @@ zobrazující posledních 8 událostí save flow:
 
 ```
 TAP
-takePicture()…
-xfile: REC_2026….jpg
-read 2847291 B
-compose rot=0…
-composed 412803 B
+capturing 1179×2556…
+captured 1179×2556
+encoding JPEG…
+encoded 412803 B
 wrote temp
 Gal.putImage OK ✓
 ```
 
 Pokud něco selže, je hned vidět **kde**. Vypnutelné ikonkou broučka
-vpravo nahoře. `debugPrint` paralelně do `flutter run` console pro release
-build.
+vpravo nahoře. `debugPrint` paralelně do `flutter run` console.
 
 ---
 
 ## Souhrn změn
 
-| Soubor                                                    | Co se změnilo                                              |
-|-----------------------------------------------------------|------------------------------------------------------------|
-| `pubspec.yaml`                                            | + `gal`, `image`, `path_provider`                          |
-| `ios/Runner/Info.plist`                                   | + `NSPhotoLibraryAddUsageDescription`                       |
-| `lib/features/mirror_preview/mirror_preview_screen.dart`  | full rewrite save flow + isolate + debug overlay           |
+| Soubor                                                    | Co se změnilo                                                         |
+|-----------------------------------------------------------|-----------------------------------------------------------------------|
+| `pubspec.yaml`                                            | + `gal`, `image`, `path_provider`                                     |
+| `ios/Runner/Info.plist`                                   | + `NSPhotoLibraryAddUsageDescription`, + `NSPhotoLibraryUsageDescription` |
+| `ios/Podfile`                                             | + `PERMISSION_CAMERA/MICROPHONE/PHOTOS/PHOTOS_ADD_ONLY` macros        |
+| `lib/features/mirror_preview/mirror_preview_screen.dart`  | rewrite save flow: RepaintBoundary screenshot + compute JPEG encode   |
 
-## Architektura finálního save flow
+---
+
+## Architektura finálního save flow (iOS)
 
 ```
 TAP
   ↓
-controller.takePicture()                    ← real camera frame, ne RepaintBoundary
+RepaintBoundary.toImage(pixelRatio)     ← screenshot MirrorCanvas widgetu
+  ↓                                       pixel-perfect shoda s preview
+uiImage.toByteData(rawRgba)             ← RGBA bytes (na UI thread)
   ↓
-xfile.readAsBytes()                          → Uint8List (JPEG)
-  ↓
-compute(_processPhoto, _PhotoJob{           ← jediný isolate hop
-  jpegBytes, sideIsLeft, displayAspect,        primitiva + Uint8List only
-  flipForIos, rotateCcwDeg
+compute(_encodeToJpeg, _EncodeJob{      ← izolát: jen Uint8List + int primitiva
+  rgbaBytes, width, height
 })
-  ├── img.decodeImage()                     ← CPU, ne dart:ui
-  ├── img.flipHorizontal() (iOS only)
-  ├── img.copyRotate() (landscape)
-  ├── img.copyCrop() (display aspect)
-  ├── img.copyCrop() + img.flipHorizontal() (mirror split)
-  ├── img.compositeImage() × 2
-  └── img.encodeJpg()                       → Uint8List
+  └── img.Image.fromBytes(rgba)
+  └── img.encodeJpg(quality: 92)        → Uint8List
   ↓
-File.writeAsBytes(tempDir + uniqueName)     ← path-based gal call
+File.writeAsBytes(tempDir/mb_*.jpg)     ← path-based gal call
   ↓
-Gal.putImage(tempFile.path)                  ← gal řeší permissions sám
+Gal.putImage(tempFile.path)             ← gal řeší iOS permissions sám
   ↓
 flash animation + temp file delete
 ```

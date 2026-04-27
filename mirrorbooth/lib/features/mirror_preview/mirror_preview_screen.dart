@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:image/image.dart' as img;
@@ -11,67 +14,24 @@ import 'mirror_canvas.dart';
 import 'mirror_preview_controller.dart';
 import 'side_toggle_button.dart';
 
-// ── Isolate payload (only primitives + Uint8List, safe across isolate) ───────
+// ── Isolate payload for JPEG encoding ────────────────────────────────────────
 
-class _PhotoJob {
-  final Uint8List jpegBytes;
-  final bool sideIsLeft;
-  final double displayAspect; // portrait W/H (< 1)
-  final bool flipForIos;      // iOS takePicture() = un-mirrored sensor
-  final int rotateCcwDeg;     // 0/90/180/270 — match preview rotation
-
-  const _PhotoJob({
-    required this.jpegBytes,
-    required this.sideIsLeft,
-    required this.displayAspect,
-    required this.flipForIos,
-    required this.rotateCcwDeg,
-  });
+class _EncodeJob {
+  final Uint8List rgbaBytes;
+  final int width;
+  final int height;
+  const _EncodeJob({required this.rgbaBytes, required this.width, required this.height});
 }
 
-Uint8List _processPhoto(_PhotoJob job) {
-  var src = img.decodeImage(job.jpegBytes);
-  if (src == null) throw Exception('decodeImage returned null');
-
-  if (job.flipForIos) src = img.flipHorizontal(src);
-
-  if (job.rotateCcwDeg == 90) src = img.copyRotate(src, angle: 90);
-  if (job.rotateCcwDeg == 180) src = img.copyRotate(src, angle: 180);
-  if (job.rotateCcwDeg == 270) src = img.copyRotate(src, angle: 270);
-
-  // Crop to display aspect ratio (BoxFit.cover equivalent)
-  final imgAspect = src.width / src.height;
-  int cropW, cropH, cropX, cropY;
-  if (imgAspect > job.displayAspect) {
-    cropH = src.height;
-    cropW = (src.height * job.displayAspect).round().clamp(1, src.width);
-    cropX = (src.width - cropW) ~/ 2;
-    cropY = 0;
-  } else {
-    cropW = src.width;
-    cropH = (src.width / job.displayAspect).round().clamp(1, src.height);
-    cropX = 0;
-    cropY = (src.height - cropH) ~/ 2;
-  }
-  src = img.copyCrop(src, x: cropX, y: cropY, width: cropW, height: cropH);
-
-  // Mirror split: both panels show same face half, one flipped
-  final panelW = cropW ~/ 2;
-  if (panelW < 1) throw Exception('panelW=$panelW after crop ${cropW}x$cropH');
-  final srcX = job.sideIsLeft ? 0 : cropW - panelW;
-  final panel = img.copyCrop(src, x: srcX, y: 0, width: panelW, height: cropH);
-  final mirror = img.flipHorizontal(panel);
-
-  final output = img.Image(width: cropW, height: cropH);
-  if (job.sideIsLeft) {
-    img.compositeImage(output, panel, dstX: 0);
-    img.compositeImage(output, mirror, dstX: panelW);
-  } else {
-    img.compositeImage(output, mirror, dstX: 0);
-    img.compositeImage(output, panel, dstX: panelW);
-  }
-
-  return Uint8List.fromList(img.encodeJpg(output, quality: 92));
+Uint8List _encodeToJpeg(_EncodeJob job) {
+  final image = img.Image.fromBytes(
+    width: job.width,
+    height: job.height,
+    bytes: job.rgbaBytes.buffer,
+    numChannels: 4,
+    order: img.ChannelOrder.rgba,
+  );
+  return Uint8List.fromList(img.encodeJpg(image, quality: 92));
 }
 
 // ── Screen ───────────────────────────────────────────────────────────────────
@@ -90,6 +50,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   bool _isSaving = false;
   bool _showDebug = true;
   final List<String> _debugLog = <String>[];
+  // Key for the RepaintBoundary wrapping MirrorCanvas — used for screenshot capture.
+  final _canvasKey = GlobalKey();
 
   @override
   void initState() {
@@ -133,43 +95,39 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     File? tempFile;
     try {
-      final state = ref.read(mirrorPreviewProvider);
-      if (state.controller == null) {
-        _log('controller is null');
-        return;
-      }
+      // Capture what the user actually sees: pixel-perfect screenshot of the
+      // MirrorCanvas widget at the device's full physical resolution.
+      final boundary =
+          _canvasKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+      _log('capturing ${(boundary.size.width * pixelRatio).round()}×'
+          '${(boundary.size.height * pixelRatio).round()}…');
 
-      _log('takePicture()…');
-      final xfile = await state.controller!.takePicture();
-      _log('xfile: ${xfile.path.split('/').last}');
+      final uiImage = await boundary.toImage(pixelRatio: pixelRatio);
+      _log('captured ${uiImage.width}×${uiImage.height}');
 
-      final rawBytes = await xfile.readAsBytes();
-      _log('read ${rawBytes.length} B');
+      final byteData = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
+      if (byteData == null) throw Exception('toByteData returned null');
+      uiImage.dispose();
 
-      if (!mounted) return;
-      final mq = MediaQuery.of(context);
-      // Portrait W/H (< 1). Screen stays portrait regardless of physical phone tilt.
-      final displayAspect = mq.size.width / mq.size.height;
+      final rgbaBytes = byteData.buffer.asUint8List();
+      _log('encoding JPEG…');
 
-      _log('compose rot=${state.rotationDeg}…');
-      final job = _PhotoJob(
-        jpegBytes: rawBytes,
-        sideIsLeft: state.side.isLeft,
-        displayAspect: displayAspect,
-        flipForIos: Platform.isIOS,
-        rotateCcwDeg: state.rotationDeg,
+      final jpegBytes = await compute(
+        _encodeToJpeg,
+        _EncodeJob(
+          rgbaBytes: rgbaBytes,
+          width: uiImage.width,
+          height: uiImage.height,
+        ),
       );
-      final outBytes = await compute(_processPhoto, job);
-      _log('composed ${outBytes.length} B');
+      _log('encoded ${jpegBytes.length} B');
 
       final dir = await getTemporaryDirectory();
       tempFile = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.jpg');
-      await tempFile.writeAsBytes(outBytes);
+      await tempFile.writeAsBytes(jpegBytes);
       _log('wrote temp');
 
-      // gal handles the platform permission internally; don't pre-check with
-      // permission_handler — Permission.storage is deprecated/blocked on
-      // Android 13+, manual checks just cause silent failures.
       await Gal.putImage(tempFile.path);
       _log('Gal.putImage OK ✓');
 
@@ -237,14 +195,17 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Camera + mirror — rotation applied INSIDE each panel so the seam stays vertical.
-        MirrorCanvas(
-          controller: state.controller!,
-          side: state.side,
-          cameraRotationDeg: state.rotationDeg,
+        // Camera + mirror wrapped in RepaintBoundary for screenshot capture.
+        RepaintBoundary(
+          key: _canvasKey,
+          child: MirrorCanvas(
+            controller: state.controller!,
+            side: state.side,
+            cameraRotationDeg: state.rotationDeg,
+          ),
         ),
 
-        // Vertical seam indicator
+        // Vertical seam indicator (outside RepaintBoundary — not saved to file)
         Center(child: Container(width: 1, color: Colors.white12)),
 
         // Top-level tap target — reliable hit testing regardless of inner transforms.
