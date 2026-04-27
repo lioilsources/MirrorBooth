@@ -12,7 +12,19 @@ enum MirrorFilter {
   thermal,
   psychedelic,
   oil,
-  crt;
+  crt,
+  manga,
+  starWars,
+  winx,
+  bluey,
+  spongebob,
+  adventureTime,
+  gravityFalls,
+  mlp,
+  pokemon,
+  classicDisney,
+  cartoon80s,
+  popArt;
 
   String get label => switch (this) {
         MirrorFilter.none => 'None',
@@ -29,6 +41,18 @@ enum MirrorFilter {
         MirrorFilter.psychedelic => 'Psych',
         MirrorFilter.oil => 'Oil',
         MirrorFilter.crt => 'CRT',
+        MirrorFilter.manga => 'Manga',
+        MirrorFilter.starWars => 'Wars',
+        MirrorFilter.winx => 'Winx',
+        MirrorFilter.bluey => 'Bluey',
+        MirrorFilter.spongebob => 'Bob',
+        MirrorFilter.adventureTime => 'Adv',
+        MirrorFilter.gravityFalls => 'Noir',
+        MirrorFilter.mlp => 'Pony',
+        MirrorFilter.pokemon => 'Poke',
+        MirrorFilter.classicDisney => 'Disney',
+        MirrorFilter.cartoon80s => '80s',
+        MirrorFilter.popArt => 'Pop',
       };
 
   String get icon => switch (this) {
@@ -46,12 +70,28 @@ enum MirrorFilter {
         MirrorFilter.psychedelic => 'P',
         MirrorFilter.oil => 'Q',
         MirrorFilter.crt => 'V',
+        MirrorFilter.manga => 'M',
+        MirrorFilter.starWars => '∞',
+        MirrorFilter.winx => '★',
+        MirrorFilter.bluey => 'B',
+        MirrorFilter.spongebob => '✿',
+        MirrorFilter.adventureTime => 'A',
+        MirrorFilter.gravityFalls => 'G',
+        MirrorFilter.mlp => '♥',
+        MirrorFilter.pokemon => '⚡',
+        MirrorFilter.classicDisney => '✦',
+        MirrorFilter.cartoon80s => '≡',
+        MirrorFilter.popArt => '●',
       };
 
   bool get needsTime => switch (this) {
         MirrorFilter.glitch => true,
         MirrorFilter.neon => true,
         MirrorFilter.psychedelic => true,
+        MirrorFilter.manga => true,
+        MirrorFilter.winx => true,
+        MirrorFilter.spongebob => true,
+        MirrorFilter.pokemon => true,
         _ => false,
       };
 
@@ -70,5 +110,17 @@ enum MirrorFilter {
         MirrorFilter.psychedelic => 'shaders/filter_psychedelic.frag',
         MirrorFilter.oil => 'shaders/filter_oil.frag',
         MirrorFilter.crt => 'shaders/filter_crt.frag',
+        MirrorFilter.manga => 'shaders/filter_manga.frag',
+        MirrorFilter.starWars => 'shaders/filter_star_wars.frag',
+        MirrorFilter.winx => 'shaders/filter_winx.frag',
+        MirrorFilter.bluey => 'shaders/filter_bluey.frag',
+        MirrorFilter.spongebob => 'shaders/filter_spongebob.frag',
+        MirrorFilter.adventureTime => 'shaders/filter_adventure_time.frag',
+        MirrorFilter.gravityFalls => 'shaders/filter_gravity_falls.frag',
+        MirrorFilter.mlp => 'shaders/filter_mlp.frag',
+        MirrorFilter.pokemon => 'shaders/filter_pokemon.frag',
+        MirrorFilter.classicDisney => 'shaders/filter_classic_disney.frag',
+        MirrorFilter.cartoon80s => 'shaders/filter_cartoon_80s.frag',
+        MirrorFilter.popArt => 'shaders/filter_pop_art.frag',
       };
 }
