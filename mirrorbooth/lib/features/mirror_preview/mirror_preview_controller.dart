@@ -100,12 +100,15 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     state = state.copyWith(selectedFilter: filter);
   }
 
+  void Function()? onForceStop;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final controller = this.state.controller;
     if (controller == null || !controller.value.isInitialized) return;
 
     if (state == AppLifecycleState.inactive) {
+      onForceStop?.call();
       controller.dispose();
       WakelockPlus.disable();
       this.state = this.state.copyWith(isReady: false);
