@@ -13,6 +13,7 @@ mirrorbooth/android/key.properties
 # iOS
 mirrorbooth/ios/Pods/
 mirrorbooth/ios/.symlinks/
+mirrorbooth/ios/ExportOptions.plist
 
 # macOS/IDE
 .DS_Store
