@@ -1,0 +1,60 @@
+name: Release Android
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.41.x'
+  WORKING_DIR: mirrorbooth
+
+jobs:
+  build-android:
+    name: Build & Release Android (APK)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: flutter pub get
+
+      - name: Build APK (release)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mirrorbooth-apk
+          path: ${{ env.WORKING_DIR }}/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.WORKING_DIR }}/build/app/outputs/flutter-apk/app-release.apk
+          name: MirrorBooth ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

@@ -1,0 +1,62 @@
+name: Release iOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.41.x'
+  WORKING_DIR: mirrorbooth
+
+jobs:
+  build-ios:
+    name: Build & Release iOS (unsigned)
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: flutter pub get
+
+      - name: Install CocoaPods dependencies
+        working-directory: ${{ env.WORKING_DIR }}/ios
+        run: pod install --repo-update
+
+      - name: Build iOS (release, no codesign)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: flutter build ios --release --no-codesign
+
+      - name: Package unsigned .app
+        working-directory: ${{ env.WORKING_DIR }}/build/ios/iphoneos
+        run: zip -r "$GITHUB_WORKSPACE/mirrorbooth-${{ github.ref_name }}-ios-unsigned.zip" Runner.app
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mirrorbooth-ios-unsigned
+          path: mirrorbooth-${{ github.ref_name }}-ios-unsigned.zip
+
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: mirrorbooth-${{ github.ref_name }}-ios-unsigned.zip
+          name: MirrorBooth ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
