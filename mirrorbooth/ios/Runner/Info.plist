@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>MirrorBooth uses the front camera to create your symmetric mirror preview.</string>
+	<string>MirrorBooth uses the camera to create your symmetric mirror preview.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>MirrorBooth saves your mirror photo to the photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

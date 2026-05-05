@@ -15,6 +15,7 @@ import '../video_recording/recording_overlay.dart';
 import '../video_recording/video_playback_screen.dart';
 import '../video_recording/video_recording_notifier.dart';
 import '../video_recording/video_recording_state.dart';
+import 'camera_lens_toggle_button.dart';
 import 'filter_strip.dart';
 import 'filtered_mirror_canvas.dart';
 import 'mirror_preview_controller.dart';
@@ -316,6 +317,13 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                 SideToggleButton(current: state.side, onToggle: notifier.toggleSide),
                 const SizedBox(width: 16),
                 _RotateButton(deg: state.rotationDeg, onTap: notifier.cycleRotation),
+                if (state.canToggleLens) ...[
+                  const SizedBox(width: 16),
+                  CameraLensToggleButton(
+                    current: state.lensDirection,
+                    onToggle: notifier.toggleLens,
+                  ),
+                ],
               ],
             ),
           ),
