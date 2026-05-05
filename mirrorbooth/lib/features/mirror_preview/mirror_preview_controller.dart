@@ -15,6 +15,9 @@ class MirrorPreviewState {
   /// 0, 90, 180, 270 — applied to camera content (preview + capture)
   final int rotationDeg;
   final MirrorFilter selectedFilter;
+  final CameraLensDirection lensDirection;
+  final bool hasFrontCamera;
+  final bool hasBackCamera;
 
   const MirrorPreviewState({
     this.controller,
@@ -23,7 +26,12 @@ class MirrorPreviewState {
     this.error,
     this.rotationDeg = 0,
     this.selectedFilter = MirrorFilter.none,
+    this.lensDirection = CameraLensDirection.front,
+    this.hasFrontCamera = false,
+    this.hasBackCamera = false,
   });
+
+  bool get canToggleLens => hasFrontCamera && hasBackCamera;
 
   MirrorPreviewState copyWith({
     CameraController? controller,
@@ -32,6 +40,9 @@ class MirrorPreviewState {
     String? error,
     int? rotationDeg,
     MirrorFilter? selectedFilter,
+    CameraLensDirection? lensDirection,
+    bool? hasFrontCamera,
+    bool? hasBackCamera,
   }) =>
       MirrorPreviewState(
         controller: controller ?? this.controller,
@@ -40,6 +51,9 @@ class MirrorPreviewState {
         error: error ?? this.error,
         rotationDeg: rotationDeg ?? this.rotationDeg,
         selectedFilter: selectedFilter ?? this.selectedFilter,
+        lensDirection: lensDirection ?? this.lensDirection,
+        hasFrontCamera: hasFrontCamera ?? this.hasFrontCamera,
+        hasBackCamera: hasBackCamera ?? this.hasBackCamera,
       );
 }
 
@@ -50,7 +64,9 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     _init();
   }
 
-  Future<void> _init() async {
+  bool _switchingLens = false;
+
+  Future<void> _init({CameraLensDirection? preferredLens}) async {
     final status = await Permission.camera.request();
     if (!status.isGranted) {
       state = state.copyWith(error: 'Camera permission denied');
@@ -58,13 +74,27 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     }
 
     final cameras = await availableCameras();
-    final front = cameras.firstWhere(
-      (c) => c.lensDirection == CameraLensDirection.front,
-      orElse: () => cameras.first,
+    if (cameras.isEmpty) {
+      state = state.copyWith(error: 'No cameras available');
+      return;
+    }
+
+    final hasFront =
+        cameras.any((c) => c.lensDirection == CameraLensDirection.front);
+    final hasBack =
+        cameras.any((c) => c.lensDirection == CameraLensDirection.back);
+
+    final desired = preferredLens ?? state.lensDirection;
+    final selected = cameras.firstWhere(
+      (c) => c.lensDirection == desired,
+      orElse: () => cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      ),
     );
 
     final controller = CameraController(
-      front,
+      selected,
       ResolutionPreset.high,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.bgra8888,
@@ -72,10 +102,36 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
     try {
       await controller.initialize();
-      state = state.copyWith(controller: controller, isReady: true);
+      state = state.copyWith(
+        controller: controller,
+        isReady: true,
+        lensDirection: selected.lensDirection,
+        hasFrontCamera: hasFront,
+        hasBackCamera: hasBack,
+      );
       WakelockPlus.enable();
     } catch (e) {
       state = state.copyWith(error: e.toString());
+    }
+  }
+
+  Future<void> toggleLens() async {
+    if (_switchingLens) return;
+    if (!state.canToggleLens) return;
+    final old = state.controller;
+    if (old == null || !state.isReady) return;
+
+    _switchingLens = true;
+    final next = state.lensDirection == CameraLensDirection.front
+        ? CameraLensDirection.back
+        : CameraLensDirection.front;
+
+    state = state.copyWith(isReady: false);
+    try {
+      await old.dispose();
+      await _init(preferredLens: next);
+    } finally {
+      _switchingLens = false;
     }
   }
 
