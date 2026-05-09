@@ -1,4 +1,4 @@
-name: Release iOS (TestFlight)
+name: Release iOS
 
 on:
   push:
@@ -9,15 +9,10 @@ on:
 permissions:
   contents: write
 
-env:
-  FLUTTER_VERSION: '3.41.x'
-  WORKING_DIR: mirrorbooth
-  BUNDLE_ID: com.mirrorbooth.mirrorbooth
-
 jobs:
   build-ios:
-    name: Build & Upload to TestFlight
-    runs-on: macos-15
+    name: Build & Release iOS
+    runs-on: macos-26
 
     steps:
       - name: Checkout
@@ -26,118 +21,75 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
-      - name: Resolve version
-        id: version
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
-          echo "name=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "number=${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
-
       - name: Install dependencies
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: mirrorbooth
         run: flutter pub get
 
       - name: Install CocoaPods dependencies
-        working-directory: ${{ env.WORKING_DIR }}/ios
-        run: pod install --repo-update
+        working-directory: mirrorbooth/ios
+        run: pod install
 
       - name: Import signing certificate
         env:
-          IOS_P12_BASE64: ${{ secrets.IOS_P12_BASE64 }}
-          IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
-          IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+          CERTIFICATE_P12_BASE64: ${{ secrets.IOS_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
         run: |
-          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
-          CERT_PATH="$RUNNER_TEMP/cert.p12"
-
-          echo -n "$IOS_P12_BASE64" | base64 --decode > "$CERT_PATH"
-
-          security create-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security import "$CERT_PATH" -P "$IOS_P12_PASSWORD" \
-            -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          security set-key-partition-list \
-            -S apple-tool:,apple: -k "$IOS_KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security list-keychain -d user -s "$KEYCHAIN_PATH" \
-            $(security list-keychains -d user | tr -d '"')
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode > $RUNNER_TEMP/certificate.p12
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security import $RUNNER_TEMP/certificate.p12 -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
 
       - name: Install provisioning profile
-        id: profile
         env:
-          IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
         run: |
-          PP_PATH="$RUNNER_TEMP/profile.mobileprovision"
-          echo -n "$IOS_PROVISION_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
+          PP_PATH=$RUNNER_TEMP/profile.mobileprovision
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > $PP_PATH
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
+          PROFILE_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
+          echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
+          echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
-          PP_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
-          PP_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
+      - name: Inject profile name into project
+        run: |
+          sed -i '' "s/\"CI_PROFILE_NAME\"/\"$PROFILE_NAME\"/g" mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
 
-          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-          cp "$PP_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/${PP_UUID}.mobileprovision"
+      - name: Build Flutter iOS (no codesign)
+        working-directory: mirrorbooth
+        run: flutter build ios --release --no-codesign
 
-          echo "uuid=$PP_UUID" >> "$GITHUB_OUTPUT"
-          echo "name=$PP_NAME" >> "$GITHUB_OUTPUT"
-
-      - name: Generate ExportOptions.plist
+      - name: Archive with manual signing
         env:
           TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
-          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+        working-directory: mirrorbooth
         run: |
-          cat > "${{ env.WORKING_DIR }}/ios/ExportOptions.plist" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store</string>
-            <key>destination</key>
-            <string>export</string>
-            <key>teamID</key>
-            <string>${TEAM_ID}</string>
-            <key>signingStyle</key>
-            <string>manual</string>
-            <key>signingCertificate</key>
-            <string>Apple Distribution</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>${{ env.BUNDLE_ID }}</key>
-              <string>${PROFILE_NAME}</string>
-            </dict>
-            <key>uploadBitcode</key>
-            <false/>
-            <key>compileBitcode</key>
-            <false/>
-            <key>uploadSymbols</key>
-            <true/>
-            <key>stripSwiftSymbols</key>
-            <true/>
-          </dict>
-          </plist>
-          EOF
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/Runner.xcarchive \
+            DEVELOPMENT_TEAM=$TEAM_ID
 
-      - name: Build IPA
-        working-directory: ${{ env.WORKING_DIR }}
+      - name: Export IPA
+        env:
+          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
-          flutter build ipa --release \
-            --build-name="${{ steps.version.outputs.name }}" \
-            --build-number="${{ steps.version.outputs.number }}" \
-            --export-options-plist=ios/ExportOptions.plist
-
-      - name: Locate IPA
-        id: ipa
-        run: |
-          IPA_PATH=$(find ${{ env.WORKING_DIR }}/build/ios/ipa -name "*.ipa" | head -1)
-          if [ -z "$IPA_PATH" ]; then
-            echo "::error::No IPA produced"
-            exit 1
-          fi
-          echo "path=$IPA_PATH" >> "$GITHUB_OUTPUT"
+          /usr/libexec/PlistBuddy -c "Set :teamID $TEAM_ID" mirrorbooth/ios/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.ol1n.mirrorbooth $PROFILE_NAME" mirrorbooth/ios/ExportOptions.plist
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/Runner.xcarchive \
+            -exportOptionsPlist mirrorbooth/ios/ExportOptions.plist \
+            -exportPath $RUNNER_TEMP/ipa
 
       - name: Upload to TestFlight
         env:
@@ -145,13 +97,11 @@ jobs:
           API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
         run: |
-          mkdir -p "$HOME/.appstoreconnect/private_keys"
-          echo -n "$API_KEY_BASE64" | base64 --decode \
-            > "$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8"
-
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo -n "$API_KEY_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           xcrun altool --upload-app \
             --type ios \
-            --file "${{ steps.ipa.outputs.path }}" \
+            --file "$(ls $RUNNER_TEMP/ipa/*.ipa)" \
             --apiKey "$API_KEY_ID" \
             --apiIssuer "$API_ISSUER_ID"
 
@@ -159,7 +109,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.ipa.outputs.path }}
+          files: ${{ runner.temp }}/ipa/*.ipa
           name: MirrorBooth ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
@@ -168,5 +118,5 @@ jobs:
       - name: Clean up keychain
         if: always()
         run: |
-          security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" 2>/dev/null || true
-          rm -f "$HOME/.appstoreconnect/private_keys/AuthKey_"*.p8
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db 2>/dev/null || true
+          rm -f ~/.appstoreconnect/private_keys/AuthKey_*.p8
