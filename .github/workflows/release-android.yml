@@ -9,13 +9,9 @@ on:
 permissions:
   contents: write
 
-env:
-  FLUTTER_VERSION: '3.41.x'
-  WORKING_DIR: mirrorbooth
-
 jobs:
   build-android:
-    name: Build & Release Android (APK)
+    name: Build & Release Android
     runs-on: ubuntu-latest
 
     steps:
@@ -31,30 +27,33 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
 
       - name: Install dependencies
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: mirrorbooth
         run: flutter pub get
 
-      - name: Build APK (release)
-        working-directory: ${{ env.WORKING_DIR }}
-        run: flutter build apk --release
+      - name: Create keystore and key.properties
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo -n "$KEYSTORE_BASE64" | base64 --decode > mirrorbooth/android/app/release.keystore
+          printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=release.keystore\n" \
+            "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > mirrorbooth/android/key.properties
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: mirrorbooth-apk
-          path: ${{ env.WORKING_DIR }}/build/app/outputs/flutter-apk/app-release.apk
+      - name: Build release AAB
+        working-directory: mirrorbooth
+        run: flutter build appbundle --release
 
       - name: Upload to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.WORKING_DIR }}/build/app/outputs/flutter-apk/app-release.apk
+          files: mirrorbooth/build/app/outputs/bundle/release/app-release.aab
           name: MirrorBooth ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          draft: false
+          prerelease: true
