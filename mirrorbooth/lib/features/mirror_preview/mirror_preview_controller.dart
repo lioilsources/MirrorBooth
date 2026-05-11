@@ -12,8 +12,9 @@ class MirrorPreviewState {
   final MirrorSide side;
   final bool isReady;
   final String? error;
-  /// 0, 90, 180, 270 — applied to camera content (preview + capture)
-  final int rotationDeg;
+  /// Continuous rotation in degrees [0, 360), applied to the whole circular
+  /// mirror composition.
+  final double rotationDeg;
   final MirrorFilter selectedFilter;
   final CameraLensDirection lensDirection;
   final bool hasFrontCamera;
@@ -24,7 +25,7 @@ class MirrorPreviewState {
     this.side = MirrorSide.left,
     this.isReady = false,
     this.error,
-    this.rotationDeg = 0,
+    this.rotationDeg = 0.0,
     this.selectedFilter = MirrorFilter.none,
     this.lensDirection = CameraLensDirection.front,
     this.hasFrontCamera = false,
@@ -38,7 +39,7 @@ class MirrorPreviewState {
     MirrorSide? side,
     bool? isReady,
     String? error,
-    int? rotationDeg,
+    double? rotationDeg,
     MirrorFilter? selectedFilter,
     CameraLensDirection? lensDirection,
     bool? hasFrontCamera,
@@ -143,14 +144,13 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     state = state.copyWith(side: side);
   }
 
-  /// Cycle: 0° → 90° → 180° → 270° → 0°. Used by manual rotate button.
-  void cycleRotation() {
-    state = state.copyWith(rotationDeg: (state.rotationDeg + 90) % 360);
+  void setRotation(double deg) {
+    var normalized = deg % 360.0;
+    if (normalized < 0) normalized += 360.0;
+    state = state.copyWith(rotationDeg: normalized);
   }
 
-  void setRotation(int deg) {
-    state = state.copyWith(rotationDeg: deg % 360);
-  }
+  void nudgeRotation(double delta) => setRotation(state.rotationDeg + delta);
 
   void setFilter(MirrorFilter filter) {
     state = state.copyWith(selectedFilter: filter);

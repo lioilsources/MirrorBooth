@@ -3,46 +3,40 @@ import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import '../../core/mirror_side.dart';
 
-/// Realtime face mirror using two CameraPreview widgets sharing the same
-/// underlying GPU texture (textureId).
+/// Renders the mirror composition as a SQUARE bounded by the parent's shortest
+/// side. The composition is the same as before — two panels meeting at a
+/// vertical seam, one flipped — but laid out edge-to-edge in a square so the
+/// inscribed circle around the seam captures the full mirrored frame.
 ///
-/// Each panel uses OverflowBox to position a full-size CameraPreview so that
-/// the face center (camera midpoint) sits exactly at the seam between the two
-/// panels. One panel is then flipped with Transform.flip to create the mirror.
+/// Camera content is scaled with BoxFit.cover within the square: the natural
+/// portrait camera display (typically 9:16) is widened to fill the square, and
+/// the extra horizontal extent is filled by the existing mirror-overflow logic
+/// (so the result inside the inscribed circle is a continuous mirror).
 ///
-/// [cameraRotationDeg] (0/90/180/270) wraps the inner CameraPreview in a
-/// RotatedBox, used when the phone is held landscape — the camera content gets
-/// rotated to upright **inside** the panel, so the mirror seam stays vertical.
+/// Rotation is no longer applied here — the parent wraps this widget in a
+/// Transform.rotate so the entire composition (seam included) rotates as one.
 class MirrorCanvas extends StatelessWidget {
   final CameraController controller;
   final MirrorSide side;
-  final int cameraRotationDeg;
 
   const MirrorCanvas({
     super.key,
     required this.controller,
     required this.side,
-    this.cameraRotationDeg = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_, constraints) {
-      final panelW = constraints.maxWidth / 2;
-      final panelH = constraints.maxHeight;
+      final dim = min(constraints.maxWidth, constraints.maxHeight);
+      final panelW = dim / 2;
+      final panelH = dim;
 
-      // Aspect ratio of the (possibly rotated) camera preview as it will be
-      // displayed (width / height). Without rotation: native camera is
-      // landscape, CameraPreview displays it portrait → invert. With ±90°
-      // rotation: post-rotation aspect equals the native landscape aspect.
-      final isQuarter = cameraRotationDeg == 90 || cameraRotationDeg == 270;
-      final portraitAspect = isQuarter
-          ? controller.value.aspectRatio
-          : 1.0 / controller.value.aspectRatio;
+      // Native sensor is landscape; CameraPreview shown in portrait → invert.
+      final portraitAspect = 1.0 / controller.value.aspectRatio;
 
-      // Scale the camera to cover the FULL SCREEN (both panels) using
-      // BoxFit.cover semantics.
-      final fullW = panelW * 2;
+      // BoxFit.cover semantics within the square.
+      final fullW = dim;
       double camW, camH;
       if (fullW / panelH > portraitAspect) {
         camW = fullW;
@@ -58,17 +52,6 @@ class MirrorCanvas extends StatelessWidget {
           : (panelW / denominator).clamp(-1.0, 1.0);
       final alignment = Alignment(alignX, 0);
 
-      Widget cameraView() {
-        Widget cam = CameraPreview(controller);
-        if (cameraRotationDeg != 0) {
-          cam = RotatedBox(
-            quarterTurns: (cameraRotationDeg ~/ 90) % 4,
-            child: cam,
-          );
-        }
-        return cam;
-      }
-
       Widget panel({required bool flip}) {
         Widget w = ClipRect(
           child: OverflowBox(
@@ -78,17 +61,21 @@ class MirrorCanvas extends StatelessWidget {
             child: SizedBox(
               width: camW,
               height: camH,
-              child: cameraView(),
+              child: CameraPreview(controller),
             ),
           ),
         );
         return flip ? Transform.flip(flipX: true, child: w) : w;
       }
 
-      return Row(children: [
-        Expanded(child: panel(flip: !side.isLeft)),
-        Expanded(child: panel(flip: side.isLeft)),
-      ]);
+      return SizedBox(
+        width: dim,
+        height: dim,
+        child: Row(children: [
+          Expanded(child: panel(flip: !side.isLeft)),
+          Expanded(child: panel(flip: side.isLeft)),
+        ]),
+      );
     });
   }
 }

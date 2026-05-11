@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,6 +45,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   Ticker? _recordingTicker;
   bool _isCapturingFrame = false;
   double _devicePixelRatio = 1.0;
+
+  // Rotation drag bookkeeping.
+  Offset _rotCenter = Offset.zero;
+  double _lastGestureAngle = 0.0;
+  static const double _rotDeadZone = 24.0;
 
   @override
   void initState() {
@@ -86,7 +93,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   Future<void> _captureAndSave() async {
     if (_isSaving) return;
     setState(() => _isSaving = true);
-    _log('TAP');
+    _log('PHOTO');
 
     File? tempFile;
     try {
@@ -103,19 +110,19 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       if (byteData == null) throw Exception('toByteData returned null');
       uiImage.dispose();
 
-      final jpegBytes = await compute(
-        encodeToJpeg,
+      final pngBytes = await compute(
+        encodeToPng,
         EncodeJob(
           rgbaBytes: byteData.buffer.asUint8List(),
           width: uiImage.width,
           height: uiImage.height,
         ),
       );
-      _log('encoded ${jpegBytes.length} B');
+      _log('encoded ${pngBytes.length} B');
 
       final dir = await getTemporaryDirectory();
-      tempFile = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.jpg');
-      await tempFile.writeAsBytes(jpegBytes);
+      tempFile = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.png');
+      await tempFile.writeAsBytes(pngBytes);
 
       await Gal.putImage(tempFile.path);
       _log('Gal.putImage OK ✓');
@@ -135,18 +142,22 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   // ── Video recording ───────────────────────────────────────────────────────
 
-  Future<void> _onLongPressStart(LongPressStartDetails _) async {
-    final notifier = ref.read(videoRecordingProvider.notifier);
-    await notifier.startRecording();
-    if (ref.read(videoRecordingProvider).phase != RecordingPhase.recording) return;
-
-    _recordingTicker?.dispose();
-    _recordingTicker = createTicker((_) => _captureFrame())..start();
-  }
-
-  Future<void> _onLongPressEnd(LongPressEndDetails _) async {
-    _stopRecordingTicker();
-    await ref.read(videoRecordingProvider.notifier).stopRecording();
+  Future<void> _toggleRecording() async {
+    final phase = ref.read(videoRecordingProvider).phase;
+    if (phase == RecordingPhase.idle) {
+      final notifier = ref.read(videoRecordingProvider.notifier);
+      await notifier.startRecording();
+      if (ref.read(videoRecordingProvider).phase != RecordingPhase.recording) {
+        return;
+      }
+      HapticFeedback.mediumImpact();
+      _recordingTicker?.dispose();
+      _recordingTicker = createTicker((_) => _captureFrame())..start();
+    } else if (phase == RecordingPhase.recording) {
+      _stopRecordingTicker();
+      HapticFeedback.mediumImpact();
+      await ref.read(videoRecordingProvider.notifier).stopRecording();
+    }
   }
 
   void _stopRecordingTicker() {
@@ -156,7 +167,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   }
 
   // Lower pixel ratio for recording: balances quality vs. encode speed.
-  // At 1.5× on a 3× device, frames are ~4× smaller → ~20 fps instead of 3 fps.
   static const _recordingPixelRatio = 1.5;
 
   Future<void> _captureFrame() async {
@@ -173,6 +183,27 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     } finally {
       _isCapturingFrame = false;
     }
+  }
+
+  // ── Rotation drag ─────────────────────────────────────────────────────────
+
+  void _onRotateStart(DragStartDetails d) {
+    final size = MediaQuery.of(context).size;
+    _rotCenter = Offset(size.width / 2, size.height / 2);
+    final v = d.globalPosition - _rotCenter;
+    _lastGestureAngle = atan2(v.dy, v.dx);
+  }
+
+  void _onRotateUpdate(DragUpdateDetails d) {
+    final v = d.globalPosition - _rotCenter;
+    if (v.distance < _rotDeadZone) return;
+    final angle = atan2(v.dy, v.dx);
+    var delta = angle - _lastGestureAngle;
+    if (delta > pi) delta -= 2 * pi;
+    if (delta < -pi) delta += 2 * pi;
+    _lastGestureAngle = angle;
+    final notifier = ref.read(mirrorPreviewProvider.notifier);
+    notifier.nudgeRotation(delta * 180.0 / pi);
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -202,7 +233,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     final recordingState = ref.watch(videoRecordingProvider);
 
-    // Error from recording — show snack then clear.
     ref.listen<VideoRecordingState>(videoRecordingProvider, (_, next) {
       if (next.errorMessage != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -219,7 +249,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       }
     });
 
-    // Show playback/assembling screen when needed.
     if (recordingState.phase == RecordingPhase.assembling ||
         recordingState.phase == RecordingPhase.playback) {
       return const VideoPlaybackScreen();
@@ -274,32 +303,40 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     return Stack(
       fit: StackFit.expand,
       children: [
-        RepaintBoundary(
-          key: _canvasKey,
-          child: FilteredMirrorCanvas(
-            controller: state.controller!,
-            side: state.side,
-            cameraRotationDeg: state.rotationDeg,
-            filter: state.selectedFilter,
-            shaderCache: shaderCache,
-          ),
-        ),
-
-        Center(child: Container(width: 1, color: Colors.white12)),
-
+        // Full-screen rotation drag. Translucent so taps on buttons above pass.
         Positioned.fill(
           child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: isRecording ? null : _captureAndSave,
-            onLongPressStart: _onLongPressStart,
-            onLongPressEnd: _onLongPressEnd,
+            behavior: HitTestBehavior.translucent,
+            onPanStart: _onRotateStart,
+            onPanUpdate: _onRotateUpdate,
           ),
         ),
 
-        // Controls hidden during recording
-        if (!isRecording) ...[
+        // Circular mirror canvas — centered, square, rotates with content.
+        Center(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: RepaintBoundary(
+              key: _canvasKey,
+              child: ClipOval(
+                child: Transform.rotate(
+                  angle: state.rotationDeg * pi / 180.0,
+                  child: FilteredMirrorCanvas(
+                    controller: state.controller!,
+                    side: state.side,
+                    filter: state.selectedFilter,
+                    shaderCache: shaderCache,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Controls hidden during recording (except the rec button itself).
+        if (!isRecording)
           Positioned(
-            bottom: 136,
+            bottom: 148,
             left: 0,
             right: 0,
             child: FilterStrip(
@@ -307,26 +344,38 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
               onSelect: notifier.setFilter,
             ),
           ),
-          Positioned(
-            bottom: 60,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+
+        // Bottom row: side | photo (big) | rec | lens
+        Positioned(
+          bottom: 44,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!isRecording) ...[
                 SideToggleButton(current: state.side, onToggle: notifier.toggleSide),
-                const SizedBox(width: 16),
-                _RotateButton(deg: state.rotationDeg, onTap: notifier.cycleRotation),
+                const SizedBox(width: 14),
+                _PhotoButton(
+                  enabled: !_isSaving,
+                  onTap: _captureAndSave,
+                ),
+                const SizedBox(width: 14),
+                _RecButton(isRecording: false, onTap: _toggleRecording),
                 if (state.canToggleLens) ...[
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   CameraLensToggleButton(
                     current: state.lensDirection,
                     onToggle: notifier.toggleLens,
                   ),
                 ],
-              ],
-            ),
+              ] else
+                _RecButton(isRecording: true, onTap: _toggleRecording),
+            ],
           ),
+        ),
+
+        if (!isRecording)
           Positioned(
             top: safeTop + 16,
             right: 20,
@@ -355,59 +404,58 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
               ],
             ),
           ),
-          if (_showDebug)
-            Positioned(
-              top: safeTop + 16,
-              left: 12,
-              right: 80,
-              child: IgnorePointer(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.white12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'rot=${state.rotationDeg}°  side=${state.side.label}  ${_isSaving ? "SAVING…" : "ready"}',
-                        style: const TextStyle(
-                          color: Colors.greenAccent,
-                          fontSize: 11,
+
+        if (!isRecording && _showDebug)
+          Positioned(
+            top: safeTop + 16,
+            left: 12,
+            right: 80,
+            child: IgnorePointer(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.white12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'rot=${state.rotationDeg.toStringAsFixed(1)}°  side=${state.side.label}  ${_isSaving ? "SAVING…" : "ready"}',
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (_debugLog.isEmpty)
+                      const Text(
+                        'drag = rotate  •  ⊙ = photo  •  ● = video',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 10,
                           fontFamily: 'monospace',
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (_debugLog.isEmpty)
-                        const Text(
-                          'tap = photo  •  hold = video',
-                          style: TextStyle(
-                            color: Colors.white54,
-                            fontSize: 10,
-                            fontFamily: 'monospace',
-                          ),
-                        )
-                      else
-                        ..._debugLog.map((l) => Text(
-                              l,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontFamily: 'monospace',
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            )),
-                    ],
-                  ),
+                      )
+                    else
+                      ..._debugLog.map((l) => Text(
+                            l,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )),
+                  ],
                 ),
               ),
             ),
-        ],
+          ),
 
-        // Recording indicator
         if (isRecording)
           Positioned(
             top: safeTop + 16,
@@ -418,7 +466,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
             ),
           ),
 
-        // Flash overlay
         IgnorePointer(
           child: FadeTransition(
             opacity: _flashOpacity,
@@ -437,38 +484,67 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
 // ── Small helpers ────────────────────────────────────────────────────────────
 
-class _RotateButton extends StatelessWidget {
-  final int deg;
+class _PhotoButton extends StatelessWidget {
+  final bool enabled;
   final VoidCallback onTap;
-  const _RotateButton({required this.deg, required this.onTap});
+  const _PhotoButton({required this.enabled, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        width: 78,
+        height: 78,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 3.5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Container(
+            decoration: BoxDecoration(
+              color: enabled ? Colors.white : Colors.white54,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RecButton extends StatelessWidget {
+  final bool isRecording;
+  final VoidCallback onTap;
+  const _RecButton({required this.isRecording, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 64,
-        height: 64,
+        width: 56,
+        height: 56,
         decoration: BoxDecoration(
           color: Colors.black54,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white30, width: 1.5),
+          border: Border.all(
+            color: isRecording ? Colors.redAccent : Colors.white70,
+            width: 2,
+          ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.screen_rotation_rounded, color: Colors.white, size: 22),
-            const SizedBox(height: 2),
-            Text(
-              '$deg°',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1,
-              ),
+        child: Center(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: isRecording ? 22 : 28,
+            height: isRecording ? 22 : 28,
+            decoration: BoxDecoration(
+              color: Colors.redAccent,
+              borderRadius: BorderRadius.circular(isRecording ? 4 : 14),
             ),
-          ],
+          ),
         ),
       ),
     );
