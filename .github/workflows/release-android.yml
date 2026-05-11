@@ -34,6 +34,15 @@ jobs:
         working-directory: mirrorbooth
         run: flutter pub get
 
+      - name: Bump build number
+        working-directory: mirrorbooth
+        run: |
+          BASE=$(grep '^version:' pubspec.yaml | sed -E 's/^version: ([0-9.]+).*/\1/')
+          NEW="${BASE}+${{ github.run_number }}"
+          sed -i.bak -E "s/^version: .*/version: ${NEW}/" pubspec.yaml
+          rm -f pubspec.yaml.bak
+          echo "Build version: ${NEW}"
+
       - name: Create keystore and key.properties
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
