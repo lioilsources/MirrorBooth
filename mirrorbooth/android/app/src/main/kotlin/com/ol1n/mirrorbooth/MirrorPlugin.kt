@@ -1,4 +1,4 @@
-package com.mirrorbooth.mirrorbooth
+package com.ol1n.mirrorbooth
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall

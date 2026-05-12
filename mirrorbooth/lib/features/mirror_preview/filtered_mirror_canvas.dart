@@ -13,7 +13,6 @@ import 'mirror_canvas.dart';
 class FilteredMirrorCanvas extends StatefulWidget {
   final CameraController controller;
   final MirrorSide side;
-  final int cameraRotationDeg;
   final MirrorFilter filter;
   final ShaderCache shaderCache;
 
@@ -21,7 +20,6 @@ class FilteredMirrorCanvas extends StatefulWidget {
     super.key,
     required this.controller,
     required this.side,
-    required this.cameraRotationDeg,
     required this.filter,
     required this.shaderCache,
   });
@@ -88,7 +86,6 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
     final mirrorCanvas = MirrorCanvas(
       controller: widget.controller,
       side: widget.side,
-      cameraRotationDeg: widget.cameraRotationDeg,
     );
 
     if (widget.filter == MirrorFilter.none) return mirrorCanvas;
