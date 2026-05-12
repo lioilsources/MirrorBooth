@@ -299,6 +299,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     final isRecording = recordingState.phase == RecordingPhase.recording;
     final safeTop = MediaQuery.of(context).padding.top;
+    final screenSize = MediaQuery.of(context).size;
+    final diameter = min(screenSize.width, screenSize.height);
 
     return Stack(
       fit: StackFit.expand,
@@ -312,15 +314,22 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
           ),
         ),
 
-        // Circular mirror canvas — centered, square, rotates with content.
-        Center(
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: RepaintBoundary(
-              key: _canvasKey,
-              child: ClipOval(
-                child: Transform.rotate(
-                  angle: state.rotationDeg * pi / 180.0,
+        // Circular mirror canvas — explicit size, no AspectRatio, centered.
+        // Inner RepaintBoundary forces the camera Texture into an offscreen
+        // layer before ClipOval, which avoids Android hardware-overlay
+        // conflicts when clipping/rotating a Texture widget directly.
+        Positioned(
+          left: (screenSize.width - diameter) / 2,
+          top: (screenSize.height - diameter) / 2,
+          width: diameter,
+          height: diameter,
+          child: RepaintBoundary(
+            key: _canvasKey,
+            child: ClipOval(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              child: Transform.rotate(
+                angle: state.rotationDeg * pi / 180.0,
+                child: RepaintBoundary(
                   child: FilteredMirrorCanvas(
                     controller: state.controller!,
                     side: state.side,
