@@ -300,45 +300,57 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     final isRecording = recordingState.phase == RecordingPhase.recording;
     final safeTop = MediaQuery.of(context).padding.top;
     final screenSize = MediaQuery.of(context).size;
-    final diameter = min(screenSize.width, screenSize.height);
+    // Canvas must be at least as large as the screen diagonal so that at any
+    // rotation angle the rotated rectangle still fully covers the display.
+    final diagonal =
+        sqrt(screenSize.width * screenSize.width + screenSize.height * screenSize.height);
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Full-screen rotation drag. Translucent so taps on buttons above pass.
+        // Mirror canvas sized to the screen diagonal — no circular clip.
+        // At any rotation angle the oversized canvas covers the full display.
+        // RepaintBoundary (keyed) captures the visible W×H area for photos.
+        Positioned.fill(
+          child: RepaintBoundary(
+            key: _canvasKey,
+            child: OverflowBox(
+              maxWidth: double.infinity,
+              maxHeight: double.infinity,
+              child: Transform.rotate(
+                angle: state.rotationDeg * pi / 180.0,
+                child: SizedBox(
+                  width: diagonal,
+                  height: diagonal,
+                  child: RepaintBoundary(
+                    child: FilteredMirrorCanvas(
+                      controller: state.controller!,
+                      side: state.side,
+                      filter: state.selectedFilter,
+                      shaderCache: shaderCache,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Rotation ring overlay — decorative circle showing the drag target.
+        IgnorePointer(
+          child: Center(
+            child: _RotationRing(rotationDeg: state.rotationDeg),
+          ),
+        ),
+
+        // Full-screen rotation drag — must be above the camera Texture so it
+        // receives pointer events that the Texture would otherwise absorb.
+        // Pan gestures don't interfere with taps on buttons above.
         Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onPanStart: _onRotateStart,
             onPanUpdate: _onRotateUpdate,
-          ),
-        ),
-
-        // Circular mirror canvas — explicit size, no AspectRatio, centered.
-        // Inner RepaintBoundary forces the camera Texture into an offscreen
-        // layer before ClipOval, which avoids Android hardware-overlay
-        // conflicts when clipping/rotating a Texture widget directly.
-        Positioned(
-          left: (screenSize.width - diameter) / 2,
-          top: (screenSize.height - diameter) / 2,
-          width: diameter,
-          height: diameter,
-          child: RepaintBoundary(
-            key: _canvasKey,
-            child: ClipOval(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Transform.rotate(
-                angle: state.rotationDeg * pi / 180.0,
-                child: RepaintBoundary(
-                  child: FilteredMirrorCanvas(
-                    controller: state.controller!,
-                    side: state.side,
-                    filter: state.selectedFilter,
-                    shaderCache: shaderCache,
-                  ),
-                ),
-              ),
-            ),
           ),
         ),
 
@@ -577,4 +589,70 @@ class _CallButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _RotationRing extends StatelessWidget {
+  final double rotationDeg;
+  const _RotationRing({required this.rotationDeg});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final diameter = size.shortestSide * 0.88;
+    return SizedBox(
+      width: diameter,
+      height: diameter,
+      child: CustomPaint(painter: _RingPainter(rotationDeg: rotationDeg)),
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  final double rotationDeg;
+  const _RingPainter({required this.rotationDeg});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Outer ring
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.white.withValues(alpha: 0.35)
+        ..strokeWidth = 1.5,
+    );
+
+    // Tick marks every 30°
+    final tickPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white.withValues(alpha: 0.5)
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+
+    for (int i = 0; i < 12; i++) {
+      final angle = (i * 30 - rotationDeg) * pi / 180.0;
+      final isMajor = i % 3 == 0;
+      final inner = radius - (isMajor ? 14.0 : 8.0);
+      canvas.drawLine(
+        center + Offset(cos(angle), sin(angle)) * inner,
+        center + Offset(cos(angle), sin(angle)) * (radius - 2),
+        tickPaint,
+      );
+    }
+
+    // Top indicator dot (shows current 0° position)
+    final dotAngle = -rotationDeg * pi / 180.0 - pi / 2;
+    canvas.drawCircle(
+      center + Offset(cos(dotAngle), sin(dotAngle)) * (radius - 8),
+      4,
+      Paint()..color = Colors.white.withValues(alpha: 0.9),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_RingPainter old) => old.rotationDeg != rotationDeg;
 }

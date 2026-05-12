@@ -3,18 +3,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import '../../core/mirror_side.dart';
 
-/// Renders the mirror composition as a SQUARE bounded by the parent's shortest
-/// side. The composition is the same as before — two panels meeting at a
-/// vertical seam, one flipped — but laid out edge-to-edge in a square so the
-/// inscribed circle around the seam captures the full mirrored frame.
+/// Renders the mirror composition filling the full parent bounds.
+/// Two panels meet at a vertical seam — one is the camera feed, the other
+/// is a horizontally flipped copy — producing a continuous mirror image.
 ///
-/// Camera content is scaled with BoxFit.cover within the square: the natural
-/// portrait camera display (typically 9:16) is widened to fill the square, and
-/// the extra horizontal extent is filled by the existing mirror-overflow logic
-/// (so the result inside the inscribed circle is a continuous mirror).
-///
-/// Rotation is no longer applied here — the parent wraps this widget in a
-/// Transform.rotate so the entire composition (seam included) rotates as one.
+/// Camera content uses BoxFit.cover per panel so there are no black bars.
+/// Rotation is applied by the parent via Transform.rotate.
 class MirrorCanvas extends StatelessWidget {
   final CameraController controller;
   final MirrorSide side;
@@ -28,19 +22,17 @@ class MirrorCanvas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_, constraints) {
-      final dim = min(constraints.maxWidth, constraints.maxHeight);
-      final panelW = dim / 2;
-      final panelH = dim;
+      final panelW = constraints.maxWidth / 2;
+      final panelH = constraints.maxHeight;
 
       // Native sensor is landscape; CameraPreview shown in portrait → invert.
       final portraitAspect = 1.0 / controller.value.aspectRatio;
 
-      // BoxFit.cover semantics within the square.
-      final fullW = dim;
+      // BoxFit.cover per panel: fill the panel without black bars.
       double camW, camH;
-      if (fullW / panelH > portraitAspect) {
-        camW = fullW;
-        camH = fullW / portraitAspect;
+      if (panelW / panelH > portraitAspect) {
+        camW = panelW;
+        camH = panelW / portraitAspect;
       } else {
         camH = panelH;
         camW = panelH * portraitAspect;
@@ -69,8 +61,8 @@ class MirrorCanvas extends StatelessWidget {
       }
 
       return SizedBox(
-        width: dim,
-        height: dim,
+        width: constraints.maxWidth,
+        height: panelH,
         child: Row(children: [
           Expanded(child: panel(flip: !side.isLeft)),
           Expanded(child: panel(flip: side.isLeft)),
