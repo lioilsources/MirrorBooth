@@ -15,6 +15,9 @@ class MirrorPreviewState {
   /// Continuous rotation in degrees [0, 360), applied to the whole circular
   /// mirror composition.
   final double rotationDeg;
+  /// Mirror axis angle in degrees [0, 360). 90° = vertical (default),
+  /// 0°/180° = horizontal. The axis passes through the screen center.
+  final double mirrorAxisDeg;
   final MirrorFilter selectedFilter;
   final CameraLensDirection lensDirection;
   final bool hasFrontCamera;
@@ -26,6 +29,7 @@ class MirrorPreviewState {
     this.isReady = false,
     this.error,
     this.rotationDeg = 0.0,
+    this.mirrorAxisDeg = 90.0,
     this.selectedFilter = MirrorFilter.none,
     this.lensDirection = CameraLensDirection.front,
     this.hasFrontCamera = false,
@@ -40,6 +44,7 @@ class MirrorPreviewState {
     bool? isReady,
     String? error,
     double? rotationDeg,
+    double? mirrorAxisDeg,
     MirrorFilter? selectedFilter,
     CameraLensDirection? lensDirection,
     bool? hasFrontCamera,
@@ -51,6 +56,7 @@ class MirrorPreviewState {
         isReady: isReady ?? this.isReady,
         error: error ?? this.error,
         rotationDeg: rotationDeg ?? this.rotationDeg,
+        mirrorAxisDeg: mirrorAxisDeg ?? this.mirrorAxisDeg,
         selectedFilter: selectedFilter ?? this.selectedFilter,
         lensDirection: lensDirection ?? this.lensDirection,
         hasFrontCamera: hasFrontCamera ?? this.hasFrontCamera,
@@ -151,6 +157,15 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
   }
 
   void nudgeRotation(double delta) => setRotation(state.rotationDeg + delta);
+
+  void setMirrorAxis(double deg) {
+    var normalized = deg % 360.0;
+    if (normalized < 0) normalized += 360.0;
+    state = state.copyWith(mirrorAxisDeg: normalized);
+  }
+
+  void nudgeMirrorAxis(double delta) =>
+      setMirrorAxis(state.mirrorAxisDeg + delta);
 
   void setFilter(MirrorFilter filter) {
     state = state.copyWith(selectedFilter: filter);
