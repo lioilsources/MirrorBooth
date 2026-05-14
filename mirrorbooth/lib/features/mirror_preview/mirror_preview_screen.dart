@@ -325,10 +325,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         // Mirror canvas sized to the screen diagonal — no circular clip.
         // At any rotation angle the oversized canvas covers the full display.
         // RepaintBoundary (keyed) captures the visible W×H area for photos.
-        //
-        // Total applied rotation = outer image rotation + (mirrorAxis - 90°).
-        // The mirror seam is vertical at the canvas centre by construction,
-        // so an extra (mirrorAxis - 90°) places it at the requested angle.
         Positioned.fill(
           child: RepaintBoundary(
             key: _canvasKey,
@@ -336,9 +332,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
               maxWidth: double.infinity,
               maxHeight: double.infinity,
               child: Transform.rotate(
-                angle: (state.rotationDeg + state.mirrorAxisDeg - 90.0) *
-                    pi /
-                    180.0,
+                angle: state.rotationDeg * pi / 180.0,
                 child: SizedBox(
                   width: diagonal,
                   height: diagonal,
@@ -348,6 +342,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                       side: state.side,
                       filter: state.selectedFilter,
                       shaderCache: shaderCache,
+                      mirrorAxisDeg: state.mirrorAxisDeg,
                     ),
                   ),
                 ),
