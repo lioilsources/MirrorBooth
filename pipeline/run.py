@@ -12,7 +12,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from config import OUTPUT_DIR
+import integrator
+from config import OUTPUT_DIR, settings
 from graph import build_graph
 from state import ShaderGenState
 
@@ -21,6 +22,10 @@ def main():
     parser = argparse.ArgumentParser(description="Generate a GLSL shader via LangGraph agents")
     parser.add_argument("--style", required=True, help="Natural language description of the desired filter effect")
     parser.add_argument("--name", required=True, help="Short snake_case name for the output shader (e.g. oil_warm)")
+    parser.add_argument("--no-install", action="store_true",
+                        help="Generate only; do not register the shader in the Flutter app")
+    parser.add_argument("--min-install-score", type=float, default=settings.min_install_score,
+                        help=f"Minimum ranker overall score to auto-install (default {settings.min_install_score})")
     args = parser.parse_args()
 
     shader_name = args.name.strip().replace(" ", "_").lower()
@@ -32,6 +37,8 @@ def main():
         "style_prompt": args.style,
         "tech_spec": {},
         "rag_context": [],
+        "port_reference": "",
+        "port_techniques": [],
         "glsl_code": "",
         "validation_errors": [],
         "retry_count": 0,
@@ -71,7 +78,43 @@ def main():
     if explanation:
         print(f"  Judge:     {explanation}")
     print("=" * 60)
-    print(f"\nNext step: copy {frag_path.name} to mirrorbooth/shaders/ and register in pubspec.yaml + mirror_filter.dart")
+
+    # --- auto-integration into the Flutter app ---
+    try:
+        overall_num = float(overall)
+    except (TypeError, ValueError):
+        overall_num = 0.0
+
+    do_install = settings.auto_install and not args.no_install
+    if not do_install:
+        print(f"\nSkipped install (--no-install). To register manually: copy "
+              f"{frag_path.name} to mirrorbooth/shaders/ and add it to "
+              f"pubspec.yaml + mirror_filter.dart")
+        return
+
+    if overall_num < args.min_install_score:
+        print(f"\nSkipped install: score {overall_num} < threshold "
+              f"{args.min_install_score}. Re-run or lower --min-install-score "
+              f"to register {frag_path.name}.")
+        return
+
+    try:
+        report = integrator.install(frag_path, shader_name, final_state["tech_spec"])
+    except integrator.IntegrationError as e:
+        print(f"\nInstall FAILED: {e}\nOutputs are saved in {run_dir}.")
+        sys.exit(1)
+
+    (run_dir / "install_report.json").write_text(
+        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    print(f"\nInstalled as MirrorFilter.{report['enum_name']} "
+          f"(label '{report['label']}', icon '{report['icon']}')")
+    if report["already_installed"]:
+        print("  (already present — no changes needed)")
+    for f in report["files_changed"]:
+        print(f"  changed: {f}")
+    print("\nRebuild the Flutter app to pick up the new filter "
+          "(flutter pub get && flutter run).")
 
 
 if __name__ == "__main__":

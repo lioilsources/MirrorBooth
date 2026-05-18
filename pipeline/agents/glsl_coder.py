@@ -44,10 +44,21 @@ def glsl_coder_node(state: ShaderGenState) -> ShaderGenState:
 
     tech_spec = state["tech_spec"]
     rag_snippets = state.get("rag_context", [])
+    port_reference = state.get("port_reference", "")
     errors = state.get("validation_errors", [])
 
+    port_block = ""
+    if port_reference:
+        port_block = (
+            "\n\nA Shadertoy effect has already been ported to the exact "
+            "Flutter/Impeller contract below. Strongly prefer adapting THIS "
+            "reference faithfully (keep its structure and math; only adjust "
+            "to match the requested effect):\n"
+            f"```glsl\n{port_reference}\n```"
+        )
+
     rag_block = ""
-    if rag_snippets:
+    if rag_snippets and not port_reference:
         joined = "\n\n// ---\n".join(rag_snippets)
         rag_block = f"\n\nReference GLSL snippets from existing shaders (use as inspiration, adapt as needed):\n```glsl\n{joined}\n```"
 
@@ -63,7 +74,7 @@ def glsl_coder_node(state: ShaderGenState) -> ShaderGenState:
         f"Techniques: {', '.join(tech_spec.get('techniques', []))}\n"
         f"Description: {tech_spec.get('description', '')}\n"
         f"Needs time uniform: {tech_spec.get('needs_time', False)}"
-        f"{rag_block}{error_block}"
+        f"{port_block}{rag_block}{error_block}"
     )
 
     messages = [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=user_msg)]
