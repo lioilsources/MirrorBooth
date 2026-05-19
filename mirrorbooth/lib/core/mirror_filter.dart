@@ -24,7 +24,9 @@ enum MirrorFilter {
   pokemon,
   classicDisney,
   cartoon80s,
-  popArt;
+  popArt,
+  // >>> generated-filters-enum <<<
+  ;
 
   String get label => switch (this) {
         MirrorFilter.none => 'None',
@@ -53,6 +55,7 @@ enum MirrorFilter {
         MirrorFilter.classicDisney => 'Disney',
         MirrorFilter.cartoon80s => '80s',
         MirrorFilter.popArt => 'Pop',
+        // >>> generated-filters-label <<<
       };
 
   String get icon => switch (this) {
@@ -82,6 +85,7 @@ enum MirrorFilter {
         MirrorFilter.classicDisney => '✦',
         MirrorFilter.cartoon80s => '≡',
         MirrorFilter.popArt => '●',
+        // >>> generated-filters-icon <<<
       };
 
   bool get needsTime => switch (this) {
@@ -92,6 +96,7 @@ enum MirrorFilter {
         MirrorFilter.winx => true,
         MirrorFilter.spongebob => true,
         MirrorFilter.pokemon => true,
+        // >>> generated-filters-needstime <<<
         _ => false,
       };
 
@@ -122,5 +127,6 @@ enum MirrorFilter {
         MirrorFilter.classicDisney => 'shaders/filter_classic_disney.frag',
         MirrorFilter.cartoon80s => 'shaders/filter_cartoon_80s.frag',
         MirrorFilter.popArt => 'shaders/filter_pop_art.frag',
+        // >>> generated-filters-shaderasset <<<
       };
 }

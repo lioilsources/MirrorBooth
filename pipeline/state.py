@@ -5,6 +5,8 @@ class ShaderGenState(TypedDict):
     style_prompt: str
     tech_spec: dict
     rag_context: list[str]
+    port_reference: str
+    port_techniques: list[str]
     glsl_code: str
     validation_errors: list[str]
     retry_count: int
