@@ -13,5 +13,6 @@ import UIKit
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     MirrorPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "MirrorPlugin")!)
+    CameraInfoPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "CameraInfoPlugin")!)
   }
 }

@@ -19,6 +19,10 @@ class MirrorPreviewState {
   final CameraLensDirection lensDirection;
   final bool hasFrontCamera;
   final bool hasBackCamera;
+  final double zoomLevel;
+  final double minZoom;
+  final double maxZoom;
+  final List<double> zoomPresets;
 
   const MirrorPreviewState({
     this.controller,
@@ -30,9 +34,14 @@ class MirrorPreviewState {
     this.lensDirection = CameraLensDirection.front,
     this.hasFrontCamera = false,
     this.hasBackCamera = false,
+    this.zoomLevel = 1.0,
+    this.minZoom = 1.0,
+    this.maxZoom = 1.0,
+    this.zoomPresets = const [1.0],
   });
 
   bool get canToggleLens => hasFrontCamera && hasBackCamera;
+  bool get canZoom => maxZoom > minZoom + 0.01;
 
   MirrorPreviewState copyWith({
     CameraController? controller,
@@ -44,6 +53,10 @@ class MirrorPreviewState {
     CameraLensDirection? lensDirection,
     bool? hasFrontCamera,
     bool? hasBackCamera,
+    double? zoomLevel,
+    double? minZoom,
+    double? maxZoom,
+    List<double>? zoomPresets,
   }) =>
       MirrorPreviewState(
         controller: controller ?? this.controller,
@@ -55,6 +68,10 @@ class MirrorPreviewState {
         lensDirection: lensDirection ?? this.lensDirection,
         hasFrontCamera: hasFrontCamera ?? this.hasFrontCamera,
         hasBackCamera: hasBackCamera ?? this.hasBackCamera,
+        zoomLevel: zoomLevel ?? this.zoomLevel,
+        minZoom: minZoom ?? this.minZoom,
+        maxZoom: maxZoom ?? this.maxZoom,
+        zoomPresets: zoomPresets ?? this.zoomPresets,
       );
 }
 
@@ -103,16 +120,66 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
     try {
       await controller.initialize();
+
+      double minZoom = 1.0;
+      double maxZoom = 1.0;
+      try {
+        minZoom = await controller.getMinZoomLevel();
+        maxZoom = await controller.getMaxZoomLevel();
+      } catch (_) {
+        // Some devices/platforms may not support zoom queries; keep defaults.
+      }
+      final presets = _computeZoomPresets(minZoom, maxZoom);
+      final initialZoom = presets.contains(1.0) ? 1.0 : minZoom;
+      try {
+        await controller.setZoomLevel(initialZoom);
+      } catch (_) {}
+
       state = state.copyWith(
         controller: controller,
         isReady: true,
         lensDirection: selected.lensDirection,
         hasFrontCamera: hasFront,
         hasBackCamera: hasBack,
+        zoomLevel: initialZoom,
+        minZoom: minZoom,
+        maxZoom: maxZoom,
+        zoomPresets: presets,
       );
       WakelockPlus.enable();
     } catch (e) {
       state = state.copyWith(error: e.toString());
+    }
+  }
+
+  /// Computes iPhone-style zoom presets that fall inside the device's actual
+  /// [min, max] zoom range reported by the camera plugin. We always include
+  /// 1.0 (the "wide" lens equivalent) and add 0.5×, 2×, 3× when the hardware
+  /// supports them. Without native lens introspection these are heuristics:
+  /// a 0.5× preset means the device exposes sub-1× zoom (likely a real ultra-
+  /// wide); 2×/3× may be digital on phones without a telephoto.
+  static List<double> _computeZoomPresets(double min, double max) {
+    final values = <double>{};
+    if (min < 0.95) {
+      // Round down to one decimal so 0.5×/0.6× display cleanly.
+      values.add((min * 10).floor() / 10.0);
+    }
+    values.add(1.0);
+    if (max >= 1.95) values.add(2.0);
+    if (max >= 2.95) values.add(3.0);
+    final list = values.where((v) => v >= min && v <= max).toList()..sort();
+    return list.isEmpty ? [min.clamp(0.1, max)] : list;
+  }
+
+  Future<void> setZoom(double z) async {
+    final ctrl = state.controller;
+    if (ctrl == null || !state.isReady) return;
+    final clamped = z.clamp(state.minZoom, state.maxZoom);
+    try {
+      await ctrl.setZoomLevel(clamped);
+      state = state.copyWith(zoomLevel: clamped);
+    } catch (_) {
+      // Ignore transient errors (e.g., controller disposed mid-call).
     }
   }
 
