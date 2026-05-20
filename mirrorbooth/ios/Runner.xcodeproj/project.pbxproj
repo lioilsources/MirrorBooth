@@ -14,6 +14,7 @@
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		7884E9022EC3CC0900C636F2 /* MirrorPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E9012EC3CC0900C636F2 /* MirrorPlugin.swift */; };
 		7884E9042EC3CC0900C636F2 /* MirrorVideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E9032EC3CC0900C636F2 /* MirrorVideoProcessor.swift */; };
+		7884E9062EC3CC0900C636F2 /* CameraInfoPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E9052EC3CC0900C636F2 /* CameraInfoPlugin.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -59,6 +60,7 @@
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7884E9012EC3CC0900C636F2 /* MirrorPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorPlugin.swift; sourceTree = "<group>"; };
 		7884E9032EC3CC0900C636F2 /* MirrorVideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorVideoProcessor.swift; sourceTree = "<group>"; };
+		7884E9052EC3CC0900C636F2 /* CameraInfoPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraInfoPlugin.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7E1D956B5B8104E24733CF19 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				7884E9012EC3CC0900C636F2 /* MirrorPlugin.swift */,
 				7884E9032EC3CC0900C636F2 /* MirrorVideoProcessor.swift */,
+				7884E9052EC3CC0900C636F2 /* CameraInfoPlugin.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
@@ -409,6 +412,7 @@
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 				7884E9022EC3CC0900C636F2 /* MirrorPlugin.swift in Sources */,
 				7884E9042EC3CC0900C636F2 /* MirrorVideoProcessor.swift in Sources */,
+				7884E9062EC3CC0900C636F2 /* CameraInfoPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

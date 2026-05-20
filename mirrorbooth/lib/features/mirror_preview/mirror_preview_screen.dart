@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -13,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/jpeg_encode_utils.dart';
 import '../../core/shader_provider.dart';
+import '../../services/camera_info_service.dart';
 import '../video_recording/recording_overlay.dart';
 import '../video_recording/video_playback_screen.dart';
 import '../video_recording/video_recording_notifier.dart';
@@ -22,6 +24,7 @@ import 'filter_strip.dart';
 import 'filtered_mirror_canvas.dart';
 import 'mirror_preview_controller.dart';
 import 'side_toggle_button.dart';
+import 'zoom_control.dart';
 
 // ── Screen ───────────────────────────────────────────────────────────────────
 
@@ -40,6 +43,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   bool _showDebug = true;
   final List<String> _debugLog = <String>[];
   final _canvasKey = GlobalKey();
+  Map<String, dynamic>? _lensInfo;
 
   // Recording
   Ticker? _recordingTicker;
@@ -67,6 +71,13 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         ref.read(videoRecordingProvider.notifier).forceStop();
       };
     });
+    _loadLensInfo();
+  }
+
+  Future<void> _loadLensInfo() async {
+    final info = await CameraInfoService.getLensInfo();
+    if (!mounted) return;
+    setState(() => _lensInfo = info);
   }
 
   @override
@@ -207,6 +218,102 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
+
+  List<Widget> _lensInfoLines(CameraLensDirection direction) {
+    final info = _lensInfo;
+    if (info == null) {
+      return const [
+        Text(
+          'lenses=…',
+          style: TextStyle(
+            color: Colors.white38,
+            fontSize: 10,
+            fontFamily: 'monospace',
+          ),
+        ),
+      ];
+    }
+    final key = direction == CameraLensDirection.front ? 'front' : 'back';
+    final lenses = info[key];
+    if (lenses is! List || lenses.isEmpty) {
+      return [
+        Text(
+          'lenses[$key]=none',
+          style: const TextStyle(
+            color: Colors.white38,
+            fontSize: 10,
+            fontFamily: 'monospace',
+          ),
+        ),
+      ];
+    }
+    final lines = <Widget>[
+      Text(
+        'lenses[$key]=${lenses.length}',
+        style: const TextStyle(
+          color: Colors.amberAccent,
+          fontSize: 10,
+          fontFamily: 'monospace',
+        ),
+      ),
+    ];
+    for (final raw in lenses) {
+      if (raw is! Map) continue;
+      lines.add(Text(
+        _formatLens(Map<String, dynamic>.from(raw)),
+        style: const TextStyle(
+          color: Colors.white70,
+          fontSize: 9,
+          fontFamily: 'monospace',
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ));
+    }
+    return lines;
+  }
+
+  String _formatLens(Map<String, dynamic> lens) {
+    // iOS layout
+    if (lens.containsKey('type')) {
+      final type = (lens['type'] as String?) ?? '?';
+      final shortType = type.replaceFirst('AVCaptureDeviceTypeBuiltIn', '');
+      final minZ = (lens['minZoom'] as num?)?.toDouble() ?? 1.0;
+      final maxZ = (lens['maxZoom'] as num?)?.toDouble() ?? 1.0;
+      final switches = (lens['switchOverFactors'] as List?)
+              ?.map((e) => (e as num).toDouble().toStringAsFixed(1))
+              .join(',') ??
+          '';
+      final cc = lens['constituentCount'] ?? 0;
+      final extra = switches.isNotEmpty
+          ? '  switch=[$switches]'
+          : (cc != 0 ? '  parts=$cc' : '');
+      return ' $shortType  z=${minZ.toStringAsFixed(1)}–${maxZ.toStringAsFixed(1)}×$extra';
+    }
+    // Android layout
+    final id = lens['id'] ?? '?';
+    final focals = (lens['focalLengths'] as List?)
+            ?.map((e) => (e as num).toDouble().toStringAsFixed(1))
+            .join(',') ??
+        '';
+    final zoomRange = lens['zoomRange'];
+    final maxDig = (lens['maxDigitalZoom'] as num?)?.toDouble();
+    final isLogical = lens['isLogical'] == true;
+    final physical = (lens['physicalIds'] as List?)?.length;
+    final parts = <String>['id=$id'];
+    if (focals.isNotEmpty) parts.add('f=[$focals]mm');
+    if (zoomRange is List && zoomRange.length == 2) {
+      final lo = (zoomRange[0] as num).toDouble().toStringAsFixed(1);
+      final hi = (zoomRange[1] as num).toDouble().toStringAsFixed(1);
+      parts.add('z=$lo–$hi×');
+    } else if (maxDig != null) {
+      parts.add('digMax=${maxDig.toStringAsFixed(1)}×');
+    }
+    if (isLogical) {
+      parts.add('logical(${physical ?? 0})');
+    }
+    return ' ${parts.join('  ')}';
+  }
 
   void _showError(String msg) {
     if (!mounted) return;
@@ -357,12 +464,32 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         // Controls hidden during recording (except the rec button itself).
         if (!isRecording)
           Positioned(
-            bottom: 148,
+            bottom: 224,
             left: 0,
             right: 0,
             child: FilterStrip(
               selected: state.selectedFilter,
               onSelect: notifier.setFilter,
+            ),
+          ),
+
+        // Zoom control: preset buttons with long-press slider that pops up
+        // above the row. Sits between the filter strip and the bottom row so
+        // the slider has clear space and never collides with capture controls.
+        if (!isRecording && state.canZoom)
+          Positioned(
+            bottom: 132,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: ZoomControl(
+                currentZoom: state.zoomLevel,
+                minZoom: state.minZoom,
+                maxZoom: state.maxZoom,
+                presets: state.zoomPresets,
+                onChanged: notifier.setZoom,
+              ),
             ),
           ),
 
@@ -450,6 +577,17 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                         fontFamily: 'monospace',
                       ),
                     ),
+                    Text(
+                      'zoom=${state.zoomLevel.toStringAsFixed(2)}× '
+                      '[${state.minZoom.toStringAsFixed(2)}–${state.maxZoom.toStringAsFixed(2)}] '
+                      'lens=${state.lensDirection == CameraLensDirection.front ? "FRONT" : "BACK"}',
+                      style: const TextStyle(
+                        color: Colors.cyanAccent,
+                        fontSize: 10,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    ..._lensInfoLines(state.lensDirection),
                     const SizedBox(height: 4),
                     if (_debugLog.isEmpty)
                       const Text(
