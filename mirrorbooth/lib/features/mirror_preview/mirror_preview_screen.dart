@@ -443,13 +443,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
           ),
         ),
 
-        // Rotation ring overlay — decorative circle showing the drag target.
-        IgnorePointer(
-          child: Center(
-            child: _RotationRing(rotationDeg: state.rotationDeg),
-          ),
-        ),
-
         // Full-screen rotation drag — must be above the camera Texture so it
         // receives pointer events that the Texture would otherwise absorb.
         // Pan gestures don't interfere with taps on buttons above.
@@ -464,7 +457,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         // Controls hidden during recording (except the rec button itself).
         if (!isRecording)
           Positioned(
-            bottom: 224,
+            bottom: 188,
             left: 0,
             right: 0,
             child: FilterStrip(
@@ -473,12 +466,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
             ),
           ),
 
-        // Zoom control: preset buttons with long-press slider that pops up
-        // above the row. Sits between the filter strip and the bottom row so
-        // the slider has clear space and never collides with capture controls.
+        // Zoom control: compact preset row whose long-press slider floats above
+        // it. Sits between the filter strip and the bottom capture controls.
         if (!isRecording && state.canZoom)
           Positioned(
-            bottom: 132,
+            bottom: 130,
             left: 0,
             right: 0,
             child: Align(
@@ -624,6 +616,15 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
               child: RecordingOverlay(elapsed: recordingState.elapsed),
             ),
           ),
+
+        // Rotation ring overlay — decorative circle showing the drag target.
+        // Kept as the topmost overlay (above the filter strip / zoom row) so
+        // those bottom controls can never visually occlude its arc.
+        IgnorePointer(
+          child: Center(
+            child: _RotationRing(rotationDeg: state.rotationDeg),
+          ),
+        ),
 
         IgnorePointer(
           child: FadeTransition(

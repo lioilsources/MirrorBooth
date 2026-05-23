@@ -34,6 +34,9 @@ class _ZoomControlState extends State<ZoomControl> {
   static const double _sliderWidth = 240.0;
   static const double _sliderHeight = 32.0;
   static const double _sliderGap = 10.0;
+  // Approximate height of the button row (largest button + vertical padding),
+  // used to float the slider just above it without reserving layout space.
+  static const double _rowHeight = 44.0;
 
   void _showSlider() {
     if (_sliderActive) return;
@@ -72,21 +75,24 @@ class _ZoomControlState extends State<ZoomControl> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    // The button row defines the widget's footprint. The slider floats above
+    // it via a non-clipped Stack so it never reserves layout height (keeping
+    // the control compact and clear of the rotation ring / filter strip).
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.bottomCenter,
       children: [
-        // Slider always present in the tree (so its RenderBox exists for
-        // coordinate mapping), but invisible & non-interactive when inactive.
-        AnimatedSlide(
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOut,
-          offset: _sliderActive ? Offset.zero : const Offset(0, 0.4),
-          child: AnimatedOpacity(
+        // Floating slider, painted above the row, outside the widget bounds.
+        Positioned(
+          bottom: _rowHeight + _sliderGap,
+          child: AnimatedSlide(
             duration: const Duration(milliseconds: 140),
-            opacity: _sliderActive ? 1.0 : 0.0,
-            child: IgnorePointer(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: _sliderGap),
+            curve: Curves.easeOut,
+            offset: _sliderActive ? Offset.zero : const Offset(0, 0.4),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 140),
+              opacity: _sliderActive ? 1.0 : 0.0,
+              child: IgnorePointer(
                 child: _ZoomSlider(
                   key: _sliderKey,
                   width: _sliderWidth,
