@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -13,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/jpeg_encode_utils.dart';
 import '../../core/shader_provider.dart';
+import '../../services/camera_info_service.dart';
 import '../video_recording/recording_overlay.dart';
 import '../video_recording/video_playback_screen.dart';
 import '../video_recording/video_recording_notifier.dart';
@@ -22,6 +24,7 @@ import 'filter_strip.dart';
 import 'filtered_mirror_canvas.dart';
 import 'mirror_preview_controller.dart';
 import 'side_toggle_button.dart';
+import 'zoom_control.dart';
 
 // ── Screen ───────────────────────────────────────────────────────────────────
 
@@ -40,6 +43,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   bool _showDebug = true;
   final List<String> _debugLog = <String>[];
   final _canvasKey = GlobalKey();
+  Map<String, dynamic>? _lensInfo;
 
   // Recording
   Ticker? _recordingTicker;
@@ -67,6 +71,13 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         ref.read(videoRecordingProvider.notifier).forceStop();
       };
     });
+    _loadLensInfo();
+  }
+
+  Future<void> _loadLensInfo() async {
+    final info = await CameraInfoService.getLensInfo();
+    if (!mounted) return;
+    setState(() => _lensInfo = info);
   }
 
   @override
@@ -208,6 +219,102 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
+  List<Widget> _lensInfoLines(CameraLensDirection direction) {
+    final info = _lensInfo;
+    if (info == null) {
+      return const [
+        Text(
+          'lenses=…',
+          style: TextStyle(
+            color: Colors.white38,
+            fontSize: 10,
+            fontFamily: 'monospace',
+          ),
+        ),
+      ];
+    }
+    final key = direction == CameraLensDirection.front ? 'front' : 'back';
+    final lenses = info[key];
+    if (lenses is! List || lenses.isEmpty) {
+      return [
+        Text(
+          'lenses[$key]=none',
+          style: const TextStyle(
+            color: Colors.white38,
+            fontSize: 10,
+            fontFamily: 'monospace',
+          ),
+        ),
+      ];
+    }
+    final lines = <Widget>[
+      Text(
+        'lenses[$key]=${lenses.length}',
+        style: const TextStyle(
+          color: Colors.amberAccent,
+          fontSize: 10,
+          fontFamily: 'monospace',
+        ),
+      ),
+    ];
+    for (final raw in lenses) {
+      if (raw is! Map) continue;
+      lines.add(Text(
+        _formatLens(Map<String, dynamic>.from(raw)),
+        style: const TextStyle(
+          color: Colors.white70,
+          fontSize: 9,
+          fontFamily: 'monospace',
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ));
+    }
+    return lines;
+  }
+
+  String _formatLens(Map<String, dynamic> lens) {
+    // iOS layout
+    if (lens.containsKey('type')) {
+      final type = (lens['type'] as String?) ?? '?';
+      final shortType = type.replaceFirst('AVCaptureDeviceTypeBuiltIn', '');
+      final minZ = (lens['minZoom'] as num?)?.toDouble() ?? 1.0;
+      final maxZ = (lens['maxZoom'] as num?)?.toDouble() ?? 1.0;
+      final switches = (lens['switchOverFactors'] as List?)
+              ?.map((e) => (e as num).toDouble().toStringAsFixed(1))
+              .join(',') ??
+          '';
+      final cc = lens['constituentCount'] ?? 0;
+      final extra = switches.isNotEmpty
+          ? '  switch=[$switches]'
+          : (cc != 0 ? '  parts=$cc' : '');
+      return ' $shortType  z=${minZ.toStringAsFixed(1)}–${maxZ.toStringAsFixed(1)}×$extra';
+    }
+    // Android layout
+    final id = lens['id'] ?? '?';
+    final focals = (lens['focalLengths'] as List?)
+            ?.map((e) => (e as num).toDouble().toStringAsFixed(1))
+            .join(',') ??
+        '';
+    final zoomRange = lens['zoomRange'];
+    final maxDig = (lens['maxDigitalZoom'] as num?)?.toDouble();
+    final isLogical = lens['isLogical'] == true;
+    final physical = (lens['physicalIds'] as List?)?.length;
+    final parts = <String>['id=$id'];
+    if (focals.isNotEmpty) parts.add('f=[$focals]mm');
+    if (zoomRange is List && zoomRange.length == 2) {
+      final lo = (zoomRange[0] as num).toDouble().toStringAsFixed(1);
+      final hi = (zoomRange[1] as num).toDouble().toStringAsFixed(1);
+      parts.add('z=$lo–$hi×');
+    } else if (maxDig != null) {
+      parts.add('digMax=${maxDig.toStringAsFixed(1)}×');
+    }
+    if (isLogical) {
+      parts.add('logical(${physical ?? 0})');
+    }
+    return ' ${parts.join('  ')}';
+  }
+
   void _showError(String msg) {
     if (!mounted) return;
     showDialog<void>(
@@ -336,13 +443,6 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
           ),
         ),
 
-        // Rotation ring overlay — decorative circle showing the drag target.
-        IgnorePointer(
-          child: Center(
-            child: _RotationRing(rotationDeg: state.rotationDeg),
-          ),
-        ),
-
         // Full-screen rotation drag — must be above the camera Texture so it
         // receives pointer events that the Texture would otherwise absorb.
         // Pan gestures don't interfere with taps on buttons above.
@@ -357,12 +457,31 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         // Controls hidden during recording (except the rec button itself).
         if (!isRecording)
           Positioned(
-            bottom: 148,
+            bottom: 188,
             left: 0,
             right: 0,
             child: FilterStrip(
               selected: state.selectedFilter,
               onSelect: notifier.setFilter,
+            ),
+          ),
+
+        // Zoom control: compact preset row whose long-press slider floats above
+        // it. Sits between the filter strip and the bottom capture controls.
+        if (!isRecording && state.canZoom)
+          Positioned(
+            bottom: 130,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: ZoomControl(
+                currentZoom: state.zoomLevel,
+                minZoom: state.minZoom,
+                maxZoom: state.maxZoom,
+                presets: state.zoomPresets,
+                onChanged: notifier.setZoom,
+              ),
             ),
           ),
 
@@ -450,6 +569,17 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                         fontFamily: 'monospace',
                       ),
                     ),
+                    Text(
+                      'zoom=${state.zoomLevel.toStringAsFixed(2)}× '
+                      '[${state.minZoom.toStringAsFixed(2)}–${state.maxZoom.toStringAsFixed(2)}] '
+                      'lens=${state.lensDirection == CameraLensDirection.front ? "FRONT" : "BACK"}',
+                      style: const TextStyle(
+                        color: Colors.cyanAccent,
+                        fontSize: 10,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    ..._lensInfoLines(state.lensDirection),
                     const SizedBox(height: 4),
                     if (_debugLog.isEmpty)
                       const Text(
@@ -486,6 +616,15 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
               child: RecordingOverlay(elapsed: recordingState.elapsed),
             ),
           ),
+
+        // Rotation ring overlay — decorative circle showing the drag target.
+        // Kept as the topmost overlay (above the filter strip / zoom row) so
+        // those bottom controls can never visually occlude its arc.
+        IgnorePointer(
+          child: Center(
+            child: _RotationRing(rotationDeg: state.rotationDeg),
+          ),
+        ),
 
         IgnorePointer(
           child: FadeTransition(
@@ -643,6 +782,31 @@ class _RingPainter extends CustomPainter {
         tickPaint,
       );
     }
+
+    // Mirror axis: the seam where the two mirrored halves meet. It is vertical
+    // in the (un-rotated) composition, so on screen it runs through the top
+    // indicator dot and rotates with the composition. The inner circle frames
+    // it so the axis is easy to spot.
+    final innerRadius = radius * 0.62;
+    final axisAngle = -rotationDeg * pi / 180.0 - pi / 2;
+    final axisDir = Offset(cos(axisAngle), sin(axisAngle));
+
+    canvas.drawCircle(
+      center,
+      innerRadius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.white.withValues(alpha: 0.25)
+        ..strokeWidth = 1.0,
+    );
+    canvas.drawLine(
+      center - axisDir * innerRadius,
+      center + axisDir * innerRadius,
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.55)
+        ..strokeWidth = 1.5
+        ..strokeCap = StrokeCap.round,
+    );
 
     // Top indicator dot (shows current 0° position)
     final dotAngle = -rotationDeg * pi / 180.0 - pi / 2;
