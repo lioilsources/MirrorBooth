@@ -783,6 +783,31 @@ class _RingPainter extends CustomPainter {
       );
     }
 
+    // Mirror axis: the seam where the two mirrored halves meet. It is vertical
+    // in the (un-rotated) composition, so on screen it runs through the top
+    // indicator dot and rotates with the composition. The inner circle frames
+    // it so the axis is easy to spot.
+    final innerRadius = radius * 0.62;
+    final axisAngle = -rotationDeg * pi / 180.0 - pi / 2;
+    final axisDir = Offset(cos(axisAngle), sin(axisAngle));
+
+    canvas.drawCircle(
+      center,
+      innerRadius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.white.withValues(alpha: 0.25)
+        ..strokeWidth = 1.0,
+    );
+    canvas.drawLine(
+      center - axisDir * innerRadius,
+      center + axisDir * innerRadius,
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.55)
+        ..strokeWidth = 1.5
+        ..strokeCap = StrokeCap.round,
+    );
+
     // Top indicator dot (shows current 0° position)
     final dotAngle = -rotationDeg * pi / 180.0 - pi / 2;
     canvas.drawCircle(
