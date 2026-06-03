@@ -1,0 +1,28 @@
+MirrorBooth ToyShaders seed corpus — provenance & licensing
+============================================================
+
+Every *.glsl file in this directory is an ORIGINAL work authored for
+MirrorBooth and dedicated to the public domain under CC0-1.0 (see LICENSE).
+Each file carries an `SPDX-License-Identifier: CC0-1.0` header.
+
+NO code from shadertoy.com (or any third party) is vendored here. These
+shaders are fresh implementations of well-known, non-copyrightable graphics
+*techniques* (value/fBm noise, voronoi, plasma, kaleidoscope, tunnel,
+sphere-trace SDF, domain warp, curl flow, truchet, palette cycling, CRT,
+chromatic split, metaballs, starfield, hex mosaic, polar/vignette warps).
+They follow the Shadertoy authoring CONVENTION only:
+
+    void mainImage(out vec4 fragColor, in vec2 fragCoord)
+    iResolution, iTime, iChannel0
+
+so the deterministic shadertoy_adapter can demonstrate porting them to the
+Flutter/Impeller contract and so the RAG index learns realtime idioms.
+
+Adding third-party shaders
+--------------------------
+Any future non-original file MUST be verified MIT or CC0, carry a per-file
+SPDX header, and be listed below with its upstream URL and license. Anything
+under Shadertoy's default license (CC-BY-NC-SA) or "all rights reserved"
+MUST NOT be added.
+
+Third-party files: (none)
