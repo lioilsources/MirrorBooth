@@ -55,6 +55,8 @@ jobs:
           security import $RUNNER_TEMP/certificate.p12 -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
+          echo "=== Imported certificates ==="
+          security find-identity -v -p codesigning $KEYCHAIN_PATH
 
       - name: Install provisioning profile
         env:
@@ -63,15 +65,26 @@ jobs:
           PP_PATH=$RUNNER_TEMP/profile.mobileprovision
           echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > $PP_PATH
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+          DECODED=$(security cms -D -i "$PP_PATH")
+          UUID=$(echo "$DECODED" | plutil -extract UUID raw -)
+          PROFILE_NAME=$(echo "$DECODED" | plutil -extract Name raw -)
+          BUNDLE_ID=$(echo "$DECODED" | plutil -extract Entitlements.application-identifier raw - | sed 's/^[^.]*\.//')
+          EXPIRY=$(echo "$DECODED" | plutil -extract ExpirationDate raw -)
+          PROFILE_TYPE=$(echo "$DECODED" | plutil -extract ProvisionsAllDevices raw - 2>/dev/null && echo "Enterprise" || (echo "$DECODED" | plutil -extract Entitlements.get-task-allow raw - 2>/dev/null | grep -q true && echo "Development" || echo "Distribution/AppStore"))
+          echo "=== Provisioning profile info ==="
+          echo "Profile name:      $PROFILE_NAME"
+          echo "Profile UUID:      $UUID"
+          echo "Profile bundle ID: $BUNDLE_ID"
+          echo "Profile expires:   $EXPIRY"
+          echo "Profile type:      $PROFILE_TYPE"
           cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
-          PROFILE_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
       - name: Inject profile name into project
         run: |
           sed -i '' "s/\"CI_PROFILE_NAME\"/\"$PROFILE_NAME\"/g" mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
+          grep PROVISIONING_PROFILE_SPECIFIER mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
 
       - name: Build Flutter iOS (no codesign)
         working-directory: mirrorbooth
