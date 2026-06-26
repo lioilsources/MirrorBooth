@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "880883178741",
+    "project_id": "fir-app-distribution-bb2ae",
+    "storage_bucket": "fir-app-distribution-bb2ae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880883178741:android:716d2de79e880f6f41b9bc",
+        "android_client_info": {
+          "package_name": "com.ol1n.duolingoCards"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVsLSJDB7ACqoDZguaLWYy-OwDtJ1mADU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880883178741:android:75d6ba607d8fa5c941b9bc",
+        "android_client_info": {
+          "package_name": "com.ol1n.kiran"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVsLSJDB7ACqoDZguaLWYy-OwDtJ1mADU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880883178741:android:7778a4fad92ac06a41b9bc",
+        "android_client_info": {
+          "package_name": "com.ol1n.mirrorbooth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVsLSJDB7ACqoDZguaLWYy-OwDtJ1mADU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
