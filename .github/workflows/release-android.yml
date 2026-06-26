@@ -50,19 +50,34 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo -n "$KEYSTORE_BASE64" | base64 --decode > mirrorbooth/android/app/release.keystore
-          printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=release.keystore\n" \
-            "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > mirrorbooth/android/key.properties
+          echo -n "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode --ignore-garbage > mirrorbooth/android/app/release.keystore
+          printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=release.keystore\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > mirrorbooth/android/key.properties
 
       - name: Build release AAB
         working-directory: mirrorbooth
         run: flutter build appbundle --release
 
+      - name: Build release APK
+        working-directory: mirrorbooth
+        run: flutter build apk --release
+
       - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: mirrorbooth/build/app/outputs/bundle/release/app-release.aab
+          files: |
+            mirrorbooth/build/app/outputs/bundle/release/app-release.aab
+            mirrorbooth/build/app/outputs/flutter-apk/app-release.apk
           name: MirrorBooth ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: true
+
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          groups: Alfa
+          releaseNotes: "MirrorBooth ${{ github.ref_name }} (build ${{ github.run_number }})"
+          file: mirrorbooth/build/app/outputs/flutter-apk/app-release.apk
