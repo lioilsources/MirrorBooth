@@ -69,13 +69,14 @@ jobs:
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
-      - name: Inject profile name into project
-        run: |
-          sed -i '' "s/\"CI_PROFILE_NAME\"/\"$PROFILE_NAME\"/g" mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
-
       - name: Build Flutter iOS (no codesign)
         working-directory: mirrorbooth
         run: flutter build ios --release --no-codesign
+
+      - name: Inject profile name into project
+        run: |
+          sed -i '' "s/CI_PROFILE_NAME/$PROFILE_NAME/g" mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
+          grep PROVISIONING_PROFILE_SPECIFIER mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
 
       - name: Archive with manual signing
         env:
