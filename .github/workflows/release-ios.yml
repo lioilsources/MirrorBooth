@@ -69,10 +69,6 @@ jobs:
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
-      - name: Build Flutter iOS (no codesign)
-        working-directory: mirrorbooth
-        run: flutter build ios --release --no-codesign
-
       - name: Inject profile name into project
         run: |
           sed -i '' \
@@ -80,6 +76,10 @@ jobs:
             -e "s/CI_PROFILE_NAME/\"$PROFILE_NAME\"/g" \
             mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
           grep PROVISIONING_PROFILE_SPECIFIER mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
+
+      - name: Build Flutter iOS (no codesign)
+        working-directory: mirrorbooth
+        run: flutter build ios --release --no-codesign
 
       - name: Archive with manual signing
         env:
@@ -91,11 +91,7 @@ jobs:
             -scheme Runner \
             -configuration Release \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
-            DEVELOPMENT_TEAM=$TEAM_ID \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE=$PROFILE_UUID \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME"
+            DEVELOPMENT_TEAM=$TEAM_ID
 
       - name: Export IPA
         env:
