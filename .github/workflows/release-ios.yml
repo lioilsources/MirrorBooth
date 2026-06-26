@@ -63,11 +63,18 @@ jobs:
           PP_PATH=$RUNNER_TEMP/profile.mobileprovision
           echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > $PP_PATH
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+          DECODED=$(security cms -D -i "$PP_PATH")
+          UUID=$(echo "$DECODED" | plutil -extract UUID raw -)
+          PROFILE_NAME=$(echo "$DECODED" | plutil -extract Name raw -)
+          TEAM_ID=$(echo "$DECODED" | plutil -extract TeamIdentifier.0 raw -)
           cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
-          PROFILE_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
+          echo "=== Provisioning profile info ==="
+          echo "Profile name: $PROFILE_NAME"
+          echo "Profile UUID: $UUID"
+          echo "Team ID:      $TEAM_ID"
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
+          echo "PROFILE_TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
 
       - name: Inject profile UUID into project
         run: |
@@ -82,8 +89,6 @@ jobs:
         run: flutter build ios --release --no-codesign
 
       - name: Archive with manual signing
-        env:
-          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         working-directory: mirrorbooth
         run: |
           xcodebuild archive \
@@ -91,13 +96,12 @@ jobs:
             -scheme Runner \
             -configuration Release \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
-            DEVELOPMENT_TEAM=$TEAM_ID
+            DEVELOPMENT_TEAM=$PROFILE_TEAM_ID \
+            CODE_SIGN_IDENTITY="Apple Distribution"
 
       - name: Export IPA
-        env:
-          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
         run: |
-          /usr/libexec/PlistBuddy -c "Set :teamID $TEAM_ID" mirrorbooth/ios/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Set :teamID $PROFILE_TEAM_ID" mirrorbooth/ios/ExportOptions.plist
           /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.ol1n.mirrorbooth $PROFILE_NAME" mirrorbooth/ios/ExportOptions.plist
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
