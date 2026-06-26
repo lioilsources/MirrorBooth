@@ -69,11 +69,11 @@ jobs:
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
-      - name: Inject profile name into project
+      - name: Inject profile UUID into project
         run: |
           sed -i '' \
-            -e "s/\"CI_PROFILE_NAME\"/\"$PROFILE_NAME\"/g" \
-            -e "s/CI_PROFILE_NAME/\"$PROFILE_NAME\"/g" \
+            -e "s/\"CI_PROFILE_NAME\"/\"$PROFILE_UUID\"/g" \
+            -e "s/CI_PROFILE_NAME/\"$PROFILE_UUID\"/g" \
             mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
           grep PROVISIONING_PROFILE_SPECIFIER mirrorbooth/ios/Runner.xcodeproj/project.pbxproj
 
