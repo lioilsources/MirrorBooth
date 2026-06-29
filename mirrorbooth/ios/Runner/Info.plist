@@ -2,18 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>MirrorBooth uses the camera to create your symmetric mirror preview.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>MirrorBooth saves your mirror photo to the photo library.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MirrorBooth saves your mirror photo to the photo library.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>MirrorBooth uses the microphone for FaceTimeMirrorBooth calls.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -34,8 +24,18 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>MirrorBooth uses the camera to create your symmetric mirror preview.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>MirrorBooth uses the microphone for FaceTimeMirrorBooth calls.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>MirrorBooth saves your mirror photo to the photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MirrorBooth saves your mirror photo to the photo library.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
