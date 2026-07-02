@@ -49,7 +49,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   // Rotation drag bookkeeping.
   Offset _rotCenter = Offset.zero;
   double _lastGestureAngle = 0.0;
+  bool _draggingInnerRing = false;
   static const double _rotDeadZone = 24.0;
+  // Fraction of shortest screen side used for each ring's diameter.
+  static const double _outerRingDiameterFrac = 0.88;
+  static const double _innerRingDiameterFrac = 0.44;
 
   @override
   void initState() {
@@ -191,6 +195,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     final size = MediaQuery.of(context).size;
     _rotCenter = Offset(size.width / 2, size.height / 2);
     final v = d.globalPosition - _rotCenter;
+    // Inner ring gets priority when the drag begins inside its radius (plus
+    // a small touch-tolerance margin); otherwise the drag rotates the
+    // outer composition.
+    final innerRadius = size.shortestSide * _innerRingDiameterFrac / 2;
+    _draggingInnerRing = v.distance <= innerRadius + 16.0;
     _lastGestureAngle = atan2(v.dy, v.dx);
   }
 
@@ -203,7 +212,12 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     if (delta < -pi) delta += 2 * pi;
     _lastGestureAngle = angle;
     final notifier = ref.read(mirrorPreviewProvider.notifier);
-    notifier.nudgeRotation(delta * 180.0 / pi);
+    final deltaDeg = delta * 180.0 / pi;
+    if (_draggingInnerRing) {
+      notifier.nudgeMirrorAxis(deltaDeg);
+    } else {
+      notifier.nudgeRotation(deltaDeg);
+    }
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -328,6 +342,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                       side: state.side,
                       filter: state.selectedFilter,
                       shaderCache: shaderCache,
+                      mirrorAxisDeg: state.mirrorAxisDeg,
                     ),
                   ),
                 ),
@@ -336,10 +351,25 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
           ),
         ),
 
-        // Rotation ring overlay — decorative circle showing the drag target.
+        // Outer rotation ring overlay — decorative circle showing the drag
+        // target for whole-image rotation.
         IgnorePointer(
           child: Center(
-            child: _RotationRing(rotationDeg: state.rotationDeg),
+            child: _RotationRing(
+              rotationDeg: state.rotationDeg,
+              diameterFrac: _outerRingDiameterFrac,
+            ),
+          ),
+        ),
+
+        // Inner mirror-axis ring — dashed circle with a thin line indicating
+        // the current mirror axis direction through the screen centre.
+        IgnorePointer(
+          child: Center(
+            child: _MirrorAxisRing(
+              mirrorAxisDeg: state.mirrorAxisDeg,
+              diameterFrac: _innerRingDiameterFrac,
+            ),
           ),
         ),
 
@@ -443,7 +473,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'rot=${state.rotationDeg.toStringAsFixed(1)}°  side=${state.side.label}  ${_isSaving ? "SAVING…" : "ready"}',
+                      'rot=${state.rotationDeg.toStringAsFixed(1)}°  axis=${state.mirrorAxisDeg.toStringAsFixed(1)}°  side=${state.side.label}  ${_isSaving ? "SAVING…" : "ready"}',
                       style: const TextStyle(
                         color: Colors.greenAccent,
                         fontSize: 11,
@@ -593,18 +623,93 @@ class _CallButton extends StatelessWidget {
 
 class _RotationRing extends StatelessWidget {
   final double rotationDeg;
-  const _RotationRing({required this.rotationDeg});
+  final double diameterFrac;
+  const _RotationRing({
+    required this.rotationDeg,
+    required this.diameterFrac,
+  });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final diameter = size.shortestSide * 0.88;
+    final diameter = size.shortestSide * diameterFrac;
     return SizedBox(
       width: diameter,
       height: diameter,
       child: CustomPaint(painter: _RingPainter(rotationDeg: rotationDeg)),
     );
   }
+}
+
+class _MirrorAxisRing extends StatelessWidget {
+  final double mirrorAxisDeg;
+  final double diameterFrac;
+  const _MirrorAxisRing({
+    required this.mirrorAxisDeg,
+    required this.diameterFrac,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final diameter = size.shortestSide * diameterFrac;
+    return SizedBox(
+      width: diameter,
+      height: diameter,
+      child: CustomPaint(
+        painter: _MirrorAxisRingPainter(mirrorAxisDeg: mirrorAxisDeg),
+      ),
+    );
+  }
+}
+
+class _MirrorAxisRingPainter extends CustomPainter {
+  final double mirrorAxisDeg;
+  const _MirrorAxisRingPainter({required this.mirrorAxisDeg});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Dashed outer ring.
+    final ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white.withValues(alpha: 0.55)
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    const dashCount = 48;
+    const sweep = 2 * pi / dashCount;
+    const gapFrac = 0.45;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    for (int i = 0; i < dashCount; i++) {
+      final start = i * sweep;
+      canvas.drawArc(rect, start, sweep * (1 - gapFrac), false, ringPaint);
+    }
+
+    // Thin axis line through centre at the mirror-axis angle. The axis is
+    // a line (both directions) so we draw from -radius to +radius along it.
+    final theta = mirrorAxisDeg * pi / 180.0;
+    final dir = Offset(cos(theta), sin(theta));
+    final axisLength = radius - 4.0;
+    final axisPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white.withValues(alpha: 0.85)
+      ..strokeWidth = 1.0
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(center - dir * axisLength, center + dir * axisLength, axisPaint);
+
+    // Tiny centre dot for affordance.
+    canvas.drawCircle(
+      center,
+      2.0,
+      Paint()..color = Colors.white.withValues(alpha: 0.9),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_MirrorAxisRingPainter old) =>
+      old.mirrorAxisDeg != mirrorAxisDeg;
 }
 
 class _RingPainter extends CustomPainter {
