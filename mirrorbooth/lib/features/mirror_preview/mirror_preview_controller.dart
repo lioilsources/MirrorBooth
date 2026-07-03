@@ -165,9 +165,11 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
     if (state == AppLifecycleState.inactive) {
       onForceStop?.call();
+      // Flip isReady first so the screen drops FilteredMirrorCanvas (and its
+      // capture ticker) before the controller dies.
+      this.state = this.state.copyWith(isReady: false);
       controller.dispose();
       WakelockPlus.disable();
-      this.state = this.state.copyWith(isReady: false);
     } else if (state == AppLifecycleState.resumed) {
       _init();
     }
