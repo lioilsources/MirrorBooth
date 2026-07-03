@@ -30,14 +30,14 @@ jobs:
         working-directory: mirrorbooth
         run: flutter pub get
 
-      - name: Build Windows (debug)
+      - name: Build Windows (release)
         working-directory: mirrorbooth
-        run: flutter build windows --debug
+        run: flutter build windows --release
 
       - name: Package as ZIP
         shell: pwsh
         run: |
-          $src = "mirrorbooth\build\windows\x64\runner\Debug"
+          $src = "mirrorbooth\build\windows\x64\runner\Release"
           $dest = "MirrorBooth-${{ github.ref_name }}-Windows.zip"
           Compress-Archive -Path "$src\*" -DestinationPath $dest
 
