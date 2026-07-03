@@ -39,21 +39,21 @@ jobs:
         working-directory: mirrorbooth
         run: flutter pub get
 
-      - name: Build Linux (debug)
+      - name: Build Linux (release)
         working-directory: mirrorbooth
-        run: flutter build linux --debug
+        run: flutter build linux --release
 
       - name: Package as tar.gz
         run: |
           tar -czf "MirrorBooth-${{ github.ref_name }}-Linux.tar.gz" \
-            -C mirrorbooth/build/linux/x64/debug/bundle .
+            -C mirrorbooth/build/linux/x64/release/bundle .
 
       - name: Package as AppImage (icon + .desktop)
         run: |
           set -e
           APP_DIR="mirrorbooth"
           APP_NAME="MirrorBooth"
-          BUNDLE="$APP_DIR/build/linux/x64/debug/bundle"
+          BUNDLE="$APP_DIR/build/linux/x64/release/bundle"
           BIN=$(grep -m1 'set(BINARY_NAME' "$APP_DIR/linux/CMakeLists.txt" | sed -E 's/.*"([^"]+)".*/\1/')
           echo "Binary: $BIN"
 

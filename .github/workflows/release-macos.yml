@@ -27,13 +27,13 @@ jobs:
         working-directory: mirrorbooth
         run: flutter pub get
 
-      - name: Build macOS (debug)
+      - name: Build macOS (release)
         working-directory: mirrorbooth
-        run: flutter build macos --debug
+        run: flutter build macos --release
 
       - name: Package as ZIP
         run: |
-          cd "mirrorbooth/build/macos/Build/Products/Debug"
+          cd "mirrorbooth/build/macos/Build/Products/Release"
           zip -r "$OLDPWD/MirrorBooth-${{ github.ref_name }}-macOS.zip" "mirrorbooth.app"
 
       - name: Upload to GitHub Release
