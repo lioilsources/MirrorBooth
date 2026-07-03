@@ -15,6 +15,7 @@ class FilteredMirrorCanvas extends StatefulWidget {
   final MirrorSide side;
   final MirrorFilter filter;
   final ShaderCache shaderCache;
+  final double mirrorAxisDeg;
 
   const FilteredMirrorCanvas({
     super.key,
@@ -22,6 +23,7 @@ class FilteredMirrorCanvas extends StatefulWidget {
     required this.side,
     required this.filter,
     required this.shaderCache,
+    this.mirrorAxisDeg = 90.0,
   });
 
   @override
@@ -86,6 +88,7 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
     final mirrorCanvas = MirrorCanvas(
       controller: widget.controller,
       side: widget.side,
+      mirrorAxisDeg: widget.mirrorAxisDeg,
     );
 
     if (widget.filter == MirrorFilter.none) return mirrorCanvas;
