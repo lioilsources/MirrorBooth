@@ -30,6 +30,23 @@ jobs:
         working-directory: mirrorbooth
         run: flutter pub get
 
+      # ffmpeg_kit_flutter_new's windows/CMakeLists.txt downloads the FFmpegKit
+      # zip and extracts it with `cmake -E tar` into a dir reached through Flutter's
+      # .plugin_symlinks symlink; libarchive refuses ("Cannot extract through
+      # symlink"). Pre-extract it ourselves and point the plugin at it via
+      # FFMPEGKIT_LOCAL_DIR, which makes the plugin file(COPY) instead of tar.
+      - name: Prefetch FFmpegKit (avoid CMake extract-through-symlink)
+        shell: pwsh
+        run: |
+          $ver = "8.0.0"; $pkg = "full-gpl"; $arch = "x86_64"
+          $zip = "ffmpeg-kit-windows-$arch-$pkg-$ver.zip"
+          $url = "https://github.com/sk3llo/ffmpeg_kit_flutter/releases/download/$ver-$pkg-windows/$zip"
+          $out = Join-Path $env:RUNNER_TEMP "ffmpegkit"
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          Invoke-WebRequest -Uri $url -OutFile (Join-Path $env:RUNNER_TEMP $zip)
+          Expand-Archive -Path (Join-Path $env:RUNNER_TEMP $zip) -DestinationPath $out -Force
+          "FFMPEGKIT_LOCAL_DIR=$out" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       - name: Build Windows (release)
         working-directory: mirrorbooth
         run: flutter build windows --release

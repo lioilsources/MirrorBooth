@@ -22,7 +22,7 @@ dependencies:
   path_provider: ^2.1.5
   sensors_plus: ^6.1.1
   record: ^6.0.0
-  ffmpeg_kit_flutter_new: ^4.1.0
+  ffmpeg_kit_flutter_new: 4.3.2  # pinned: Windows bundle prefetched in CI (FFMPEGKIT_LOCAL_DIR)
   video_player: ^2.9.2
 
 dev_dependencies:
