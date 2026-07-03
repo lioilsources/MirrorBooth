@@ -30,14 +30,13 @@ void main() {
     vec3 col = texture(uTexture, uv).rgb;
     float lum = luminance(col);
 
-    float q = floor(lum * 4.0) / 4.0;
-    int idx = clamp(int(q * 4.0), 0, 3);
+    float idx = clamp(floor(lum * 4.0), 0.0, 3.0);
 
     vec3 comicColor;
-    if (idx == 0)      comicColor = vec3(0.05, 0.02, 0.02);
-    else if (idx == 1) comicColor = vec3(0.85, 0.15, 0.12);
-    else if (idx == 2) comicColor = vec3(0.98, 0.88, 0.20);
-    else               comicColor = vec3(0.97, 0.97, 0.97);
+    if (idx < 0.5)      comicColor = vec3(0.05, 0.02, 0.02);
+    else if (idx < 1.5) comicColor = vec3(0.85, 0.15, 0.12);
+    else if (idx < 2.5) comicColor = vec3(0.98, 0.88, 0.20);
+    else                comicColor = vec3(0.97, 0.97, 0.97);
 
     float edge = sobelEdge(uv, px);
     float outline = smoothstep(0.18, 0.40, edge);
