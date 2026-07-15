@@ -47,29 +47,17 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
   shaders:
-    - shaders/mirror.frag
+    - shaders/filter_glow.frag
+    - shaders/filter_slim.frag
+    - shaders/filter_doll.frag
+    - shaders/filter_big_nose.frag
+    - shaders/filter_alien.frag
+    - shaders/filter_melt.frag
     - shaders/filter_pencil.frag
     - shaders/filter_comic.frag
-    - shaders/filter_cel_shade.frag
     - shaders/filter_glitch.frag
-    - shaders/filter_pixel_art.frag
     - shaders/filter_neon.frag
-    - shaders/filter_watercolor.frag
-    - shaders/filter_charcoal.frag
-    - shaders/filter_halftone.frag
     - shaders/filter_thermal.frag
-    - shaders/filter_psychedelic.frag
     - shaders/filter_oil.frag
     - shaders/filter_crt.frag
-    - shaders/filter_manga.frag
-    - shaders/filter_star_wars.frag
-    - shaders/filter_winx.frag
-    - shaders/filter_bluey.frag
-    - shaders/filter_spongebob.frag
-    - shaders/filter_adventure_time.frag
-    - shaders/filter_gravity_falls.frag
-    - shaders/filter_mlp.frag
-    - shaders/filter_pokemon.frag
-    - shaders/filter_classic_disney.frag
-    - shaders/filter_cartoon_80s.frag
     - shaders/filter_pop_art.frag

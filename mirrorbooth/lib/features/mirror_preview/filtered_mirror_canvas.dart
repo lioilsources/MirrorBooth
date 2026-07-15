@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 
+import '../../core/face_anchor.dart';
 import '../../core/mirror_filter.dart';
 import '../../core/mirror_side.dart';
 import '../../core/shader_provider.dart';
@@ -17,6 +18,7 @@ class FilteredMirrorCanvas extends StatefulWidget {
   final MirrorFilter filter;
   final ShaderCache shaderCache;
   final double mirrorAxisDeg;
+  final FaceAnchor faceAnchor;
 
   const FilteredMirrorCanvas({
     super.key,
@@ -25,6 +27,7 @@ class FilteredMirrorCanvas extends StatefulWidget {
     required this.filter,
     required this.shaderCache,
     this.mirrorAxisDeg = 90.0,
+    this.faceAnchor = FaceAnchor.defaults,
   });
 
   @override
@@ -180,6 +183,8 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
               shader: shader,
               needsTime: widget.filter.needsTime,
               time: (_stopwatch.elapsedMilliseconds / 1000.0) % 100.0,
+              needsFace: widget.filter.needsFace,
+              faceAnchor: widget.faceAnchor,
             ),
           ),
       ],
@@ -192,22 +197,34 @@ class _FilterShaderPainter extends CustomPainter {
   final ui.FragmentShader shader;
   final bool needsTime;
   final double time;
+  final bool needsFace;
+  final FaceAnchor faceAnchor;
 
   _FilterShaderPainter({
     required this.image,
     required this.shader,
     required this.needsTime,
     required this.time,
+    required this.needsFace,
+    required this.faceAnchor,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     // Uniform values are snapshotted into the display list at draw time, so
     // re-setting them each paint on the reused shader is safe.
+    // Float slots follow GLSL declaration order: uResolution, then uTime
+    // (needsTime shaders), then uFaceCenter + uFaceScale (needsFace shaders).
     shader.setImageSampler(0, image);
     shader.setFloat(0, size.width);
     shader.setFloat(1, size.height);
-    if (needsTime) shader.setFloat(2, time);
+    var i = 2;
+    if (needsTime) shader.setFloat(i++, time);
+    if (needsFace) {
+      shader.setFloat(i++, faceAnchor.center.dx);
+      shader.setFloat(i++, faceAnchor.center.dy);
+      shader.setFloat(i++, faceAnchor.scale);
+    }
     canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
   }
 
@@ -215,5 +232,6 @@ class _FilterShaderPainter extends CustomPainter {
   bool shouldRepaint(_FilterShaderPainter old) =>
       old.image != image ||
       old.shader != shader ||
-      (needsTime && old.time != time);
+      (needsTime && old.time != time) ||
+      (needsFace && old.faceAnchor != faceAnchor);
 }
