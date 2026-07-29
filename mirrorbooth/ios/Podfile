@@ -36,6 +36,35 @@ target 'Runner' do
   end
 end
 
+# App Review rejects binaries referencing the private selector
+# `RPSystemBroadcastPickerView.buttonPressed:`. flutter_webrtc (<= 1.5.2) uses
+# it to open the screen-share broadcast picker — a feature this app never
+# invokes. Replace the private call with the public UIControl equivalent.
+pre_install do |installer|
+  private_call = <<-OBJC
+    SEL selector = NSSelectorFromString(@"buttonPressed:");
+    if ([picker respondsToSelector:selector]) {
+      [picker performSelector:selector withObject:nil];
+    }
+  OBJC
+  public_call = <<-OBJC
+    for (UIView* subview in picker.subviews) {
+      if ([subview isKindOfClass:[UIButton class]]) {
+        [(UIButton*)subview sendActionsForControlEvents:UIControlEventAllTouchEvents];
+      }
+    }
+  OBJC
+  plugin_link = File.join(__dir__, '.symlinks', 'plugins', 'flutter_webrtc')
+  if File.exist?(plugin_link)
+    Dir.glob(File.join(File.realpath(plugin_link), '**', 'FlutterRTCDesktopCapturer.m')).each do |file|
+      source = File.read(file)
+      next unless source.include?(private_call)
+      File.write(file, source.sub(private_call, public_call))
+      Pod::UI.puts "Patched private buttonPressed: selector out of #{file}"
+    end
+  end
+end
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
