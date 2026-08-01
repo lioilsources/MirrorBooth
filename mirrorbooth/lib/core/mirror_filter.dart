@@ -1,7 +1,8 @@
 enum FilterCollection {
   pretty('Pretty'),
   ugly('Ugly'),
-  art('Art');
+  art('Art'),
+  fantasy('Fantasy');
 
   const FilterCollection(this.label);
 
@@ -26,7 +27,14 @@ enum MirrorFilter {
   thermal,
   oil,
   crt,
-  popArt;
+  popArt,
+  // Fantasy
+  vampire,
+  zombie,
+  ghost,
+  demon,
+  cyborg,
+  frozen;
 
   String get label => switch (this) {
         MirrorFilter.none => 'None',
@@ -44,6 +52,12 @@ enum MirrorFilter {
         MirrorFilter.oil => 'Oil',
         MirrorFilter.crt => 'CRT',
         MirrorFilter.popArt => 'Pop',
+        MirrorFilter.vampire => 'Vamp',
+        MirrorFilter.zombie => 'Zombie',
+        MirrorFilter.ghost => 'Ghost',
+        MirrorFilter.demon => 'Demon',
+        MirrorFilter.cyborg => 'Cyborg',
+        MirrorFilter.frozen => 'Frost',
       };
 
   String get icon => switch (this) {
@@ -62,12 +76,22 @@ enum MirrorFilter {
         MirrorFilter.oil => 'Q',
         MirrorFilter.crt => 'V',
         MirrorFilter.popArt => '●',
+        MirrorFilter.vampire => '†',
+        MirrorFilter.zombie => 'Ж',
+        MirrorFilter.ghost => '◌',
+        MirrorFilter.demon => 'Ψ',
+        MirrorFilter.cyborg => '▣',
+        MirrorFilter.frozen => '❆',
       };
 
   bool get needsTime => switch (this) {
         MirrorFilter.melt => true,
         MirrorFilter.glitch => true,
         MirrorFilter.neon => true,
+        MirrorFilter.ghost => true,
+        MirrorFilter.demon => true,
+        MirrorFilter.cyborg => true,
+        MirrorFilter.frozen => true,
         _ => false,
       };
 
@@ -79,6 +103,9 @@ enum MirrorFilter {
         MirrorFilter.doll => true,
         MirrorFilter.bigNose => true,
         MirrorFilter.alien => true,
+        MirrorFilter.vampire => true,
+        MirrorFilter.zombie => true,
+        MirrorFilter.demon => true,
         _ => false,
       };
 
@@ -92,6 +119,13 @@ enum MirrorFilter {
         MirrorFilter.alien ||
         MirrorFilter.melt =>
           FilterCollection.ugly,
+        MirrorFilter.vampire ||
+        MirrorFilter.zombie ||
+        MirrorFilter.ghost ||
+        MirrorFilter.demon ||
+        MirrorFilter.cyborg ||
+        MirrorFilter.frozen =>
+          FilterCollection.fantasy,
         _ => FilterCollection.art,
       };
 
@@ -114,5 +148,11 @@ enum MirrorFilter {
         MirrorFilter.oil => 'shaders/filter_oil.frag',
         MirrorFilter.crt => 'shaders/filter_crt.frag',
         MirrorFilter.popArt => 'shaders/filter_pop_art.frag',
+        MirrorFilter.vampire => 'shaders/filter_vampire.frag',
+        MirrorFilter.zombie => 'shaders/filter_zombie.frag',
+        MirrorFilter.ghost => 'shaders/filter_ghost.frag',
+        MirrorFilter.demon => 'shaders/filter_demon.frag',
+        MirrorFilter.cyborg => 'shaders/filter_cyborg.frag',
+        MirrorFilter.frozen => 'shaders/filter_frozen.frag',
       };
 }

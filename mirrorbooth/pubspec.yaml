@@ -61,3 +61,9 @@ flutter:
     - shaders/filter_oil.frag
     - shaders/filter_crt.frag
     - shaders/filter_pop_art.frag
+    - shaders/filter_vampire.frag
+    - shaders/filter_zombie.frag
+    - shaders/filter_ghost.frag
+    - shaders/filter_demon.frag
+    - shaders/filter_cyborg.frag
+    - shaders/filter_frozen.frag
