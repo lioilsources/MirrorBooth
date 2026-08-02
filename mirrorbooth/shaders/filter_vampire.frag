@@ -24,15 +24,15 @@ void main() {
     vec2 e = vec2(uFaceCenter.x, uFaceCenter.y - 0.35 * uFaceScale);
     vec2 k = uv - e;
     k.x *= aspect * 0.6;
-    float sigma = 0.30 * uFaceScale;
+    float sigma = 0.32 * uFaceScale;
     float w = exp(-dot(k, k) / (sigma * sigma));
-    float dark = smoothstep(0.55, 0.15, l);
-    col = mix(col, vec3(0.60, 0.05, 0.08), 0.8 * w * dark);
+    float dark = 0.35 + 0.65 * smoothstep(0.55, 0.15, l);
+    col = mix(col, vec3(0.60, 0.05, 0.08), 0.9 * w * dark);
 
     // Deep red-black vignette + mild contrast lift
     vec2 d = uv - vec2(0.5);
     d.x *= aspect;
-    float vig = smoothstep(0.5, 0.95, length(d));
+    float vig = smoothstep(0.42, 0.9, length(d));
     col = mix(col, vec3(0.08, 0.0, 0.02), vig);
     col = mix(vec3(0.5), col, 1.1);
 

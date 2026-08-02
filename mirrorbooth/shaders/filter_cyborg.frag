@@ -18,8 +18,8 @@ void main() {
     // Rare glitch rows: red channel splits horizontally for one beat
     float row = floor(uv.y * 24.0);
     float g = rand(vec2(row, floor(uTime * 2.0)));
-    float glitch = step(0.97, g);
-    float shift = (g - 0.985) * 4.0 * 0.02 * glitch;
+    float glitch = step(0.93, g);
+    float shift = (g - 0.965) * 0.25 * glitch;
 
     vec3 col = texture(uTexture, uv).rgb;
     col.r = texture(uTexture, clamp(uv + vec2(shift, 0.0), 0.0, 1.0)).r;
@@ -28,21 +28,21 @@ void main() {
     float l = lum(col);
     vec3 steel = vec3(l) * vec3(0.85, 0.92, 1.05);
     steel = mix(vec3(0.5), steel, 1.35);
-    col = mix(col, steel, 0.7);
+    col = mix(col, steel, 0.8);
 
     // Scanlines tied to device rows (no moire)
-    col *= 0.9 + 0.1 * sin(uv.y * uResolution.y * 3.14159);
+    col *= 0.84 + 0.16 * sin(uv.y * uResolution.y * 3.14159);
 
-    // Procedural cyan HUD: corner brackets + faint pulsing grid
+    // Procedural cyan HUD: corner brackets + pulsing grid
     vec3 hud = vec3(0.2, 0.9, 1.0);
-    float pulse = 0.6 + 0.4 * sin(uTime * 2.5);
+    float pulse = 0.7 + 0.3 * sin(uTime * 2.5);
     vec2 b = min(uv, 1.0 - uv);
-    float bracket = step(abs(b.x - 0.05), 0.002) * step(b.y, 0.18)
-                  + step(abs(b.y - 0.05), 0.002) * step(b.x, 0.18);
+    float bracket = step(abs(b.x - 0.05), 0.0035) * step(b.y, 0.18)
+                  + step(abs(b.y - 0.05), 0.0035) * step(b.x, 0.18);
     col = mix(col, hud, clamp(bracket, 0.0, 1.0) * pulse);
     vec2 cellPx = fract(uv * 8.0) * (uResolution / 8.0);
     float grid = step(cellPx.x, 1.5) + step(cellPx.y, 1.5);
-    col = mix(col, hud, 0.12 * clamp(grid, 0.0, 1.0) * pulse);
+    col = mix(col, hud, 0.25 * clamp(grid, 0.0, 1.0) * pulse);
 
     fragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }

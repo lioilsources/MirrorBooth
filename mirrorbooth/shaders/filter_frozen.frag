@@ -32,12 +32,12 @@ void main() {
     d.x *= aspect;
     float r = length(d);
     float n = 0.6 * vnoise(uv * 9.0) + 0.4 * vnoise(uv * 23.0);
-    float mask = smoothstep(0.32, 0.72, r + (n - 0.5) * 0.35);
+    float mask = smoothstep(0.20, 0.60, r + (n - 0.5) * 0.45);
     float frost = mask * smoothstep(0.30, 0.85, n);
 
     // Refraction under the frost: nudge the single tap by a noise gradient
     vec2 off = vec2(vnoise(uv * 40.0) - 0.5,
-                    vnoise(uv * 40.0 + 17.0) - 0.5) * 0.008 * mask;
+                    vnoise(uv * 40.0 + 17.0) - 0.5) * 0.015 * mask;
     vec3 col = texture(uTexture, clamp(uv + off, 0.0, 1.0)).rgb;
 
     // Cold grade with blue-lifted shadows
@@ -46,14 +46,14 @@ void main() {
     col += vec3(0.0, 0.02, 0.06) * (1.0 - l);
 
     // Whiten under the frost
-    col = mix(col, vec3(0.85, 0.93, 1.0), 0.7 * frost);
+    col = mix(col, vec3(0.85, 0.93, 1.0), 0.85 * frost);
 
     // Twinkling glints inside the frost mask
     vec2 cell = floor(uv * 90.0);
     float h = rand(cell);
     float glint = pow(rand(cell + 7.0), 40.0);
     float twinkle = 0.5 + 0.5 * sin(uTime * 3.0 + h * 6.2831);
-    col += vec3(1.0) * glint * twinkle * mask * 2.0;
+    col += vec3(1.0) * glint * twinkle * mask * 3.0;
 
     fragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
