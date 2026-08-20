@@ -111,6 +111,11 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
     try {
       await controller.initialize();
+      // Photos use takePicture(); keep flash off so the still matches the
+      // (never-flashed) live preview. Best-effort — some devices throw.
+      try {
+        await controller.setFlashMode(FlashMode.off);
+      } catch (_) {}
       state = state.copyWith(
         controller: controller,
         isReady: true,

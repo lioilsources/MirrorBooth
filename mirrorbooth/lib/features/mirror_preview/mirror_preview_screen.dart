@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:camera/camera.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -20,7 +22,9 @@ import '../video_recording/video_recording_state.dart';
 import 'camera_lens_toggle_button.dart';
 import 'filter_strip.dart';
 import 'filtered_mirror_canvas.dart';
+import 'mirror_geometry.dart';
 import 'mirror_preview_controller.dart';
+import 'photo_composer.dart';
 import 'side_toggle_button.dart';
 
 // ── Screen ───────────────────────────────────────────────────────────────────
@@ -101,32 +105,35 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     File? tempFile;
     try {
-      final boundary =
-          _canvasKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final pixelRatio = _devicePixelRatio;
-      _log('capturing ${(boundary.size.width * pixelRatio).round()}×'
-          '${(boundary.size.height * pixelRatio).round()}…');
+      ui.Image image;
+      try {
+        image = await _composeHighResPhoto();
+      } catch (e) {
+        _log('still capture failed: $e');
+        _log('falling back to screen capture');
+        image = await _captureBoundaryImage();
+      }
+      _log('captured ${image.width}×${image.height}');
 
-      final uiImage = await boundary.toImage(pixelRatio: pixelRatio);
-      _log('captured ${uiImage.width}×${uiImage.height}');
-
-      final byteData = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final width = image.width;
+      final height = image.height;
+      image.dispose();
       if (byteData == null) throw Exception('toByteData returned null');
-      uiImage.dispose();
 
-      final pngBytes = await compute(
-        encodeToPng,
+      final jpegBytes = await compute(
+        encodeToJpeg,
         EncodeJob(
           rgbaBytes: byteData.buffer.asUint8List(),
-          width: uiImage.width,
-          height: uiImage.height,
+          width: width,
+          height: height,
         ),
       );
-      _log('encoded ${pngBytes.length} B');
+      _log('encoded ${jpegBytes.length} B');
 
       final dir = await getTemporaryDirectory();
-      tempFile = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.png');
-      await tempFile.writeAsBytes(pngBytes);
+      tempFile = File('${dir.path}/mb_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await tempFile.writeAsBytes(jpegBytes);
 
       await Gal.putImage(tempFile.path);
       _log('Gal.putImage OK ✓');
@@ -142,6 +149,58 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       tempFile?.delete().ignore();
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  /// Full-quality photo path: takes a full-resolution still from the sensor
+  /// and recomposes the current mirror/rotation/filter offline at the still's
+  /// native pixel density — far sharper than rasterising the preview.
+  Future<ui.Image> _composeHighResPhoto() async {
+    final state = ref.read(mirrorPreviewProvider);
+    final controller = state.controller;
+    if (controller == null || !controller.value.isInitialized) {
+      throw StateError('camera not ready');
+    }
+    final boundary =
+        _canvasKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    final screenSize = boundary.size;
+
+    final xfile = await controller.takePicture();
+    final bytes = await xfile.readAsBytes();
+    File(xfile.path).delete().ignore();
+    final codec = await ui.instantiateImageCodec(bytes);
+    final still = (await codec.getNextFrame()).image;
+    codec.dispose();
+    _log('still ${still.width}×${still.height}');
+
+    final filter = state.selectedFilter;
+    final shader =
+        ref.read(shaderCacheProvider).valueOrNull?[filter]?.fragmentShader();
+    try {
+      return await composeMirrorPhoto(PhotoComposeJob(
+        still: still,
+        mirrorStillHorizontally:
+            state.lensDirection == CameraLensDirection.front,
+        screenSize: screenSize,
+        rotationDeg: state.rotationDeg,
+        mirrorAxisDeg: state.mirrorAxisDeg,
+        directOnLeft: state.side.isLeft,
+        portraitAspect: 1.0 / controller.value.aspectRatio,
+        shader: shader,
+        shaderNeedsTime: filter.needsTime,
+        time: (DateTime.now().millisecondsSinceEpoch / 1000.0) % 100.0,
+        shaderNeedsFace: filter.needsFace,
+      ));
+    } finally {
+      still.dispose();
+      shader?.dispose();
+    }
+  }
+
+  /// Fallback: rasterise the on-screen boundary (screen-resolution quality).
+  Future<ui.Image> _captureBoundaryImage() {
+    final boundary =
+        _canvasKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    return boundary.toImage(pixelRatio: _devicePixelRatio);
   }
 
   // ── Video recording ───────────────────────────────────────────────────────
@@ -314,17 +373,20 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     final isRecording = recordingState.phase == RecordingPhase.recording;
     final safeTop = MediaQuery.of(context).padding.top;
     final screenSize = MediaQuery.of(context).size;
-    // Canvas must be at least as large as the screen diagonal so that at any
-    // rotation angle the rotated rectangle still fully covers the display.
-    final diagonal =
-        sqrt(screenSize.width * screenSize.width + screenSize.height * screenSize.height);
+    // Canvas sized to exactly cover the screen at the current rotation and
+    // mirror-axis angles (direct and reflected halves both). At the default
+    // state this is the screen itself — the widest possible framing and the
+    // most camera detail per screen pixel; it grows toward the screen
+    // diagonal as the composition or axis rotates.
+    final canvasBox = MirrorGeometry.canvasBoxFor(
+        screenSize, state.rotationDeg, state.mirrorAxisDeg);
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Mirror canvas sized to the screen diagonal — no circular clip.
-        // At any rotation angle the oversized canvas covers the full display.
-        // RepaintBoundary (keyed) captures the visible W×H area for photos.
+        // Mirror canvas sized by MirrorGeometry — no circular clip.
+        // RepaintBoundary (keyed) captures the visible W×H area for the
+        // recording ticker and the photo fallback path.
         Positioned.fill(
           child: RepaintBoundary(
             key: _canvasKey,
@@ -334,8 +396,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
               child: Transform.rotate(
                 angle: state.rotationDeg * pi / 180.0,
                 child: SizedBox(
-                  width: diagonal,
-                  height: diagonal,
+                  width: canvasBox.width,
+                  height: canvasBox.height,
                   child: RepaintBoundary(
                     child: FilteredMirrorCanvas(
                       controller: state.controller!,

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import '../../core/mirror_side.dart';
+import 'mirror_geometry.dart';
 
 /// Renders the mirror composition filling the full parent bounds.
 ///
@@ -33,14 +34,9 @@ class MirrorCanvas extends StatelessWidget {
 
       // Cover-fit the camera over the full canvas.
       final portraitAspect = 1.0 / controller.value.aspectRatio;
-      double camW, camH;
-      if (w / h > portraitAspect) {
-        camW = w;
-        camH = w / portraitAspect;
-      } else {
-        camH = h;
-        camW = h * portraitAspect;
-      }
+      final camSize = MirrorGeometry.coverFit(Size(w, h), portraitAspect);
+      final camW = camSize.width;
+      final camH = camSize.height;
 
       final theta = mirrorAxisDeg * pi / 180.0;
 
@@ -104,29 +100,8 @@ class _AxisClipper extends CustomClipper<Path> {
   const _AxisClipper({required this.theta, required this.clipLeft});
 
   @override
-  Path getClip(Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final center = Offset(cx, cy);
-
-    final axisDir = Offset(cos(theta), sin(theta));
-    // Left-normal: 90° CCW from axisDir.
-    final leftNormal = Offset(-sin(theta), cos(theta));
-    final sign = clipLeft ? 1.0 : -1.0;
-    final far = size.longestSide * 2;
-
-    final p1 = center + axisDir * far;
-    final p2 = center - axisDir * far;
-    final p3 = p2 + leftNormal * sign * far;
-    final p4 = p1 + leftNormal * sign * far;
-
-    return Path()
-      ..moveTo(p1.dx, p1.dy)
-      ..lineTo(p2.dx, p2.dy)
-      ..lineTo(p3.dx, p3.dy)
-      ..lineTo(p4.dx, p4.dy)
-      ..close();
-  }
+  Path getClip(Size size) =>
+      MirrorGeometry.axisHalfPlanePath(size, theta, clipLeft);
 
   @override
   bool shouldReclip(_AxisClipper old) =>
