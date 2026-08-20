@@ -102,7 +102,9 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
 
     final controller = CameraController(
       selected,
-      ResolutionPreset.high,
+      // ultraHigh (2160p) sharpens saved photos; devices that can't do it
+      // fall back to the nearest supported size per lens.
+      ResolutionPreset.ultraHigh,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.bgra8888,
     );
