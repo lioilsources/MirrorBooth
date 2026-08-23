@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
@@ -15,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/jpeg_encode_utils.dart';
 import '../../core/shader_provider.dart';
+import '../../services/shutter_button_channel.dart';
 import '../video_recording/recording_overlay.dart';
 import '../video_recording/video_playback_screen.dart';
 import '../video_recording/video_recording_notifier.dart';
@@ -50,6 +52,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   bool _isCapturingFrame = false;
   double _devicePixelRatio = 1.0;
 
+  // Hardware shutter (volume buttons)
+  StreamSubscription<ShutterPress>? _shutterSub;
+  bool _shutterClaimed = false;
+  bool _shutterSupported = false;
+
   // Rotation drag bookkeeping.
   Offset _rotCenter = Offset.zero;
   double _lastGestureAngle = 0.0;
@@ -74,14 +81,48 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         _stopRecordingTicker();
         ref.read(videoRecordingProvider.notifier).forceStop();
       };
+      // Deferred to the first frame: the native side attaches to the root
+      // view, which only exists once the view hierarchy is up.
+      _setShutterClaimed(true);
+      ShutterButtonChannel.isSupported().then((supported) {
+        if (mounted) setState(() => _shutterSupported = supported);
+      });
     });
+    _shutterSub = ShutterButtonChannel.presses.listen(_onShutterPress);
   }
 
   @override
   void dispose() {
+    _shutterSub?.cancel();
+    if (_shutterClaimed) ShutterButtonChannel.setEnabled(false);
     _flashController.dispose();
     _recordingTicker?.dispose();
     super.dispose();
+  }
+
+  // ── Hardware shutter ──────────────────────────────────────────────────────
+
+  /// Claims/releases the volume keys. Released while the playback screen is up
+  /// so the keys go back to controlling playback volume.
+  void _setShutterClaimed(bool claimed) {
+    if (_shutterClaimed == claimed) return;
+    _shutterClaimed = claimed;
+    ShutterButtonChannel.setEnabled(claimed);
+  }
+
+  void _onShutterPress(ShutterPress press) {
+    if (!mounted) return;
+    final phase = ref.read(videoRecordingProvider).phase;
+    if (phase == RecordingPhase.recording) {
+      _toggleRecording();
+      return;
+    }
+    if (phase != RecordingPhase.idle) return;
+    if (press == ShutterPress.long) {
+      _toggleRecording();
+    } else {
+      _captureAndSave();
+    }
   }
 
   void _log(String msg) {
@@ -307,6 +348,10 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     final recordingState = ref.watch(videoRecordingProvider);
 
     ref.listen<VideoRecordingState>(videoRecordingProvider, (_, next) {
+      // Hand the volume keys back while the playback screen is up so they
+      // control playback volume as usual.
+      _setShutterClaimed(next.phase == RecordingPhase.idle ||
+          next.phase == RecordingPhase.recording);
       if (next.errorMessage != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -544,9 +589,10 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                     ),
                     const SizedBox(height: 4),
                     if (_debugLog.isEmpty)
-                      const Text(
-                        'drag = rotate  •  ⊙ = photo  •  ● = video',
-                        style: TextStyle(
+                      Text(
+                        'drag = rotate  •  ⊙ = photo  •  ● = video'
+                        '${_shutterSupported ? "\nvol = photo  •  vol hold = video" : ""}',
+                        style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 10,
                           fontFamily: 'monospace',
