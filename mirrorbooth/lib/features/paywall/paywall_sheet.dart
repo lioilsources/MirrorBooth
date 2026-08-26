@@ -47,7 +47,9 @@ class _PaywallSheet extends ConsumerWidget {
         margin: const EdgeInsets.all(12),
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.85),
+          // Nearly opaque: the filter strip sits right behind the sheet and
+          // bleeds through anything lighter, hurting legibility.
+          color: Colors.black.withValues(alpha: 0.93),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.white24),
         ),
