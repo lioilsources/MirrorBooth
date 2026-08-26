@@ -84,6 +84,8 @@ void main() {
   testWidgets('generate IAP review screenshots', (tester) async {
     await tester.runAsync(_loadRealFonts);
 
+    // This IS a test — it just lives in tool/ so CI's suite skips it.
+    // ignore: invalid_use_of_visible_for_testing_member
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
