@@ -13,6 +13,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image/image.dart' as img;
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mirrorbooth/core/mirror_filter.dart';
 import 'package:mirrorbooth/features/mirror_preview/filter_strip.dart';
@@ -175,12 +176,27 @@ void main() {
           as RenderRepaintBoundary;
       await tester.runAsync(() async {
         final image = await boundary.toImage(pixelRatio: 3.0);
-        final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+        final rgba = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+        final width = image.width;
+        final height = image.height;
         image.dispose();
+        // Apple rejects screenshots carrying an alpha channel, even fully
+        // opaque (ui.Image's built-in PNG encoder always emits one) — flatten
+        // to plain RGB, same as the promo-image generator.
+        final src = img.Image.fromBytes(
+          width: width,
+          height: height,
+          bytes: rgba!.buffer,
+          numChannels: 4,
+          order: img.ChannelOrder.rgba,
+        );
+        final flat = img.Image(width: width, height: height, numChannels: 3);
+        img.compositeImage(flat, src);
+        final bytes = img.encodePng(flat);
         final file =
             File('${outDir.path}/iap_review_${collection.name}.png');
-        await file.writeAsBytes(bytes!.buffer.asUint8List());
-        debugPrint('wrote ${file.path} (${image.width}x${image.height})');
+        await file.writeAsBytes(bytes);
+        debugPrint('wrote ${file.path} (${width}x$height)');
       });
     }
   });
