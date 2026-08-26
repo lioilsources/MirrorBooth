@@ -1,7 +1,7 @@
 name: mirrorbooth
 description: "Real-time symmetric face mirror using selfie camera."
 publish_to: 'none'
-version: 2.2.1
+version: 2.3.0
 
 environment:
   sdk: ^3.11.4
@@ -24,6 +24,8 @@ dependencies:
   record: ^6.0.0
   ffmpeg_kit_flutter_new: 4.3.2  # pinned: Windows bundle prefetched in CI (FFMPEGKIT_LOCAL_DIR)
   video_player: ^2.9.2
+  in_app_purchase: ^3.2.0
+  shared_preferences: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -50,9 +52,13 @@ flutter:
     - shaders/filter_glow.frag
     - shaders/filter_slim.frag
     - shaders/filter_doll.frag
+    - shaders/filter_chibi.frag
+    - shaders/filter_lips.frag
     - shaders/filter_big_nose.frag
     - shaders/filter_alien.frag
     - shaders/filter_melt.frag
+    - shaders/filter_big_ears.frag
+    - shaders/filter_long_neck.frag
     - shaders/filter_pencil.frag
     - shaders/filter_comic.frag
     - shaders/filter_glitch.frag

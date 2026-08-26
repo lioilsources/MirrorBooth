@@ -5,7 +5,19 @@ class FilterStrip extends StatefulWidget {
   final MirrorFilter selected;
   final ValueChanged<MirrorFilter> onSelect;
 
-  const FilterStrip({super.key, required this.selected, required this.onSelect});
+  /// Paid collections the user owns; unowned paid collections get a lock
+  /// badge (selection stays allowed — the paywall gates saving, not trying).
+  final Set<FilterCollection> ownedCollections;
+
+  const FilterStrip({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+    required this.ownedCollections,
+  });
+
+  bool _isLocked(FilterCollection c) =>
+      c.isPaid && !ownedCollections.contains(c);
 
   @override
   State<FilterStrip> createState() => _FilterStripState();
@@ -48,6 +60,7 @@ class _FilterStripState extends State<FilterStrip> {
                 _CollectionTab(
                   collection: c,
                   isActive: c == _activeCollection,
+                  isLocked: widget._isLocked(c),
                   onTap: () => setState(() => _activeCollection = c),
                 ),
                 if (c != FilterCollection.values.last) const SizedBox(width: 8),
@@ -68,6 +81,7 @@ class _FilterStripState extends State<FilterStrip> {
               return _FilterChip(
                 filter: f,
                 isActive: f == widget.selected,
+                isLocked: widget._isLocked(_activeCollection),
                 onTap: () => widget.onSelect(f),
               );
             },
@@ -81,11 +95,13 @@ class _FilterStripState extends State<FilterStrip> {
 class _FilterChip extends StatelessWidget {
   final MirrorFilter filter;
   final bool isActive;
+  final bool isLocked;
   final VoidCallback onTap;
 
   const _FilterChip({
     required this.filter,
     required this.isActive,
+    required this.isLocked,
     required this.onTap,
   });
 
@@ -104,13 +120,24 @@ class _FilterChip extends StatelessWidget {
             width: 1.5,
           ),
         ),
-        child: Text(
-          '${filter.icon} ${filter.label}',
-          style: TextStyle(
-            color: isActive ? Colors.black : Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLocked) ...[
+              Icon(Icons.lock,
+                  size: 11,
+                  color: isActive ? Colors.black : Colors.white70),
+              const SizedBox(width: 3),
+            ],
+            Text(
+              '${filter.icon} ${filter.label}',
+              style: TextStyle(
+                color: isActive ? Colors.black : Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -157,11 +184,13 @@ class _NoneChip extends StatelessWidget {
 class _CollectionTab extends StatelessWidget {
   final FilterCollection collection;
   final bool isActive;
+  final bool isLocked;
   final VoidCallback onTap;
 
   const _CollectionTab({
     required this.collection,
     required this.isActive,
+    required this.isLocked,
     required this.onTap,
   });
 
@@ -182,17 +211,23 @@ class _CollectionTab extends StatelessWidget {
             width: 1.5,
           ),
         ),
-        child: Center(
-          widthFactor: 1.0,
-          child: Text(
-            collection.label.toUpperCase(),
-            style: TextStyle(
-              color: isActive ? Colors.white : Colors.white60,
-              fontSize: 11,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
-              letterSpacing: 0.8,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLocked) ...[
+              const Icon(Icons.lock, size: 10, color: Colors.white60),
+              const SizedBox(width: 3),
+            ],
+            Text(
+              collection.label.toUpperCase(),
+              style: TextStyle(
+                color: isActive ? Colors.white : Colors.white60,
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                letterSpacing: 0.8,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

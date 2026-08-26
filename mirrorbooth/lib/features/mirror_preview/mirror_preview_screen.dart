@@ -17,6 +17,8 @@ import 'package:path_provider/path_provider.dart';
 import '../../core/jpeg_encode_utils.dart';
 import '../../core/shader_provider.dart';
 import '../../services/shutter_button_channel.dart';
+import '../paywall/entitlement_controller.dart';
+import '../paywall/paywall_sheet.dart';
 import '../video_recording/recording_overlay.dart';
 import '../video_recording/video_playback_screen.dart';
 import '../video_recording/video_recording_notifier.dart';
@@ -139,8 +141,21 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   // ── Photo capture ─────────────────────────────────────────────────────────
 
+  /// Returns true if capture may proceed with the current filter; otherwise
+  /// opens the paywall for its collection. Trying filters live is free — only
+  /// saving is gated.
+  bool _ensureEntitledForCapture() {
+    final collection =
+        ref.read(mirrorPreviewProvider).selectedFilter.collection;
+    if (collection == null) return true;
+    if (ref.read(entitlementProvider).owns(collection)) return true;
+    showPaywallSheet(context, collection);
+    return false;
+  }
+
   Future<void> _captureAndSave() async {
     if (_isSaving) return;
+    if (!_ensureEntitledForCapture()) return;
     setState(() => _isSaving = true);
     _log('PHOTO');
 
@@ -249,6 +264,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   Future<void> _toggleRecording() async {
     final phase = ref.read(videoRecordingProvider).phase;
     if (phase == RecordingPhase.idle) {
+      // Gate only starting — stopping a recording must never be blocked.
+      if (!_ensureEntitledForCapture()) return;
       final notifier = ref.read(videoRecordingProvider.notifier);
       await notifier.startRecording();
       if (ref.read(videoRecordingProvider).phase != RecordingPhase.recording) {
@@ -500,6 +517,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
             child: FilterStrip(
               selected: state.selectedFilter,
               onSelect: notifier.setFilter,
+              ownedCollections: ref.watch(entitlementProvider).owned,
             ),
           ),
 

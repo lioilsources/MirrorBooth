@@ -7,6 +7,30 @@ enum FilterCollection {
   const FilterCollection(this.label);
 
   final String label;
+
+  /// Paid collections are sold as non-consumable in-app purchases; free ones
+  /// are always available. Locked filters still preview live — the paywall
+  /// only gates saving photos/videos.
+  bool get isPaid => switch (this) {
+        FilterCollection.pretty || FilterCollection.ugly => false,
+        FilterCollection.art || FilterCollection.fantasy => true,
+      };
+
+  /// Store product ID (identical on App Store and Play), null for free
+  /// collections.
+  String? get productId => switch (this) {
+        FilterCollection.art => 'com.ol1n.mirrorbooth.collection.art',
+        FilterCollection.fantasy => 'com.ol1n.mirrorbooth.collection.fantasy',
+        _ => null,
+      };
+
+  /// Reverse lookup for purchase-stream events.
+  static FilterCollection? byProductId(String id) {
+    for (final c in values) {
+      if (c.productId == id) return c;
+    }
+    return null;
+  }
 }
 
 enum MirrorFilter {
@@ -15,10 +39,14 @@ enum MirrorFilter {
   glow,
   slim,
   doll,
+  chibi,
+  lips,
   // Ugly
   bigNose,
   alien,
   melt,
+  bigEars,
+  longNeck,
   // Art
   pencil,
   comic,
@@ -41,9 +69,13 @@ enum MirrorFilter {
         MirrorFilter.glow => 'Glow',
         MirrorFilter.slim => 'Slim',
         MirrorFilter.doll => 'Doll',
+        MirrorFilter.chibi => 'Chibi',
+        MirrorFilter.lips => 'Lips',
         MirrorFilter.bigNose => 'Nose',
         MirrorFilter.alien => 'Alien',
         MirrorFilter.melt => 'Melt',
+        MirrorFilter.bigEars => 'Ears',
+        MirrorFilter.longNeck => 'Neck',
         MirrorFilter.pencil => 'Pencil',
         MirrorFilter.comic => 'Comic',
         MirrorFilter.glitch => 'Glitch',
@@ -65,9 +97,13 @@ enum MirrorFilter {
         MirrorFilter.glow => '✧',
         MirrorFilter.slim => '|',
         MirrorFilter.doll => '◉',
+        MirrorFilter.chibi => '◕',
+        MirrorFilter.lips => 'ω',
         MirrorFilter.bigNose => '▲',
         MirrorFilter.alien => 'Λ',
         MirrorFilter.melt => '≈',
+        MirrorFilter.bigEars => '◖',
+        MirrorFilter.longNeck => 'Y',
         MirrorFilter.pencil => '/',
         MirrorFilter.comic => '!',
         MirrorFilter.glitch => '~',
@@ -101,24 +137,44 @@ enum MirrorFilter {
   bool get needsFace => switch (this) {
         MirrorFilter.slim => true,
         MirrorFilter.doll => true,
+        MirrorFilter.chibi => true,
+        MirrorFilter.lips => true,
         MirrorFilter.bigNose => true,
         MirrorFilter.alien => true,
+        MirrorFilter.bigEars => true,
+        MirrorFilter.longNeck => true,
         MirrorFilter.vampire => true,
         MirrorFilter.zombie => true,
         MirrorFilter.demon => true,
         _ => false,
       };
 
+  // Deliberately no wildcard branch: collections decide free vs paid, so a
+  // new filter must be assigned here consciously (compile error otherwise)
+  // instead of silently landing in a paid collection.
   FilterCollection? get collection => switch (this) {
         MirrorFilter.none => null,
         MirrorFilter.glow ||
         MirrorFilter.slim ||
-        MirrorFilter.doll =>
+        MirrorFilter.doll ||
+        MirrorFilter.chibi ||
+        MirrorFilter.lips =>
           FilterCollection.pretty,
         MirrorFilter.bigNose ||
         MirrorFilter.alien ||
-        MirrorFilter.melt =>
+        MirrorFilter.melt ||
+        MirrorFilter.bigEars ||
+        MirrorFilter.longNeck =>
           FilterCollection.ugly,
+        MirrorFilter.pencil ||
+        MirrorFilter.comic ||
+        MirrorFilter.glitch ||
+        MirrorFilter.neon ||
+        MirrorFilter.thermal ||
+        MirrorFilter.oil ||
+        MirrorFilter.crt ||
+        MirrorFilter.popArt =>
+          FilterCollection.art,
         MirrorFilter.vampire ||
         MirrorFilter.zombie ||
         MirrorFilter.ghost ||
@@ -126,7 +182,6 @@ enum MirrorFilter {
         MirrorFilter.cyborg ||
         MirrorFilter.frozen =>
           FilterCollection.fantasy,
-        _ => FilterCollection.art,
       };
 
   static List<MirrorFilter> inCollection(FilterCollection c) =>
@@ -137,9 +192,13 @@ enum MirrorFilter {
         MirrorFilter.glow => 'shaders/filter_glow.frag',
         MirrorFilter.slim => 'shaders/filter_slim.frag',
         MirrorFilter.doll => 'shaders/filter_doll.frag',
+        MirrorFilter.chibi => 'shaders/filter_chibi.frag',
+        MirrorFilter.lips => 'shaders/filter_lips.frag',
         MirrorFilter.bigNose => 'shaders/filter_big_nose.frag',
         MirrorFilter.alien => 'shaders/filter_alien.frag',
         MirrorFilter.melt => 'shaders/filter_melt.frag',
+        MirrorFilter.bigEars => 'shaders/filter_big_ears.frag',
+        MirrorFilter.longNeck => 'shaders/filter_long_neck.frag',
         MirrorFilter.pencil => 'shaders/filter_pencil.frag',
         MirrorFilter.comic => 'shaders/filter_comic.frag',
         MirrorFilter.glitch => 'shaders/filter_glitch.frag',
