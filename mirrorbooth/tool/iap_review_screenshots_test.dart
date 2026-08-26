@@ -89,7 +89,12 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
-    tester.view.physicalSize = const Size(1290, 2796);
+    // 6.9" display (iPhone 16 Pro Max class) — as of 2026 this is one of the
+    // only two iPhone sizes App Store Connect still accepts for uploaded
+    // screenshots (the other being 6.5" / 1242x2688); the old 6.7"
+    // (1290x2796) now fails with "The dimensions of one or more screenshots
+    // are wrong."
+    tester.view.physicalSize = const Size(1320, 2868);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(tester.view.reset);
 
