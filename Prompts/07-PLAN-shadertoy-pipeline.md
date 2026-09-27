@@ -1,6 +1,6 @@
 # 07 — ShaderGen v2: pipeline generující nové MirrorBooth filtry z knihovny Shadertoy
 
-> Plán pro implementaci (Opus). Pracuj po fázích, každou fázi uzavři zeleným CI
+> Plán pro implementaci (Opus). Provozní příprava strojů (SPARK/M2/JODA) je v `07-SETUP-shadertoy-pipeline-infra.md`. Pracuj po fázích, každou fázi uzavři zeleným CI
 > a samostatným PR. Nepřeskakuj testy a nikdy nesahej do souborů mimo `pipeline/`
 > a mimo sekci **Fáze 6** bez explicitního rozhodnutí v tomto plánu.
 
