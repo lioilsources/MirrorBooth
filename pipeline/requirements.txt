@@ -7,3 +7,5 @@ sentence-transformers>=3.0
 pydantic>=2.0
 pydantic-settings>=2.0
 python-dotenv>=1.0
+# optional: LLM_PROVIDER=anthropic (or LLM_PROVIDER_VISION=anthropic)
+anthropic>=0.40

@@ -1,7 +1,6 @@
-import json
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
-from config import settings
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from llm import get_llm, parse_json_block
 from state import ShaderGenState
 
 SYSTEM_PROMPT = """You are a graphics engineer specializing in GLSL shader design for mobile apps.
@@ -17,23 +16,36 @@ The JSON must have exactly these fields:
 Respond with raw JSON only, no markdown fences."""
 
 
+def _fallback_spec(style_prompt: str, raw: str, error: str) -> dict:
+    """Minimal spec used when the model does not return parseable JSON."""
+    return {
+        "effect_name": style_prompt.strip()[:40] or "Custom Filter",
+        "techniques": [],
+        "uniforms": ["uTexture", "uResolution"],
+        "needs_time": False,
+        "description": style_prompt.strip(),
+        "_parse_error": f"{error}; raw={raw[:500]!r}",
+    }
+
+
 def style_architect_node(state: ShaderGenState) -> ShaderGenState:
-    llm = ChatOpenAI(
-        base_url=settings.spark_base_url,
-        api_key=settings.spark_api_key,
-        model=settings.spark_model,
-        temperature=0.3,
-    )
+    llm = get_llm("architect")
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),
         HumanMessage(content=f"Design a GLSL shader for this effect: {state['style_prompt']}"),
     ]
     response = llm.invoke(messages)
     raw = response.content.strip()
-    # strip markdown fences if model adds them anyway
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-    tech_spec = json.loads(raw.strip())
-    return {**state, "tech_spec": tech_spec}
+    try:
+        tech_spec = parse_json_block(raw)
+    except ValueError as exc:
+        print(f"[style_architect] WARNING: could not parse tech spec JSON ({exc}); using fallback spec")
+        tech_spec = _fallback_spec(state["style_prompt"], raw, str(exc))
+
+    needs_time = bool(tech_spec.get("needs_time", False))
+    return {
+        **state,
+        "tech_spec": tech_spec,
+        "needs_time": needs_time,
+        "needs_face": bool(state.get("needs_face", False)),
+    }
