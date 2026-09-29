@@ -4,3 +4,5 @@ rag/db/
 output/*/
 __pycache__/
 *.pyc
+.pytest_cache/
+.ruff_cache/
