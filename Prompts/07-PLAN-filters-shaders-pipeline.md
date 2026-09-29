@@ -1,7 +1,7 @@
 # Plán: ToyShaders seed korpus + Shadertoy adaptér + auto-integrace do Flutter appky
 
 
-> **Kde je kód (2026-09-29):** scaffolding tohoto plánu (adaptér, porter, integrator, 18 seed shaderů, testy) je jen na větvi `claude/plan-shader-pipeline-filters-axG6R` (3 commity, 4. 6. 2026, merge do `main` bez konfliktů, nikdy neprojeto proti živému modelu). Řídí se z `AiStack/PLAN-model-bench.md` §8.3, kde je i navíc krok s VL soudcem a přesměrování `config.py` na LiteLLM `:8080`.
+> **Nahrazeno (2026-09-29):** platný plán je `07-PLAN-shadertoy-pipeline.md` (ShaderGen v2, Shadertoy API + licenční filtr + `impellerc` + headless náhled + vision ranker) s runbookem `07-SETUP-shadertoy-pipeline-infra.md`. Tenhle červnový plán zůstává jako popis scaffoldingu na větvi `claude/plan-shader-pipeline-filters-axG6R` (adaptér, porter, integrator se sentinely, 18 CC0 seed shaderů, testy; merge do `main` bez konfliktů, nikdy neprojeto proti živému modelu) — co z něj převzít, rozhodne Fáze 0 plánu v2. Řídí se z `AiStack/PLAN-model-bench.md` §8.3.
 
 ## Context (proč)
 
