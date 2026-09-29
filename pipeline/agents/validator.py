@@ -2,20 +2,21 @@ import re
 import shutil
 import subprocess
 import tempfile
+
 from state import ShaderGenState
 
 REQUIRED_PATTERNS = [
-    (r'#include\s*<flutter/runtime_effect\.glsl>', "#include <flutter/runtime_effect.glsl>"),
-    (r'uniform\s+sampler2D\s+uTexture', "uniform sampler2D uTexture"),
-    (r'uniform\s+vec2\s+uResolution', "uniform vec2 uResolution"),
-    (r'FlutterFragCoord\s*\(\s*\)', "FlutterFragCoord()"),
-    (r'out\s+vec4\s+fragColor', "out vec4 fragColor"),
-    (r'fragColor\s*=', "fragColor assignment in main()"),
+    (r"#include\s*<flutter/runtime_effect\.glsl>", "#include <flutter/runtime_effect.glsl>"),
+    (r"uniform\s+sampler2D\s+uTexture", "uniform sampler2D uTexture"),
+    (r"uniform\s+vec2\s+uResolution", "uniform vec2 uResolution"),
+    (r"FlutterFragCoord\s*\(\s*\)", "FlutterFragCoord()"),
+    (r"out\s+vec4\s+fragColor", "out vec4 fragColor"),
+    (r"fragColor\s*=", "fragColor assignment in main()"),
 ]
 
 FORBIDDEN_PATTERNS = [
-    (r'\bgl_FragCoord\b', "gl_FragCoord (use FlutterFragCoord() instead)"),
-    (r'#version\b', "#version directive (Flutter adds this automatically)"),
+    (r"\bgl_FragCoord\b", "gl_FragCoord (use FlutterFragCoord() instead)"),
+    (r"#version\b", "#version directive (Flutter adds this automatically)"),
 ]
 
 
@@ -49,7 +50,7 @@ def _glslang_check(code: str) -> list[str]:
     if result.returncode != 0:
         lines = (result.stdout + result.stderr).strip().splitlines()
         # strip the temp file path from messages
-        cleaned = [l.replace(tmp_path, "<shader>") for l in lines if l.strip()]
+        cleaned = [line.replace(tmp_path, "<shader>") for line in lines if line.strip()]
         return cleaned
     return []
 
@@ -61,8 +62,12 @@ def validator_node(state: ShaderGenState) -> ShaderGenState:
     errors.extend(_contract_check(code))
     errors.extend(_glslang_check(code))
 
+    # `retry_count` counts failed validations; the graph stops retrying once it reaches
+    # settings.max_retries, so a run can end with invalid code. `validation_passed`
+    # is the explicit flag run.py uses to mark such a run FAILED.
     return {
         **state,
         "validation_errors": errors,
+        "validation_passed": not errors,
         "retry_count": state.get("retry_count", 0) + (1 if errors else 0),
     }
