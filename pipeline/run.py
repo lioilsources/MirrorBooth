@@ -7,6 +7,9 @@ Usage:
 
     # port mode: deterministic port of a permissively licensed Shadertoy shader
     python run.py --from-shadertoy XsX3zB --name hologram [--blend multiply]
+
+    # batch: port the top portable candidates of a harvest, ranked report with previews
+    python run.py --batch output/harvest_<ts>/candidates.json --top 10
 """
 
 from __future__ import annotations
@@ -43,6 +46,17 @@ def _preflight_port(shader_id: str, blend: str | None, allow_nc: bool) -> tuple[
     except (ShadertoyError, TranspileError) as exc:
         return str(exc), ""
     return None, shader.info.name
+
+
+def port_state(shader_id: str, blend: str | None = None, allow_nc: bool = False) -> ShaderGenState:
+    source = {
+        "kind": "shadertoy",
+        "id": shader_id,
+        "license": "",
+        "blend": blend or "",
+        "allow_nc_license": bool(allow_nc),
+    }
+    return initial_state(f"port of shadertoy/{shader_id}", source)
 
 
 def save_outputs(final_state: ShaderGenState, run_dir: Path, shader_name: str) -> tuple[Path, bool]:
@@ -101,6 +115,8 @@ def main(argv: list[str] | None = None) -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--style", help="inspire mode: natural language description of the desired filter effect")
     mode.add_argument("--from-shadertoy", metavar="ID", help="port mode: Shadertoy shader id (permissive license only)")
+    mode.add_argument("--batch", type=Path, metavar="CANDIDATES_JSON", help="port the best harvest candidates")
+    parser.add_argument("--top", type=int, default=10, help="--batch: how many portable candidates to run")
     parser.add_argument("--name", help="short snake_case name for the output shader (e.g. oil_warm)")
     parser.add_argument("--blend", choices=sorted(BLEND_MODES), help="port mode, procedural shaders: blend with camera")
     parser.add_argument(
@@ -109,6 +125,11 @@ def main(argv: list[str] | None = None) -> int:
         help="port a non-permissive shader for a LOCAL experiment only (license_ok=false, integrate.py refuses it)",
     )
     args = parser.parse_args(argv)
+
+    if args.batch:
+        from batch import run_batch
+
+        return run_batch(args.batch, top=args.top, blend=args.blend)
 
     if args.style is not None and not args.name:
         parser.error("--name is required with --style")
@@ -121,14 +142,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.i_accept_nc_license:
             print("[ShaderGen] WARNING: --i-accept-nc-license — output is for local experiments only and cannot ship.")
         shader_name = slugify(args.name or st_name)
-        source = {
-            "kind": "shadertoy",
-            "id": args.from_shadertoy,
-            "license": "",
-            "blend": args.blend or "",
-            "allow_nc_license": bool(args.i_accept_nc_license),
-        }
-        state = initial_state(f"port of shadertoy/{args.from_shadertoy}", source)
+        state = port_state(args.from_shadertoy, args.blend, args.i_accept_nc_license)
         label = f"Shadertoy {args.from_shadertoy} ({st_name})"
     else:
         shader_name = slugify(args.name)

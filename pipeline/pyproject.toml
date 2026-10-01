@@ -38,4 +38,4 @@ ignore = ["E501"]
 "shadertoy/harvest.py" = ["E402"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["agents", "checks", "config", "glslscan", "graph", "integrate", "llm", "preview", "rag", "run", "shadertoy", "state", "tests"]
+known-first-party = ["agents", "batch", "checks", "config", "glslscan", "graph", "integrate", "llm", "preview", "rag", "run", "shadertoy", "state", "tests"]

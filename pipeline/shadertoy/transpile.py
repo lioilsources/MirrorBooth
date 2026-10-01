@@ -290,7 +290,8 @@ def transpile(
         helpers.append((SNIPPETS_DIR / "noise.glsl").read_text(encoding="utf-8").strip())
 
     # --- main ---
-    if port.category == "procedural":
+    # data_texture shaders read iChannel0 only as noise -> the camera must come in via the composite too
+    if port.category in ("procedural", "data_texture"):
         blend = blend_mode or DEFAULT_BLEND
         if blend not in BLEND_MODES:
             raise TranspileError(f"unknown blend mode {blend!r}; expected one of {sorted(BLEND_MODES)}")
