@@ -15,6 +15,8 @@ class ShaderSource(TypedDict, total=False):
     url: str
     author: str
     name: str
+    blend: str  # port mode: composite blend mode for procedural shaders
+    allow_nc_license: bool  # --i-accept-nc-license (local experiments only)
 
 
 class ShaderGenState(TypedDict):
@@ -26,6 +28,7 @@ class ShaderGenState(TypedDict):
     needs_time: bool
     needs_face: bool
     category: str  # image_filter | procedural | data_texture | unsupported | "" (style runs)
+    fixes_needed: list[str]  # port mode: constructs the LLM fixer must still repair
     validation_errors: list[str]
     validation_passed: bool
     retry_count: int
@@ -46,6 +49,7 @@ def initial_state(style_prompt: str, source: ShaderSource | None = None) -> Shad
         "needs_time": False,
         "needs_face": False,
         "category": "",
+        "fixes_needed": [],
         "validation_errors": [],
         "validation_passed": False,
         "retry_count": 0,
