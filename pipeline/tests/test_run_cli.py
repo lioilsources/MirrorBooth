@@ -34,7 +34,7 @@ def test_run_style_success(offline_graph, fake_llm, out_dir, capsys):
 
     out = capsys.readouterr().out
     assert "Status:    PASSED" in out
-    assert "Next step: copy filter_oil_warm.frag" in out
+    assert "Next step: python integrate.py --run-dir" in out
 
 
 def test_run_style_failure_is_marked(offline_graph, fake_llm, out_dir, capsys):

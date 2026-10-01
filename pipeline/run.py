@@ -170,8 +170,8 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 60)
     if passed:
         print(
-            f"\nNext step: copy {frag_path.name} to mirrorbooth/shaders/ "
-            "and register in pubspec.yaml + mirror_filter.dart"
+            f"\nNext step: python integrate.py --run-dir {run_dir} "
+            "--enum-name <camelCase> --label <Label> --icon <glyph> --collection art|fantasy"
         )
         return 0
     print(f"\n[ShaderGen] FAILED — see {run_dir / 'validation.json'}")
