@@ -1,0 +1,51 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stTexScr",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Chromatic Split",
+      "username": "bob",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "filter",
+        "chromatic"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [
+          {
+            "id": 30,
+            "src": "/media/a/x.png",
+            "ctype": "texture",
+            "channel": 0,
+            "sampler": {
+              "filter": "linear",
+              "wrap": "repeat",
+              "vflip": "true",
+              "srgb": "false",
+              "internal": "byte"
+            },
+            "published": 1
+          }
+        ],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// SPDX-License-Identifier: MIT\n\n#version 300 es\nprecision highp float;\n#define OFFSET 0.004\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord)\n{\n    vec2 uv = fragCoord.xy / iResolution.xy;\n    float r = texture(iChannel0, uv + vec2(OFFSET, 0.0), 0.0).r;\n    float g = textureLod(iChannel0, uv, 0.0).g;\n    float b = texture(iChannel0, uv - vec2(OFFSET, 0.0)).b;\n    fragColor = vec4(r, g, b, 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

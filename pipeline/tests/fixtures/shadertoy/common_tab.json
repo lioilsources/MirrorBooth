@@ -1,0 +1,58 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stCommon",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Posterize Common",
+      "username": "ivy",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "test"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [],
+        "outputs": [],
+        "code": "// Unlicense\nvec3 posterize(vec3 c, float n) { return floor(c * n) / n; }\n",
+        "name": "Common",
+        "description": "",
+        "type": "common"
+      },
+      {
+        "inputs": [
+          {
+            "id": 30,
+            "src": "/media/a/x.png",
+            "ctype": "video",
+            "channel": 0,
+            "sampler": {
+              "filter": "linear",
+              "wrap": "clamp",
+              "vflip": "true",
+              "srgb": "false",
+              "internal": "byte"
+            },
+            "published": 1
+          }
+        ],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// Unlicense (see Common)\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n    vec2 uv = fragCoord / iResolution.xy;\n    fragColor = vec4(posterize(texture(iChannel0, uv).rgb, 4.0), 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stNoiseTx",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Noise Clouds",
+      "username": "dave",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "clouds",
+        "noise"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [
+          {
+            "id": 30,
+            "src": "/media/a/0c7bf5fe9462d5bffbd11126e82908e39be3ce56220d900f633d58fb432e56f5.png",
+            "ctype": "texture",
+            "channel": 0,
+            "sampler": {
+              "filter": "linear",
+              "wrap": "clamp",
+              "vflip": "true",
+              "srgb": "false",
+              "internal": "byte"
+            },
+            "published": 1
+          }
+        ],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// This shader is released into the public domain.\n\nfloat noise(in vec2 x)\n{\n    vec2 p = floor(x);\n    vec2 f = fract(x);\n    f = f * f * (3.0 - 2.0 * f);\n    vec2 uv = (p + f + 0.5) / 256.0;\n    return textureLod(iChannel0, uv, 0.0).x;\n}\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord)\n{\n    vec2 p = fragCoord / iResolution.y;\n    float n = 0.0;\n    float a = 0.5;\n    for (int i = 0; i < 4; i++) { n += a * noise(p * 8.0); p *= 2.0; a *= 0.5; }\n    fragColor = vec4(vec3(n), 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

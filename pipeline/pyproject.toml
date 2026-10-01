@@ -31,6 +31,7 @@ ignore = ["E501"]
 [tool.ruff.lint.per-file-ignores]
 # ingest.py must extend sys.path before importing pipeline modules
 "rag/*.py" = ["E402"]
+"shadertoy/harvest.py" = ["E402"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["agents", "config", "graph", "llm", "run", "state"]
+known-first-party = ["agents", "config", "glslscan", "graph", "llm", "run", "shadertoy", "state", "tests"]
