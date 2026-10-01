@@ -33,6 +33,8 @@ enum FilterCollection {
   }
 }
 
+// `// @shadergen:*` markers are insertion points for pipeline/integrate.py
+// (ShaderGen). Keep them; they do not change behaviour.
 enum MirrorFilter {
   none,
   // Pretty
@@ -41,12 +43,14 @@ enum MirrorFilter {
   doll,
   chibi,
   lips,
+  // @shadergen:enum:pretty
   // Ugly
   bigNose,
   alien,
   melt,
   bigEars,
   longNeck,
+  // @shadergen:enum:ugly
   // Art
   pencil,
   comic,
@@ -56,13 +60,16 @@ enum MirrorFilter {
   oil,
   crt,
   popArt,
+  // @shadergen:enum:art
   // Fantasy
   vampire,
   zombie,
   ghost,
   demon,
   cyborg,
-  frozen;
+  frozen,
+  // @shadergen:enum:fantasy
+  ;
 
   String get label => switch (this) {
         MirrorFilter.none => 'None',
@@ -90,6 +97,7 @@ enum MirrorFilter {
         MirrorFilter.demon => 'Demon',
         MirrorFilter.cyborg => 'Cyborg',
         MirrorFilter.frozen => 'Frost',
+        // @shadergen:label
       };
 
   String get icon => switch (this) {
@@ -118,6 +126,7 @@ enum MirrorFilter {
         MirrorFilter.demon => 'Ψ',
         MirrorFilter.cyborg => '▣',
         MirrorFilter.frozen => '❆',
+        // @shadergen:icon
       };
 
   bool get needsTime => switch (this) {
@@ -128,6 +137,7 @@ enum MirrorFilter {
         MirrorFilter.demon => true,
         MirrorFilter.cyborg => true,
         MirrorFilter.frozen => true,
+        // @shadergen:needsTime
         _ => false,
       };
 
@@ -146,6 +156,7 @@ enum MirrorFilter {
         MirrorFilter.vampire => true,
         MirrorFilter.zombie => true,
         MirrorFilter.demon => true,
+        // @shadergen:needsFace
         _ => false,
       };
 
@@ -154,18 +165,21 @@ enum MirrorFilter {
   // instead of silently landing in a paid collection.
   FilterCollection? get collection => switch (this) {
         MirrorFilter.none => null,
+        // @shadergen:collection:pretty
         MirrorFilter.glow ||
         MirrorFilter.slim ||
         MirrorFilter.doll ||
         MirrorFilter.chibi ||
         MirrorFilter.lips =>
           FilterCollection.pretty,
+        // @shadergen:collection:ugly
         MirrorFilter.bigNose ||
         MirrorFilter.alien ||
         MirrorFilter.melt ||
         MirrorFilter.bigEars ||
         MirrorFilter.longNeck =>
           FilterCollection.ugly,
+        // @shadergen:collection:art
         MirrorFilter.pencil ||
         MirrorFilter.comic ||
         MirrorFilter.glitch ||
@@ -175,6 +189,7 @@ enum MirrorFilter {
         MirrorFilter.crt ||
         MirrorFilter.popArt =>
           FilterCollection.art,
+        // @shadergen:collection:fantasy
         MirrorFilter.vampire ||
         MirrorFilter.zombie ||
         MirrorFilter.ghost ||
@@ -213,5 +228,6 @@ enum MirrorFilter {
         MirrorFilter.demon => 'shaders/filter_demon.frag',
         MirrorFilter.cyborg => 'shaders/filter_cyborg.frag',
         MirrorFilter.frozen => 'shaders/filter_frozen.frag',
+        // @shadergen:shaderAsset
       };
 }
