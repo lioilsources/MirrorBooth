@@ -10,3 +10,7 @@ pydantic-settings>=2.0
 python-dotenv>=1.0
 # optional: LLM_PROVIDER=anthropic (or LLM_PROVIDER_VISION=anthropic)
 anthropic>=0.40
+# headless preview + metrics (Phase 5); needs a GL 3.3 context (CGL on macOS, EGL/Mesa on Linux)
+moderngl>=5.10
+numpy>=1.26
+pillow>=10.0

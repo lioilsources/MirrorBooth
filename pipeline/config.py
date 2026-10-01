@@ -12,7 +12,8 @@ SHADERTOY_CACHE_DIR = PIPELINE_DIR / "rag" / "shadertoy_cache"
 
 LLMProvider = Literal["spark", "anthropic"]
 
-# LiteLLM gateway on SPARK (aliases: translate, qwen36, vl, bench-*, ...).
+# LiteLLM gateway on SPARK. ShaderGen window per the SPARK schedule: llm 17:00-01:00 with
+# `openclaw-default` (qwen36, also vision) and `bench-nano` (Nano-30B); outside it no LLM is served.
 DEFAULT_GATEWAY_URL = "http://192.168.88.66:8080/v1"
 
 
@@ -30,13 +31,13 @@ class Settings(BaseSettings):
 
     # --- LLM: SPARK (OpenAI-compatible LiteLLM gateway) ----------------------
     spark_base_url: str = DEFAULT_GATEWAY_URL
-    # Placeholder alias until the model benchmark (AiStack PLAN-model-bench B1+B5) picks a winner.
-    spark_model: str = "translate"
+    # qwen36: 16 s/shader, 100 % B1 contract in the model benchmark; `bench-nano` is the faster alternative.
+    spark_model: str = "openclaw-default"
     # LiteLLM expects `Authorization: Bearer <key>` — put the gateway key here.
     spark_api_key: str = "dummy"
 
     spark_vision_base_url: str = DEFAULT_GATEWAY_URL
-    spark_vision_model: str = "vl"
+    spark_vision_model: str = "openclaw-default"  # qwen36 sees images; the old `vl` alias is gone
     # None = reuse spark_api_key.
     spark_vision_api_key: str | None = None
 

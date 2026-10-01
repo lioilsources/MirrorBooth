@@ -114,4 +114,7 @@ def offline_graph(monkeypatch, fake_llm):
     monkeypatch.setattr(compile_mod, "find_impellerc", lambda *_a, **_k: None)
     monkeypatch.setattr(compile_mod.shutil, "which", lambda _name: None)
     monkeypatch.setattr(settings, "max_retries", 3)
+    # headless GL is optional (moderngl) and VALID_SHADER is an identity filter that the
+    # preview metrics would reject; tests/test_preview.py covers the preview node.
+    monkeypatch.setattr(settings, "preview_enabled", False)
     return graph_mod
