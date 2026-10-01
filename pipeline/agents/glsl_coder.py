@@ -30,6 +30,12 @@ Rules:
 
 SYSTEM_PROMPT = f"""You are an expert GLSL shader developer for mobile apps (Flutter/Impeller engine).
 {FLUTTER_CONTRACT}
+LICENSING RULE (hard, never break it):
+Reference snippets carry a `// source:` line. Snippets marked "reference only, do not copy"
+(Shadertoy shaders without a permissive license) may ONLY inform the technique. Never copy
+their code verbatim or near-verbatim (no copied function bodies, constants tables or
+distinctive expressions) — write your own implementation from scratch.
+
 Write complete, compilable GLSL fragment shader code. Output raw GLSL only, no explanation, no markdown."""
 
 
@@ -43,7 +49,10 @@ def glsl_coder_node(state: ShaderGenState) -> ShaderGenState:
     rag_block = ""
     if rag_snippets:
         joined = "\n\n// ---\n".join(rag_snippets)
-        rag_block = f"\n\nReference GLSL snippets from existing shaders (use as inspiration, adapt as needed):\n```glsl\n{joined}\n```"
+        rag_block = (
+            "\n\nReference GLSL snippets (technique inspiration; obey the licensing rule for each `// source:` line):\n"
+            f"```glsl\n{joined}\n```"
+        )
 
     error_block = ""
     if errors:
