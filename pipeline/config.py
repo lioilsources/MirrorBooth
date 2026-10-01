@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     # --- External tools / sources ------------------------------------------
     shadertoy_api_key: str = ""
     flutter_root: str = ""
+    # SkSL = Skia fallback renderer on older Android devices; all shipped shaders compile for it.
+    compile_require_sksl: bool = True
 
     # --- RAG -----------------------------------------------------------------
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"

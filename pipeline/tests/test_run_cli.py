@@ -26,7 +26,9 @@ def test_run_style_success(offline_graph, fake_llm, out_dir, capsys):
     assert run_dir.name.startswith("filter_oil_warm_")
     assert (run_dir / "filter_oil_warm.frag").read_text().startswith("#include <flutter/runtime_effect.glsl>")
     assert json.loads((run_dir / "tech_spec.json").read_text())["effect_name"] == "Test FX"
-    assert json.loads((run_dir / "rank_report.json").read_text())["overall"] == 8.5
+    assert (
+        json.loads((run_dir / "rank_report.json").read_text())["overall"] == 7.2
+    )  # flutter_compliance capped at 5: no impellerc offline
     assert json.loads((run_dir / "validation.json").read_text())["validation_passed"] is True
     assert not (run_dir / "FAILED").exists()
 

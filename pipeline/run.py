@@ -158,6 +158,11 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  Retries:   {final_state.get('retry_count', 0)}")
     if final_state.get("provenance", {}).get("fixer_rounds"):
         print(f"  Fixer:     {len(final_state['provenance']['fixer_rounds'])} round(s), see fixer_diff.patch")
+    compile_info = final_state.get("provenance", {}).get("compile", {})
+    if compile_info.get("impeller_verified"):
+        print("  Compile:   impellerc OK (Metal, GLES, GLES3, Vulkan, SkSL)")
+    else:
+        print(f"  Compile:   !!! NOT verified by impellerc (backend: {compile_info.get('backend', 'none')}) !!!")
     if val_errors:
         print(f"  Errors:    {'; '.join(val_errors)}")
     if rank.get("explanation"):

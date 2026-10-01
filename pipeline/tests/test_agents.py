@@ -52,8 +52,26 @@ def test_glsl_coder_strips_fence_and_resets_errors(fake_llm):
 def test_ranker_parses_json(fake_llm):
     s = initial_state("x")
     s["glsl_code"] = VALID_SHADER
+    s["validation_passed"] = True
+    s["provenance"] = {"compile": {"backend": "impellerc", "ok": True, "impeller_verified": True}}
     out = ranker.ranker_node(s)
+    assert out["rank_report"]["scores"]["flutter_compliance"] == 10
     assert out["rank_report"]["overall"] == 8.5
+
+
+def test_ranker_compliance_is_programmatic(fake_llm):
+    s = initial_state("x")
+    s["glsl_code"] = VALID_SHADER
+    s["validation_passed"] = False  # LLM says 10, compiler says no
+    out = ranker.ranker_node(s)
+    assert out["rank_report"]["scores"]["flutter_compliance"] == 1
+    assert out["rank_report"]["overall"] == round((9 + 7 + 8 + 1) / 4, 1)
+
+    s["validation_passed"] = True
+    s["provenance"] = {"compile": {"backend": "glslang", "ok": True, "impeller_verified": False}}
+    out = ranker.ranker_node(s)
+    assert out["rank_report"]["scores"]["flutter_compliance"] == 5  # capped: not verified by impellerc
+    assert "not verified" in out["rank_report"]["flutter_compliance_source"]
 
 
 def test_ranker_fallback_on_garbage(fake_llm):
@@ -61,7 +79,9 @@ def test_ranker_fallback_on_garbage(fake_llm):
     s = initial_state("x")
     s["glsl_code"] = VALID_SHADER
     out = ranker.ranker_node(s)
-    assert out["rank_report"] == {"scores": {}, "overall": 0, "explanation": "looks good to me"}
+    report = out["rank_report"]
+    assert report["explanation"] == "looks good to me"
+    assert report["scores"] == {"flutter_compliance": 1} and report["overall"] == 1
 
 
 def test_rag_retriever_without_chromadb(monkeypatch):
