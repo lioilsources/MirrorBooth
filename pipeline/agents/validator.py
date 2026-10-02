@@ -5,6 +5,8 @@ import tempfile
 
 from state import ShaderGenState
 
+UNRESOLVED_PREFIX = "Unresolved port fix: "
+
 REQUIRED_PATTERNS = [
     (r"#include\s*<flutter/runtime_effect\.glsl>", "#include <flutter/runtime_effect.glsl>"),
     (r"uniform\s+sampler2D\s+uTexture", "uniform sampler2D uTexture"),
@@ -61,6 +63,8 @@ def validator_node(state: ShaderGenState) -> ShaderGenState:
 
     errors.extend(_contract_check(code))
     errors.extend(_glslang_check(code))
+    # port mode: constructs the transpiler could not convert keep the run from passing
+    errors.extend(f"{UNRESOLVED_PREFIX}{fix}" for fix in state.get("fixes_needed", []))
 
     # `retry_count` counts failed validations; the graph stops retrying once it reaches
     # settings.max_retries, so a run can end with invalid code. `validation_passed`

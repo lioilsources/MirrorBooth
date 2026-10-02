@@ -89,11 +89,12 @@ class FakeLLMFactory:
 def fake_llm(monkeypatch) -> FakeLLMFactory:
     """Replace ``get_llm`` in every agent module with a canned responder."""
     import agents.glsl_coder as gc
+    import agents.llm_fixer as fx
     import agents.ranker as rk
     import agents.style_architect as sa
 
     factory = FakeLLMFactory()
-    for mod in (sa, gc, rk):
+    for mod in (sa, gc, rk, fx):
         monkeypatch.setattr(mod, "get_llm", factory)
     return factory
 
