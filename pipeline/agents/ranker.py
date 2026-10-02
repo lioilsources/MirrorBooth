@@ -1,8 +1,6 @@
-import json
-import re
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
-from config import settings
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from llm import get_llm, parse_json_block
 from state import ShaderGenState
 
 SYSTEM_PROMPT = """You are a senior GLSL code reviewer specializing in mobile GPU shaders.
@@ -30,12 +28,7 @@ Respond with raw JSON only."""
 
 
 def ranker_node(state: ShaderGenState) -> ShaderGenState:
-    llm = ChatOpenAI(
-        base_url=settings.spark_base_url,
-        api_key=settings.spark_api_key,
-        model=settings.spark_model,
-        temperature=0.1,
-    )
+    llm = get_llm("ranker")
 
     tech_spec = state.get("tech_spec", {})
     messages = [
@@ -51,13 +44,9 @@ def ranker_node(state: ShaderGenState) -> ShaderGenState:
     response = llm.invoke(messages)
     raw = response.content.strip()
 
-    # strip markdown fences
-    raw = re.sub(r"^```(?:json)?\n?", "", raw)
-    raw = re.sub(r"\n?```$", "", raw)
-
     try:
-        rank_report = json.loads(raw.strip())
-    except json.JSONDecodeError:
+        rank_report = parse_json_block(raw)
+    except ValueError:
         rank_report = {"scores": {}, "overall": 0, "explanation": raw}
 
     return {**state, "rank_report": rank_report}

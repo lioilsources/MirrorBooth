@@ -1,0 +1,36 @@
+# Tooling config for the ShaderGen pipeline (developer tool, not part of the Flutter build).
+# Runtime deps: requirements.txt (full) — dev/test deps: requirements-dev.txt.
+
+[project]
+name = "mirrorbooth-shadergen"
+version = "0.2.0"
+description = "ShaderGen: LangGraph pipeline generating MirrorBooth GLSL filters"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = [
+    "network: needs internet or LAN access (Shadertoy API, SPARK gateway)",
+    "llm: calls a live LLM endpoint (SPARK / Anthropic)",
+    "flutter: needs a Flutter SDK (FLUTTER_ROOT) with impellerc",
+    "gl: needs a headless OpenGL context (EGL/OSMesa)",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["output", "rag/db", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# long lines are left to `ruff format`; LLM prompt strings are kept verbatim
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# ingest.py must extend sys.path before importing pipeline modules
+"rag/*.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agents", "config", "graph", "llm", "run", "state"]

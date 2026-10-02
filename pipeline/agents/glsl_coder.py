@@ -1,7 +1,6 @@
-import re
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
-from config import settings
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from llm import get_llm, strip_code_fence
 from state import ShaderGenState
 
 FLUTTER_CONTRACT = """
@@ -35,12 +34,7 @@ Write complete, compilable GLSL fragment shader code. Output raw GLSL only, no e
 
 
 def glsl_coder_node(state: ShaderGenState) -> ShaderGenState:
-    llm = ChatOpenAI(
-        base_url=settings.spark_base_url,
-        api_key=settings.spark_api_key,
-        model=settings.spark_model,
-        temperature=0.2,
-    )
+    llm = get_llm("coder")
 
     tech_spec = state["tech_spec"]
     rag_snippets = state.get("rag_context", [])
@@ -53,7 +47,7 @@ def glsl_coder_node(state: ShaderGenState) -> ShaderGenState:
 
     error_block = ""
     if errors:
-        error_block = f"\n\nPrevious attempt failed validation. Fix these issues:\n" + "\n".join(
+        error_block = "\n\nPrevious attempt failed validation. Fix these issues:\n" + "\n".join(
             f"- {e}" for e in errors
         )
 
@@ -68,10 +62,12 @@ def glsl_coder_node(state: ShaderGenState) -> ShaderGenState:
 
     messages = [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=user_msg)]
     response = llm.invoke(messages)
-    code = response.content.strip()
+    code = strip_code_fence(response.content)
 
-    # strip markdown fences
-    code = re.sub(r"^```(?:glsl)?\n?", "", code)
-    code = re.sub(r"\n?```$", "", code)
-
-    return {**state, "glsl_code": code.strip(), "validation_errors": [], "retry_count": state.get("retry_count", 0)}
+    return {
+        **state,
+        "glsl_code": code,
+        "validation_errors": [],
+        "validation_passed": False,
+        "retry_count": state.get("retry_count", 0),
+    }

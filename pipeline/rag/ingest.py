@@ -15,7 +15,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import chromadb
 from chromadb.utils import embedding_functions
-from config import settings, SHADERS_DIR, RAG_DB_DIR
+
+from config import RAG_DB_DIR, SHADERS_DIR, settings
 
 TECHNIQUE_TAGS = {
     "sobel": "sobel_edge_detection",
@@ -63,7 +64,7 @@ def _split_functions(code: str) -> list[str]:
     """Split GLSL code into top-level function blocks."""
     # match: returnType funcName(...) { ... } allowing nested braces
     pattern = re.compile(
-        r'(?:^|\n)(?:[\w]+\s+)+\w+\s*\([^)]*\)\s*\{',
+        r"(?:^|\n)(?:[\w]+\s+)+\w+\s*\([^)]*\)\s*\{",
         re.MULTILINE,
     )
     starts = [m.start() for m in pattern.finditer(code)]
@@ -91,12 +92,14 @@ def ingest_directory(shaders_dir: Path, collection: chromadb.Collection) -> int:
             collection.upsert(
                 ids=[doc_id],
                 documents=[chunk],
-                metadatas=[{
-                    "source": str(frag_file),
-                    "filter_name": frag_file.stem,
-                    "techniques": ",".join(techniques),
-                    "chunk_index": idx,
-                }],
+                metadatas=[
+                    {
+                        "source": str(frag_file),
+                        "filter_name": frag_file.stem,
+                        "techniques": ",".join(techniques),
+                        "chunk_index": idx,
+                    }
+                ],
             )
             count += 1
     return count
@@ -114,9 +117,7 @@ def main():
 
     RAG_DB_DIR.mkdir(parents=True, exist_ok=True)
 
-    ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name=settings.embedding_model
-    )
+    ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=settings.embedding_model)
     client = chromadb.PersistentClient(path=str(RAG_DB_DIR))
     collection = client.get_or_create_collection(name="glsl_shaders", embedding_function=ef)
 
