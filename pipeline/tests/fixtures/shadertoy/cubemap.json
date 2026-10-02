@@ -1,0 +1,50 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stCube",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Sky Reflect",
+      "username": "frank",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "test"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [
+          {
+            "id": 30,
+            "src": "/media/a/x.png",
+            "ctype": "cubemap",
+            "channel": 0,
+            "sampler": {
+              "filter": "linear",
+              "wrap": "clamp",
+              "vflip": "true",
+              "srgb": "false",
+              "internal": "byte"
+            },
+            "published": 1
+          }
+        ],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// MIT License\nvoid mainImage(out vec4 c, in vec2 f) { c = texture(iChannel0, vec3(f / iResolution.xy, 1.0)); }\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

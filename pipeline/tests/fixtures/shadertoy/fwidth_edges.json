@@ -1,0 +1,35 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stFwidth",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "AA Rings",
+      "username": "jack",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "test"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// Licensed under the MIT license.\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n    vec2 p = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\n    float d = abs(fract(length(p) * 8.0) - 0.5);\n    float w = fwidth(d);\n    float a = smoothstep(0.0, w * 1.5, d - 0.1);\n    fragColor = vec4(vec3(a), 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

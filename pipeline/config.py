@@ -8,6 +8,7 @@ PROJECT_ROOT = PIPELINE_DIR.parent
 SHADERS_DIR = PROJECT_ROOT / "mirrorbooth" / "shaders"
 RAG_DB_DIR = PIPELINE_DIR / "rag" / "db"
 OUTPUT_DIR = PIPELINE_DIR / "output"
+SHADERTOY_CACHE_DIR = PIPELINE_DIR / "rag" / "shadertoy_cache"
 
 LLMProvider = Literal["spark", "anthropic"]
 

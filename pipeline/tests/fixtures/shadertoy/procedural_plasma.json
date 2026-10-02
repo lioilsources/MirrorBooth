@@ -1,0 +1,36 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stPlasma",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Tiny Plasma",
+      "username": "carol",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "plasma",
+        "procedural"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// CC0 - public domain dedication\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord)\n{\n    vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;\n    vec2 m = iMouse.xy / iResolution.xy;\n    float v = sin(p.x * 4.0 + iTime) + sin(p.y * 3.0 - iTime * 0.7) + sin(length(p - m) * 6.0);\n    vec3 col = 0.5 + 0.5 * cos(v + vec3(0.0, 2.0, 4.0));\n    fragColor = vec4(col, 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

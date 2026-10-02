@@ -1,0 +1,51 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stWebInv",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Webcam Invert Wave",
+      "username": "alice",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "webcam",
+        "postprocessing"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [
+          {
+            "id": 30,
+            "src": "/media/a/x.png",
+            "ctype": "webcam",
+            "channel": 0,
+            "sampler": {
+              "filter": "linear",
+              "wrap": "clamp",
+              "vflip": "true",
+              "srgb": "false",
+              "internal": "byte"
+            },
+            "published": 1
+          }
+        ],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// The MIT License\n// Copyright (c) 2024 Test Author\n// Permission is hereby granted, free of charge, to any person obtaining a copy of this software.\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord)\n{\n    vec2 uv = fragCoord / iResolution.xy;\n    uv.x += 0.01 * sin(uv.y * 20.0 + iTime);\n    vec3 col = texture(iChannel0, uv).rgb;\n    fragColor = vec4(1.0 - col, 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

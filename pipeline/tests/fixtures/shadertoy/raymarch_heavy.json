@@ -1,0 +1,35 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stMarch",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Sphere March",
+      "username": "kim",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "test"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// MIT License\nfloat map(vec3 p) { return length(p) - 1.0; }\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n    vec2 p = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\n    vec3 ro = vec3(0.0, 0.0, -3.0), rd = normalize(vec3(p, 1.0));\n    float t = 0.0;\n    for (int i = 0; i < 128; i++) { float d = map(ro + rd * t); if (d < 0.001) break; t += d; }\n    fragColor = vec4(vec3(1.0 / (1.0 + t * t * 0.1)), 1.0);\n}\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      }
+    ]
+  }
+}

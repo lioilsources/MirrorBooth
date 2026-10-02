@@ -1,0 +1,63 @@
+{
+  "Shader": {
+    "ver": "0.1",
+    "info": {
+      "id": "stMulti",
+      "date": "1600000000",
+      "viewed": 1234,
+      "name": "Feedback Trails",
+      "username": "erin",
+      "description": "",
+      "likes": 42,
+      "published": 3,
+      "flags": 0,
+      "usePreview": 0,
+      "tags": [
+        "test"
+      ]
+    },
+    "renderpass": [
+      {
+        "inputs": [
+          {
+            "id": 30,
+            "src": "/media/a/x.png",
+            "ctype": "buffer",
+            "channel": 0,
+            "sampler": {
+              "filter": "linear",
+              "wrap": "clamp",
+              "vflip": "true",
+              "srgb": "false",
+              "internal": "byte"
+            },
+            "published": 1
+          }
+        ],
+        "outputs": [
+          {
+            "id": 37,
+            "channel": 0
+          }
+        ],
+        "code": "// MIT License\nvoid mainImage(out vec4 c, in vec2 f) { c = texture(iChannel0, f / iResolution.xy); }\n",
+        "name": "Image",
+        "description": "",
+        "type": "image"
+      },
+      {
+        "inputs": [],
+        "outputs": [
+          {
+            "id": 257,
+            "channel": 0
+          }
+        ],
+        "code": "void mainImage(out vec4 c, in vec2 f) { c = vec4(0.0); }",
+        "name": "Buffer A",
+        "description": "",
+        "type": "buffer"
+      }
+    ]
+  }
+}
