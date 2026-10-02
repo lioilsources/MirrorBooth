@@ -114,3 +114,18 @@ def test_rewrite_calls_handles_nesting():
 def test_detect_fixes_ignores_comments():
     assert detect_fixes("// fwidth(x) was here\nfloat a = 1.0;") == []
     assert detect_fixes("float w = fwidth(x);") == [FIX_DERIVATIVES]
+
+
+@pytest.mark.flutter
+@pytest.mark.parametrize("name", PORTABLE)
+def test_goldens_compile_with_impellerc(name, tmp_path):
+    from checks.compile import compile_shader, find_impellerc
+
+    if find_impellerc() is None:
+        pytest.skip("FLUTTER_ROOT / impellerc not available")
+    r = _port(name)
+    result = compile_shader(r.code, workdir=tmp_path)
+    if name == "fwidth_edges":
+        assert not result.ok and any("SkSL" in e for e in result.errors)
+    else:
+        assert result.ok, result.errors

@@ -11,6 +11,8 @@ All shaders MUST follow this Flutter/Impeller contract exactly:
 uniform sampler2D uTexture;    // camera frame input
 uniform vec2 uResolution;      // viewport size in pixels
 // uniform float uTime;        // include ONLY if animated
+// uniform vec2 uFaceCenter;   // include ONLY together with uFaceScale, for face-anchored effects
+// uniform float uFaceScale;   //   (uFaceCenter in 0..1, top-left origin)
 
 out vec4 fragColor;
 
@@ -21,10 +23,12 @@ void main() {
 }
 
 Rules:
+- Uniforms exactly in the order above (uTexture, uResolution, [uTime], [uFaceCenter, uFaceScale]), no other uniforms or samplers
 - Use FlutterFragCoord() NOT gl_FragCoord
 - No #version directive (Flutter adds it)
+- Not available: fwidth/dFdx/dFdy, texelFetch, textureSize, uint/uvec, uniform arrays
+- Mobile budget: at most ~64 texture fetches inside loops per pixel, loops nested at most 2 deep
 - Minimize branching (if/else) inside loops for mobile GPU performance
-- Avoid texture fetches in tight loops; prefer separable passes mentally
 - Output must always assign fragColor
 """
 

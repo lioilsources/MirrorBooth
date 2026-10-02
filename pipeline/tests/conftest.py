@@ -101,8 +101,8 @@ def fake_llm(monkeypatch) -> FakeLLMFactory:
 
 @pytest.fixture
 def offline_graph(monkeypatch, fake_llm):
-    """Graph wired to the fake LLM, with a stub RAG retriever and no glslangValidator."""
-    import agents.validator as validator
+    """Graph wired to the fake LLM, with a stub RAG retriever and no shader compiler."""
+    import checks.compile as compile_mod
     import graph as graph_mod
     from config import settings
 
@@ -110,6 +110,8 @@ def offline_graph(monkeypatch, fake_llm):
         return {**state, "rag_context": ["float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }"]}
 
     monkeypatch.setattr(graph_mod, "rag_retriever_node", stub_rag)
-    monkeypatch.setattr(validator.shutil, "which", lambda _name: None)
+    # no impellerc / glslang: compile check reports backend "none" (offline + deterministic)
+    monkeypatch.setattr(compile_mod, "find_impellerc", lambda *_a, **_k: None)
+    monkeypatch.setattr(compile_mod.shutil, "which", lambda _name: None)
     monkeypatch.setattr(settings, "max_retries", 3)
     return graph_mod
