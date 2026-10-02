@@ -73,3 +73,4 @@ flutter:
     - shaders/filter_demon.frag
     - shaders/filter_cyborg.frag
     - shaders/filter_frozen.frag
+    # @shadergen:shaders (pipeline/integrate.py inserts new shaders above this line)

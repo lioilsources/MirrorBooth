@@ -183,11 +183,24 @@ void main() {
       }
     });
 
-    test('collection sizes are 5/5/8/6', () {
-      expect(MirrorFilter.inCollection(FilterCollection.pretty), hasLength(5));
-      expect(MirrorFilter.inCollection(FilterCollection.ugly), hasLength(5));
-      expect(MirrorFilter.inCollection(FilterCollection.art), hasLength(8));
-      expect(MirrorFilter.inCollection(FilterCollection.fantasy), hasLength(6));
+    // Pins the shipped filters to their collections (free vs paid must never
+    // change silently). Collections may grow: pipeline/integrate.py adds new
+    // filters to a collection chosen explicitly on its command line.
+    test('shipped filters stay in their collections', () {
+      const shipped = {
+        FilterCollection.pretty: ['glow', 'slim', 'doll', 'chibi', 'lips'],
+        FilterCollection.ugly: ['bigNose', 'alien', 'melt', 'bigEars', 'longNeck'],
+        FilterCollection.art: [
+          'pencil', 'comic', 'glitch', 'neon', 'thermal', 'oil', 'crt', 'popArt'
+        ],
+        FilterCollection.fantasy: [
+          'vampire', 'zombie', 'ghost', 'demon', 'cyborg', 'frozen'
+        ],
+      };
+      for (final MapEntry(key: c, value: names) in shipped.entries) {
+        final actual = MirrorFilter.inCollection(c).map((f) => f.name);
+        expect(actual, containsAllInOrder(names), reason: '$c');
+      }
     });
 
     test('isPaid ⇔ productId non-null, and IDs round-trip', () {
