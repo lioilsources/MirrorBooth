@@ -58,6 +58,8 @@ class Settings(BaseSettings):
 
     # --- Graph ---------------------------------------------------------------
     max_retries: int = 3
+    # run.py --batch: concurrent graph runs (SPARK serves max 2 requests at a time)
+    batch_parallelism: int = 2
 
     # --- Mobile GPU performance budget (validator heuristics, Phase 4) -------
     perf_max_loop_fetch_budget: int = 64  # sum(loop iterations x texture fetches in body)

@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import tempfile
+import threading
 from pathlib import Path
 
 from config import settings
 from state import ShaderGenState
+
+# one GL context at a time: batch runs render from worker threads
+_GL_LOCK = threading.Lock()
 
 
 def preview_node(state: ShaderGenState) -> ShaderGenState:
@@ -20,7 +24,8 @@ def preview_node(state: ShaderGenState) -> ShaderGenState:
     warnings = list(provenance.get("validation_warnings", []))
     try:
         input_path = default_input()
-        result = render(state["glsl_code"], load_image(input_path), state["needs_time"], state["needs_face"])
+        with _GL_LOCK:
+            result = render(state["glsl_code"], load_image(input_path), state["needs_time"], state["needs_face"])
     except PreviewUnavailable as exc:
         print(f"[preview] skipped: {exc}")
         return {**state, "provenance": {**provenance, "preview": {"skipped": str(exc)}}}

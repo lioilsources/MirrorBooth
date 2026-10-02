@@ -59,8 +59,11 @@ def test_flags_and_categories():
     assert plasma.needs_time and plasma.needs_face and plasma.category == "procedural"
     assert plasma.blend_mode == "screen"
     assert "#define iMouse vec4(uFaceCenter.x * uResolution.x, (1.0 - uFaceCenter.y) * uResolution.y" in plasma.code
-    assert _port("noise_texture").category == "data_texture"
-    assert "vec4 stNoiseTex(vec2 uv)" in _port("noise_texture").code
+    noise = _port("noise_texture")
+    assert noise.category == "data_texture"
+    assert "vec4 stNoiseTex(vec2 uv)" in noise.code
+    # noise-only shaders never see the camera -> composited like procedural ones
+    assert noise.blend_mode == "screen" and "vec3 cam = texture(uTexture, uv).rgb;" in noise.code
     assert _port("fwidth_edges").fixes_needed == [FIX_DERIVATIVES]
     assert _port("webcam_invert").fixes_needed == []
 
