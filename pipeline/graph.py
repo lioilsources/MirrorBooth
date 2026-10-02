@@ -1,22 +1,25 @@
 """LangGraph wiring for both pipeline modes.
 
 inspire (source.kind == "style"):
-    style_architect -> rag_retriever -> glsl_coder -> validator --(retry)--> glsl_coder
-                                                            \\--> ranker
+    style_architect -> rag_retriever -> glsl_coder -> validator --(errors)--> glsl_coder
 port (source.kind == "shadertoy"):
     transpiler -> validator --(errors or fixes_needed)--> llm_fixer -> validator
-                          \\--> ranker
+
+Both paths: validator --passed--> preview (headless render + metrics) -> ranker -> vision_ranker.
+A preview that fails its metrics sends inspire runs back to the coder; port runs end FAILED.
 """
 
 from langgraph.graph import END, StateGraph
 
 from agents.glsl_coder import glsl_coder_node
 from agents.llm_fixer import llm_fixer_node
+from agents.preview import preview_node
 from agents.rag_retriever import rag_retriever_node
 from agents.ranker import ranker_node
 from agents.style_architect import style_architect_node
 from agents.transpiler import transpiler_node
 from agents.validator import validator_node
+from agents.vision_ranker import vision_ranker_node
 from config import settings
 from state import ShaderGenState
 
@@ -45,9 +48,16 @@ def _should_fix(state: ShaderGenState) -> str:
 
 
 def _after_validation(state: ShaderGenState) -> str:
-    if _is_port(state):
-        return _should_fix(state)
-    return _should_retry(state)
+    route = _should_fix(state) if _is_port(state) else _should_retry(state)
+    if route == "done" and state.get("validation_passed"):
+        return "preview"
+    return route
+
+
+def _after_preview(state: ShaderGenState) -> str:
+    if not _is_port(state) and _should_retry(state) == "retry":
+        return "retry"
+    return "done"
 
 
 def build_graph() -> StateGraph:
@@ -59,7 +69,9 @@ def build_graph() -> StateGraph:
     graph.add_node("transpiler", transpiler_node)
     graph.add_node("llm_fixer", llm_fixer_node)
     graph.add_node("validator", validator_node)
+    graph.add_node("preview", preview_node)
     graph.add_node("ranker", ranker_node)
+    graph.add_node("vision_ranker", vision_ranker_node)
 
     graph.set_conditional_entry_point(_entry, {"inspire": "style_architect", "port": "transpiler"})
     graph.add_edge("style_architect", "rag_retriever")
@@ -70,8 +82,10 @@ def build_graph() -> StateGraph:
     graph.add_conditional_edges(
         "validator",
         _after_validation,
-        {"retry": "glsl_coder", "fix": "llm_fixer", "done": "ranker"},
+        {"retry": "glsl_coder", "fix": "llm_fixer", "preview": "preview", "done": "ranker"},
     )
-    graph.add_edge("ranker", END)
+    graph.add_conditional_edges("preview", _after_preview, {"retry": "glsl_coder", "done": "ranker"})
+    graph.add_edge("ranker", "vision_ranker")
+    graph.add_edge("vision_ranker", END)
 
     return graph.compile()
