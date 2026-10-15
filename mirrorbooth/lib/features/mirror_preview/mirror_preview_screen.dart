@@ -558,8 +558,12 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _CallButton(),
-                const SizedBox(height: 12),
+                // The call screen's signaling server is localhost-only, so
+                // release builds would show a button that can never connect.
+                if (kDebugMode) ...[
+                  _CallButton(),
+                  const SizedBox(height: 12),
+                ],
                 GestureDetector(
                   onTap: () => setState(() => _showDebug = !_showDebug),
                   child: Container(
