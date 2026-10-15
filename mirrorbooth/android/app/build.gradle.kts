@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.ol1n.mirrorbooth"
+        applicationId = "com.ab.mirrorbooth"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
