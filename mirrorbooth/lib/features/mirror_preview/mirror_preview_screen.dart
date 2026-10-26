@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/jpeg_encode_utils.dart';
 import '../../core/shader_provider.dart';
+import '../../l10n/l10n.dart';
 import '../../services/shutter_button_channel.dart';
 import '../paywall/entitlement_controller.dart';
 import '../paywall/paywall_sheet.dart';
@@ -196,11 +197,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       _flashController.forward(from: 0.0);
     } on GalException catch (e) {
       _log('GalException: ${e.type.code}');
-      _showError('${e.type.code}: ${e.type.message}');
+      _showError((l) => galErrorMessage(l, e.type));
     } catch (e, st) {
       _log('ERROR: $e');
       debugPrint(st.toString());
-      _showError(e.toString());
+      _showError((l) => l.genericError);
     } finally {
       tempFile?.delete().ignore();
       if (mounted) setState(() => _isSaving = false);
@@ -339,17 +340,17 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  void _showError(String msg) {
+  void _showError(String Function(AppLocalizations l) message) {
     if (!mounted) return;
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Could not save photo'),
-        content: Text(msg),
+        title: Text(context.l10n.photoSaveFailedTitle),
+        content: Text(message(context.l10n)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),
@@ -369,13 +370,13 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       // control playback volume as usual.
       _setShutterClaimed(next.phase == RecordingPhase.idle ||
           next.phase == RecordingPhase.recording);
-      if (next.errorMessage != null && mounted) {
+      if (next.error != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(next.errorMessage!),
+            content: Text(next.error!.message(context.l10n)),
             backgroundColor: Colors.redAccent,
             action: SnackBarAction(
-              label: 'OK',
+              label: context.l10n.ok,
               textColor: Colors.white,
               onPressed: ref.read(videoRecordingProvider.notifier).clearError,
             ),
@@ -401,7 +402,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       error: (e, _) => Scaffold(
         backgroundColor: Colors.black,
         body: Center(
-          child: Text('Shader load error: $e',
+          child: Text(context.l10n.shaderLoadError('$e'),
               style: const TextStyle(color: Colors.white70)),
         ),
       ),
@@ -423,7 +424,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text(state.error!,
+          child: Text(state.error!.message(context.l10n),
               style: const TextStyle(color: Colors.white70), textAlign: TextAlign.center),
         ),
       );
@@ -612,8 +613,9 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                     const SizedBox(height: 4),
                     if (_debugLog.isEmpty)
                       Text(
-                        'drag = rotate  •  ⊙ = photo  •  ● = video'
-                        '${_shutterSupported ? "\nvol = photo  •  vol hold = video" : ""}',
+                        _shutterSupported
+                            ? '${context.l10n.controlsHint}\n${context.l10n.controlsHintVolume}'
+                            : context.l10n.controlsHint,
                         style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 10,

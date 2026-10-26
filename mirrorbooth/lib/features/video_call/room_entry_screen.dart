@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/mirror_side.dart';
+import '../../l10n/l10n.dart';
 import 'call_controller.dart';
 import 'call_screen.dart';
 
@@ -39,7 +40,7 @@ class _RoomEntryScreenState extends ConsumerState<RoomEntryScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to join: $e')),
+          SnackBar(content: Text(context.l10n.failedToJoin('$e'))),
         );
       }
     } finally {
@@ -61,16 +62,16 @@ class _RoomEntryScreenState extends ConsumerState<RoomEntryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Enter a room ID to start a mirrored video call.',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+            Text(
+              context.l10n.roomEntryPrompt,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
             const SizedBox(height: 24),
             TextField(
               controller: _controller,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Room ID',
+                hintText: context.l10n.roomIdHint,
                 hintStyle: const TextStyle(color: Colors.white38),
                 filled: true,
                 fillColor: Colors.white10,
@@ -82,9 +83,9 @@ class _RoomEntryScreenState extends ConsumerState<RoomEntryScreen> {
               onSubmitted: (_) => _join(),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Mirror side',
-              style: TextStyle(color: Colors.white60, fontSize: 12),
+            Text(
+              context.l10n.mirrorSideTitle,
+              style: const TextStyle(color: Colors.white60, fontSize: 12),
             ),
             const SizedBox(height: 8),
             SegmentedButton<MirrorSide>(
@@ -93,9 +94,11 @@ class _RoomEntryScreenState extends ConsumerState<RoomEntryScreen> {
                 selectedForegroundColor: Colors.black,
                 selectedBackgroundColor: Colors.white,
               ),
-              segments: const [
-                ButtonSegment(value: MirrorSide.left, label: Text('Left')),
-                ButtonSegment(value: MirrorSide.right, label: Text('Right')),
+              segments: [
+                ButtonSegment(
+                    value: MirrorSide.left, label: Text(context.l10n.mirrorSideLeft)),
+                ButtonSegment(
+                    value: MirrorSide.right, label: Text(context.l10n.mirrorSideRight)),
               ],
               selected: {_side},
               onSelectionChanged: (s) => setState(() => _side = s.first),
@@ -117,7 +120,8 @@ class _RoomEntryScreenState extends ConsumerState<RoomEntryScreen> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Join call', style: TextStyle(fontWeight: FontWeight.w600)),
+                  : Text(context.l10n.joinCall,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
           ],
         ),

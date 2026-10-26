@@ -6,6 +6,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mirrorbooth/core/mirror_filter.dart';
 import 'package:mirrorbooth/features/mirror_preview/filter_strip.dart';
 import 'package:mirrorbooth/features/paywall/entitlement_controller.dart';
+import 'package:mirrorbooth/l10n/app_localizations.dart';
 import 'package:mirrorbooth/services/purchase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -216,6 +217,8 @@ void main() {
 
   group('FilterStrip lock badges', () {
     Widget strip(Set<FilterCollection> owned) => MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: FilterStrip(
               selected: MirrorFilter.none,

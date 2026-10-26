@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "يستخدم MirrorBooth الكاميرا لإنشاء معاينة المرآة المتماثلة الخاصة بك.";
+"NSMicrophoneUsageDescription" = "يستخدم MirrorBooth الميكروفون لتسجيل الصوت في فيديوهات المرآة الخاصة بك.";
+"NSPhotoLibraryAddUsageDescription" = "يحفظ MirrorBooth صور وفيديوهات المرآة الخاصة بك في مكتبة الصور.";
+"NSPhotoLibraryUsageDescription" = "يحفظ MirrorBooth صور وفيديوهات المرآة الخاصة بك في مكتبة الصور.";

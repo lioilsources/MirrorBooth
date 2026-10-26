@@ -1,7 +1,7 @@
 name: mirrorbooth
 description: "Real-time symmetric face mirror using selfie camera."
 publish_to: 'none'
-version: 2.3.2
+version: 2.3.3
 
 environment:
   sdk: ^3.11.4
@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
   cupertino_icons: ^1.0.8
   camera: ^0.12.0
   flutter_shaders: ^0.1.3
@@ -47,6 +50,7 @@ flutter_launcher_icons:
     icon_size: 256
 
 flutter:
+  generate: true
   uses-material-design: true
   shaders:
     - shaders/filter_glow.frag

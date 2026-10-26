@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth, simetrik ayna önizlemenizi oluşturmak için kamerayı kullanır.";
+"NSMicrophoneUsageDescription" = "MirrorBooth, ayna videolarınızın sesini kaydetmek için mikrofonu kullanır.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth, ayna fotoğraflarınızı ve videolarınızı fotoğraf arşivine kaydeder.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth, ayna fotoğraflarınızı ve videolarınızı fotoğraf arşivine kaydeder.";

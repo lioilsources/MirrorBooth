@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "O MirrorBooth usa a câmera para criar sua prévia espelhada simétrica.";
+"NSMicrophoneUsageDescription" = "O MirrorBooth usa o microfone para gravar o som dos seus vídeos espelhados.";
+"NSPhotoLibraryAddUsageDescription" = "O MirrorBooth salva suas fotos e vídeos espelhados na galeria.";
+"NSPhotoLibraryUsageDescription" = "O MirrorBooth salva suas fotos e vídeos espelhados na galeria.";

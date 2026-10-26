@@ -1,0 +1,156 @@
+{
+  "@@locale": "en",
+  "filterNone": "None",
+  "@filterNone": {
+    "description": "Filter chip: no filter"
+  },
+  "filterGlow": "Glow",
+  "@filterGlow": {
+    "description": "Filter chip label, keep very short"
+  },
+  "filterSlim": "Slim",
+  "filterDoll": "Doll",
+  "filterChibi": "Chibi",
+  "filterLips": "Lips",
+  "filterBigNose": "Nose",
+  "filterAlien": "Alien",
+  "filterMelt": "Melt",
+  "filterBigEars": "Ears",
+  "filterLongNeck": "Neck",
+  "filterPencil": "Pencil",
+  "filterComic": "Comic",
+  "filterGlitch": "Glitch",
+  "filterNeon": "Neon",
+  "filterThermal": "Heat",
+  "filterOil": "Oil",
+  "filterCrt": "CRT",
+  "filterPopArt": "Pop",
+  "filterVampire": "Vamp",
+  "filterZombie": "Zombie",
+  "filterGhost": "Ghost",
+  "filterDemon": "Demon",
+  "filterCyborg": "Cyborg",
+  "filterFrozen": "Frost",
+  "collectionPretty": "Pretty",
+  "@collectionPretty": {
+    "description": "Filter collection name (tab, shown uppercased)"
+  },
+  "collectionUgly": "Ugly",
+  "collectionArt": "Art",
+  "collectionFantasy": "Fantasy",
+  "audioEffectNone": "Normal",
+  "@audioEffectNone": {
+    "description": "Audio effect chip: original sound"
+  },
+  "audioEffectChiptune": "8-bit",
+  "audioEffectSlowMo": "Slow",
+  "audioEffectChipmunk": "Chipmunk",
+  "audioEffectEcho": "Echo",
+  "audioEffectUnderwater": "Underwater",
+  "audioEffectRobot": "Robot",
+  "audioEffectReverse": "Reverse",
+  "mirrorSideLeftShort": "L",
+  "@mirrorSideLeftShort": {
+    "description": "Very short label for the left mirror side on a small round button"
+  },
+  "mirrorSideRightShort": "R",
+  "@mirrorSideRightShort": {
+    "description": "Very short label for the right mirror side on a small round button"
+  },
+  "mirrorSideLeft": "Left",
+  "mirrorSideRight": "Right",
+  "lensFront": "FRONT",
+  "@lensFront": {
+    "description": "Tiny uppercase label on the camera switch button: front camera active"
+  },
+  "lensBack": "BACK",
+  "@lensBack": {
+    "description": "Tiny uppercase label on the camera switch button: back camera active"
+  },
+  "photoSaveFailedTitle": "Could not save photo",
+  "ok": "OK",
+  "galleryAccessDenied": "Access to the photo library was denied.",
+  "galleryNotEnoughSpace": "Not enough storage space.",
+  "galleryUnsupportedFormat": "This file format is not supported.",
+  "genericError": "Something went wrong. Please try again.",
+  "shaderLoadError": "Could not load filters: {error}",
+  "@shaderLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Technical error detail"
+      }
+    }
+  },
+  "cameraPermissionDenied": "Camera permission denied",
+  "noCamerasAvailable": "No cameras available",
+  "cameraStartFailed": "Could not start the camera.",
+  "controlsHint": "drag = rotate  •  ⊙ = photo  •  ● = video",
+  "@controlsHint": {
+    "description": "Gesture hint in the info overlay; keep the symbols ⊙ and ●"
+  },
+  "controlsHintVolume": "vol = photo  •  vol hold = video",
+  "@controlsHintVolume": {
+    "description": "Hardware volume-button hint"
+  },
+  "collectionUnlocked": "{collection} collection unlocked ✓",
+  "@collectionUnlocked": {
+    "placeholders": {
+      "collection": {
+        "type": "String",
+        "description": "Localized collection name"
+      }
+    }
+  },
+  "collectionFilters": "{collection} filters",
+  "@collectionFilters": {
+    "description": "Paywall sheet title",
+    "placeholders": {
+      "collection": {
+        "type": "String",
+        "description": "Localized collection name"
+      }
+    }
+  },
+  "paywallPreviewFree": "Preview is free. Unlock to save photos and videos.",
+  "storeUnavailable": "Store unavailable",
+  "loadingPrice": "Loading price…",
+  "unlockFor": "Unlock for {price}",
+  "@unlockFor": {
+    "description": "Purchase button",
+    "placeholders": {
+      "price": {
+        "type": "String",
+        "description": "Store-formatted price, e.g. $1.99"
+      }
+    }
+  },
+  "restorePurchases": "Restore purchases",
+  "purchaseFailed": "Purchase failed",
+  "discardVideoTitle": "Discard video?",
+  "discardVideoBody": "This recording has not been saved to your camera roll.",
+  "keep": "Keep",
+  "discard": "Discard",
+  "processing": "Processing…",
+  "applyingEffect": "Applying effect…",
+  "saved": "Saved ✓",
+  "saveToCameraRoll": "Save to Camera Roll",
+  "micPermissionRequired": "Microphone permission required for video recording.",
+  "recordingTooShort": "Recording too short — hold longer.",
+  "videoAssemblyFailed": "Video assembly failed. Please try again.",
+  "audioEffectFailed": "Audio effect failed.",
+  "roomEntryPrompt": "Enter a room ID to start a mirrored video call.",
+  "roomIdHint": "Room ID",
+  "mirrorSideTitle": "Mirror side",
+  "joinCall": "Join call",
+  "failedToJoin": "Failed to join: {error}",
+  "@failedToJoin": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "Technical error detail"
+      }
+    }
+  },
+  "connecting": "Connecting…"
+}

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/mirror_preview/mirror_preview_screen.dart';
 import 'features/paywall/entitlement_controller.dart';
 import 'features/video_call/room_entry_screen.dart';
+import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,8 @@ class MirrorBoothApp extends StatelessWidget {
     return MaterialApp(
       title: 'MirrorBooth',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData.dark(useMaterial3: true).copyWith(
         scaffoldBackgroundColor: Colors.black,
         colorScheme: const ColorScheme.dark(),

@@ -7,11 +7,13 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../core/mirror_filter.dart';
 import '../../core/mirror_side.dart';
 
+enum PreviewError { cameraPermissionDenied, noCameras, cameraStartFailed }
+
 class MirrorPreviewState {
   final CameraController? controller;
   final MirrorSide side;
   final bool isReady;
-  final String? error;
+  final PreviewError? error;
   /// Continuous rotation in degrees [0, 360), applied to the whole circular
   /// mirror composition.
   final double rotationDeg;
@@ -42,7 +44,7 @@ class MirrorPreviewState {
     CameraController? controller,
     MirrorSide? side,
     bool? isReady,
-    String? error,
+    PreviewError? error,
     double? rotationDeg,
     double? mirrorAxisDeg,
     MirrorFilter? selectedFilter,
@@ -76,13 +78,13 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
   Future<void> _init({CameraLensDirection? preferredLens}) async {
     final status = await Permission.camera.request();
     if (!status.isGranted) {
-      state = state.copyWith(error: 'Camera permission denied');
+      state = state.copyWith(error: PreviewError.cameraPermissionDenied);
       return;
     }
 
     final cameras = await availableCameras();
     if (cameras.isEmpty) {
-      state = state.copyWith(error: 'No cameras available');
+      state = state.copyWith(error: PreviewError.noCameras);
       return;
     }
 
@@ -125,7 +127,8 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
       );
       WakelockPlus.enable();
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      debugPrint('camera init failed: $e');
+      state = state.copyWith(error: PreviewError.cameraStartFailed);
     }
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
@@ -33,7 +34,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     final micStatus = await Permission.microphone.request();
     if (!micStatus.isGranted) {
       state = state.copyWith(
-        errorMessage: 'Microphone permission required for video recording.',
+        error: RecordingError.micPermission,
       );
       return;
     }
@@ -50,7 +51,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
       finalVideoPath: null,
       selectedEffect: AudioEffect.none,
       isSaved: false,
-      errorMessage: null,
+      error: null,
     );
 
     _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -80,7 +81,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     if (recorder == null || recorder.frameCount < _minFrames) {
       await recorder?.deleteAll();
       state = const VideoRecordingState(
-        errorMessage: 'Recording too short — hold longer.',
+        error: RecordingError.tooShort,
       );
       return;
     }
@@ -102,7 +103,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
 
     if (result == null) {
       state = const VideoRecordingState(
-        errorMessage: 'Video assembly failed. Please try again.',
+        error: RecordingError.assemblyFailed,
       );
       return;
     }
@@ -123,7 +124,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     state = state.copyWith(
       selectedEffect: effect,
       isApplyingEffect: true,
-      errorMessage: null,
+      error: null,
     );
 
     final tmp = await getTemporaryDirectory();
@@ -144,7 +145,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     if (result == null) {
       state = state.copyWith(
         isApplyingEffect: false,
-        errorMessage: 'Audio effect failed.',
+        error: RecordingError.audioEffectFailed,
       );
       return;
     }
@@ -163,9 +164,16 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
       await Gal.putVideo(path);
       state = state.copyWith(isSaved: true);
     } on GalException catch (e) {
-      state = state.copyWith(errorMessage: '${e.type.code}: ${e.type.message}');
+      state = state.copyWith(error: switch (e.type) {
+        GalExceptionType.accessDenied => RecordingError.galleryAccessDenied,
+        GalExceptionType.notEnoughSpace => RecordingError.galleryNotEnoughSpace,
+        GalExceptionType.notSupportedFormat =>
+          RecordingError.galleryUnsupportedFormat,
+        _ => RecordingError.unexpected,
+      });
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
+      debugPrint('saveVideo failed: $e');
+      state = state.copyWith(error: RecordingError.unexpected);
     }
   }
 
@@ -192,7 +200,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
   }
 
   void clearError() {
-    state = state.copyWith(errorMessage: null);
+    state = state.copyWith(error: null);
   }
 }
 

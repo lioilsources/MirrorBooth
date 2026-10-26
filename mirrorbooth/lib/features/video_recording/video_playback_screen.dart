@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 
+import '../../l10n/l10n.dart';
 import 'audio_effect_strip.dart';
 import 'video_recording_notifier.dart';
 import 'video_recording_state.dart';
@@ -42,23 +43,24 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
       await ref.read(videoRecordingProvider.notifier).discardAndReturnToCamera();
       return false;
     }
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text('Discard video?', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'This recording has not been saved to your camera roll.',
-          style: TextStyle(color: Colors.white70),
+        title: Text(l10n.discardVideoTitle, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          l10n.discardVideoBody,
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep', style: TextStyle(color: Colors.white70)),
+            child: Text(l10n.keep, style: const TextStyle(color: Colors.white70)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Discard', style: TextStyle(color: Colors.redAccent)),
+            child: Text(l10n.discard, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -73,6 +75,7 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(videoRecordingProvider);
     final notifier = ref.read(videoRecordingProvider.notifier);
+    final l10n = context.l10n;
 
     // Keep player in sync with video path changes.
     final path = state.playbackPath;
@@ -111,15 +114,15 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
             if (state.phase == RecordingPhase.assembling)
               Container(
                 color: Colors.black87,
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(color: Colors.white),
-                      SizedBox(height: 16),
+                      const CircularProgressIndicator(color: Colors.white),
+                      const SizedBox(height: 16),
                       Text(
-                        'Processing…',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                        l10n.processing,
+                        style: const TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ],
                   ),
@@ -132,16 +135,16 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                 top: safeTop + 60,
                 left: 0,
                 right: 0,
-                child: const Center(
+                child: Center(
                   child: Material(
                     color: Colors.black87,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 14,
                             height: 14,
                             child: CircularProgressIndicator(
@@ -149,9 +152,9 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                               strokeWidth: 2,
                             ),
                           ),
-                          SizedBox(width: 10),
-                          Text('Applying effect…',
-                              style: TextStyle(color: Colors.white70, fontSize: 13)),
+                          const SizedBox(width: 10),
+                          Text(l10n.applyingEffect,
+                              style: const TextStyle(color: Colors.white70, fontSize: 13)),
                         ],
                       ),
                     ),
@@ -161,9 +164,9 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
 
             // Back (X) button
             if (state.phase == RecordingPhase.playback)
-              Positioned(
+              PositionedDirectional(
                 top: safeTop + 16,
-                left: 16,
+                start: 16,
                 child: GestureDetector(
                   onTap: _onWillPop,
                   child: Container(
@@ -209,7 +212,7 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        state.isSaved ? 'Saved ✓' : 'Save to Camera Roll',
+                        state.isSaved ? l10n.saved : l10n.saveToCameraRoll,
                         style: TextStyle(
                           color: state.isSaved ? Colors.white54 : Colors.black,
                           fontWeight: FontWeight.w700,
@@ -223,7 +226,7 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
             ],
 
             // Error banner
-            if (state.errorMessage != null)
+            if (state.error != null)
               Positioned(
                 bottom: 180,
                 left: 24,
@@ -239,7 +242,7 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            state.errorMessage!,
+                            state.error!.message(l10n),
                             style: const TextStyle(color: Colors.white, fontSize: 13),
                           ),
                         ),

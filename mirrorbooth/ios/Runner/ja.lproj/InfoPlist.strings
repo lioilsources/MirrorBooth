@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBoothは左右対称のミラープレビューを作成するためにカメラを使用します。";
+"NSMicrophoneUsageDescription" = "MirrorBoothはミラー動画の音声を録音するためにマイクを使用します。";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBoothはミラー写真と動画を写真ライブラリに保存します。";
+"NSPhotoLibraryUsageDescription" = "MirrorBoothはミラー写真と動画を写真ライブラリに保存します。";

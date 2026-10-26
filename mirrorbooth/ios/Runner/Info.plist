@@ -14,6 +14,22 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ar</string>
+		<string>cs</string>
+		<string>de</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>hi</string>
+		<string>id</string>
+		<string>it</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>pt</string>
+		<string>tr</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>mirrorbooth</string>
 	<key>CFBundlePackageType</key>
@@ -31,11 +47,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>MirrorBooth uses the camera to create your symmetric mirror preview.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>MirrorBooth uses the microphone for FaceTimeMirrorBooth calls.</string>
+	<string>MirrorBooth uses the microphone to record sound for your mirror videos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>MirrorBooth saves your mirror photo to the photo library.</string>
+	<string>MirrorBooth saves your mirror photos and videos to the photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MirrorBooth saves your mirror photo to the photo library.</string>
+	<string>MirrorBooth saves your mirror photos and videos to the photo library.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

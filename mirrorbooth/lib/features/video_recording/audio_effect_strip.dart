@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/l10n.dart';
 import 'video_recording_state.dart';
 
 class AudioEffectStrip extends StatelessWidget {
@@ -40,7 +41,7 @@ class AudioEffectStrip extends StatelessWidget {
                 ),
               ),
               child: Text(
-                '${effect.icon} ${effect.label}',
+                '${effect.icon} ${effect.localizedLabel(context.l10n)}',
                 style: TextStyle(
                   color: isActive ? Colors.black : Colors.white,
                   fontSize: 13,

@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/l10n.dart';
+
 class CameraLensToggleButton extends StatelessWidget {
   final CameraLensDirection current;
   final VoidCallback onToggle;
@@ -16,7 +18,7 @@ class CameraLensToggleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFront = current == CameraLensDirection.front;
-    final label = isFront ? 'FRONT' : 'BACK';
+    final label = isFront ? context.l10n.lensFront : context.l10n.lensBack;
     return Opacity(
       opacity: enabled ? 1.0 : 0.4,
       child: GestureDetector(
@@ -38,13 +40,20 @@ class CameraLensToggleButton extends StatelessWidget {
                 size: 22,
               ),
               const SizedBox(height: 2),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
               ),
             ],

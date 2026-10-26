@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/mirror_side.dart';
+import '../../l10n/l10n.dart';
 
 class SideToggleButton extends StatelessWidget {
   final MirrorSide current;
@@ -32,13 +33,20 @@ class SideToggleButton extends StatelessWidget {
               size: 22,
             ),
             const SizedBox(height: 2),
-            Text(
-              current.label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  current.shortLabel(context.l10n),
+                  maxLines: 1,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1,
+                  ),
+                ),
               ),
             ),
           ],
