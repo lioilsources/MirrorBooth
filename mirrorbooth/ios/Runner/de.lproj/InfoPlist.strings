@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth verwendet die Kamera, um deine symmetrische Spiegelvorschau zu erstellen.";
+"NSMicrophoneUsageDescription" = "MirrorBooth verwendet das Mikrofon, um Ton für deine Spiegelvideos aufzunehmen.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth speichert deine Spiegelfotos und -videos in der Fotomediathek.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth speichert deine Spiegelfotos und -videos in der Fotomediathek.";

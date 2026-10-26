@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
+import '../../l10n/l10n.dart';
 import 'call_controller.dart';
 
 class CallScreen extends ConsumerWidget {
@@ -58,7 +59,7 @@ class CallScreen extends ConsumerWidget {
               children: [
                 _ControlButton(
                   icon: Icons.swap_horiz_rounded,
-                  label: state.side.label,
+                  label: state.side.shortLabel(context.l10n),
                   onTap: notifier.toggleSide,
                 ),
                 const SizedBox(width: 24),
@@ -79,13 +80,14 @@ class CallScreen extends ConsumerWidget {
           if (state.status == CallStatus.connecting)
             Container(
               color: Colors.black54,
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(color: Colors.white),
-                    SizedBox(height: 16),
-                    Text('Connecting...', style: TextStyle(color: Colors.white)),
+                    const CircularProgressIndicator(color: Colors.white),
+                    const SizedBox(height: 16),
+                    Text(context.l10n.connecting,
+                        style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),

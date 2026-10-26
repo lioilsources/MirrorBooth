@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth는 대칭 미러 미리보기를 만들기 위해 카메라를 사용합니다.";
+"NSMicrophoneUsageDescription" = "MirrorBooth는 미러 동영상의 소리를 녹음하기 위해 마이크를 사용합니다.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth는 미러 사진과 동영상을 사진 보관함에 저장합니다.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth는 미러 사진과 동영상을 사진 보관함에 저장합니다.";

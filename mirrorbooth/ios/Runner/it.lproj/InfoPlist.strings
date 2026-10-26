@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth usa la fotocamera per creare l’anteprima speculare simmetrica.";
+"NSMicrophoneUsageDescription" = "MirrorBooth usa il microfono per registrare l’audio dei tuoi video specchio.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth salva le tue foto e i tuoi video specchio nella libreria foto.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth salva le tue foto e i tuoi video specchio nella libreria foto.";

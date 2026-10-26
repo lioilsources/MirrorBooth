@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/mirror_filter.dart';
+import '../../l10n/l10n.dart';
 import 'entitlement_controller.dart';
 
 /// Shows the purchase sheet for a locked [collection]. The barrier stays
@@ -26,6 +27,8 @@ class _PaywallSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(entitlementProvider);
     final notifier = ref.read(entitlementProvider.notifier);
+    final l10n = context.l10n;
+    final collectionName = collection.localizedLabel(l10n);
 
     // Auto-dismiss once the collection is owned — covers both a direct
     // purchase and a restore that happens to grant this collection.
@@ -33,7 +36,7 @@ class _PaywallSheet extends ConsumerWidget {
       if (next.owns(collection) && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${collection.label} collection unlocked ✓')),
+          SnackBar(content: Text(l10n.collectionUnlocked(collectionName))),
         );
       }
     });
@@ -63,7 +66,7 @@ class _PaywallSheet extends ConsumerWidget {
                 const Icon(Icons.lock, color: Colors.white70, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  '${collection.label} filters',
+                  l10n.collectionFilters(collectionName),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -75,16 +78,16 @@ class _PaywallSheet extends ConsumerWidget {
             const SizedBox(height: 10),
             Text(
               MirrorFilter.inCollection(collection)
-                  .map((f) => '${f.icon} ${f.label}')
+                  .map((f) => '${f.icon} ${f.localizedLabel(l10n)}')
                   .join('   '),
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white70, fontSize: 13),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Preview is free. Unlock to save photos and videos.',
+            Text(
+              l10n.paywallPreviewFree,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white54, fontSize: 12),
+              style: const TextStyle(color: Colors.white54, fontSize: 12),
             ),
             const SizedBox(height: 16),
             // CTA styled as a scaled-up active filter chip: white pill,
@@ -107,10 +110,10 @@ class _PaywallSheet extends ConsumerWidget {
                       )
                     : Text(
                         !state.storeAvailable
-                            ? 'Store unavailable'
+                            ? l10n.storeUnavailable
                             : product == null
-                                ? 'Loading price…'
-                                : 'Unlock for ${product.price}',
+                                ? l10n.loadingPrice
+                                : l10n.unlockFor(product.price),
                         style: TextStyle(
                           color: canBuy ? Colors.black : Colors.white54,
                           fontSize: 15,
@@ -123,7 +126,7 @@ class _PaywallSheet extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  state.error!,
+                  state.error!.isEmpty ? l10n.purchaseFailed : state.error!,
                   textAlign: TextAlign.center,
                   style:
                       const TextStyle(color: Colors.redAccent, fontSize: 12),
@@ -131,9 +134,9 @@ class _PaywallSheet extends ConsumerWidget {
               ),
             TextButton(
               onPressed: state.purchasePending ? null : notifier.restore,
-              child: const Text(
-                'Restore purchases',
-                style: TextStyle(color: Colors.white70, fontSize: 13),
+              child: Text(
+                l10n.restorePurchases,
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
             ),
           ],

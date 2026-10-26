@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/mirror_filter.dart';
+import '../../l10n/l10n.dart';
 
 class FilterStrip extends StatefulWidget {
   final MirrorFilter selected;
@@ -130,7 +131,7 @@ class _FilterChip extends StatelessWidget {
               const SizedBox(width: 3),
             ],
             Text(
-              '${filter.icon} ${filter.label}',
+              '${filter.icon} ${filter.localizedLabel(context.l10n)}',
               style: TextStyle(
                 color: isActive ? Colors.black : Colors.white,
                 fontSize: 12,
@@ -168,7 +169,7 @@ class _NoneChip extends StatelessWidget {
         child: Center(
           widthFactor: 1.0,
           child: Text(
-            '${MirrorFilter.none.icon} ${MirrorFilter.none.label}',
+            '${MirrorFilter.none.icon} ${MirrorFilter.none.localizedLabel(context.l10n)}',
             style: TextStyle(
               color: isActive ? Colors.black : Colors.white,
               fontSize: 11,
@@ -219,7 +220,7 @@ class _CollectionTab extends StatelessWidget {
               const SizedBox(width: 3),
             ],
             Text(
-              collection.label.toUpperCase(),
+              collection.localizedLabel(context.l10n).toUpperCase(),
               style: TextStyle(
                 color: isActive ? Colors.white : Colors.white60,
                 fontSize: 11,

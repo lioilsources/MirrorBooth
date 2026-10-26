@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth utilise la caméra pour créer votre aperçu miroir symétrique.";
+"NSMicrophoneUsageDescription" = "MirrorBooth utilise le micro pour enregistrer le son de vos vidéos miroir.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth enregistre vos photos et vidéos miroir dans la photothèque.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth enregistre vos photos et vidéos miroir dans la photothèque.";

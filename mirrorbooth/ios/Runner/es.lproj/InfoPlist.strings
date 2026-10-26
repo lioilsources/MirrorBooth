@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth usa la cámara para crear la vista previa simétrica de tu reflejo.";
+"NSMicrophoneUsageDescription" = "MirrorBooth usa el micrófono para grabar el sonido de tus videos espejo.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth guarda tus fotos y videos espejo en la fototeca.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth guarda tus fotos y videos espejo en la fototeca.";

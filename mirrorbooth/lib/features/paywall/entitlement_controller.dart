@@ -130,7 +130,9 @@ class EntitlementController extends StateNotifier<EntitlementState> {
           if (_verify(purchase)) _grant(purchase.productID);
           state = state.copyWith(purchasePending: false, clearError: true);
         case PurchaseStatus.error:
-          final message = purchase.error?.message ?? 'Purchase failed';
+          // Empty = no store-provided message; the UI shows a localized
+          // generic "Purchase failed" instead.
+          final message = purchase.error?.message ?? '';
           // Android reports user cancellation as an error — stay silent then.
           final cancelled = message.toLowerCase().contains('cancel');
           state = state.copyWith(

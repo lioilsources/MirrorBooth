@@ -1,5 +1,17 @@
 enum RecordingPhase { idle, recording, assembling, playback }
 
+/// User-facing recording errors; the UI maps them to localized text.
+enum RecordingError {
+  micPermission,
+  tooShort,
+  assemblyFailed,
+  audioEffectFailed,
+  galleryAccessDenied,
+  galleryNotEnoughSpace,
+  galleryUnsupportedFormat,
+  unexpected,
+}
+
 enum AudioEffect {
   none,
   chiptune,
@@ -63,7 +75,7 @@ class VideoRecordingState {
   final AudioEffect selectedEffect;
   final bool isSaved;
   final bool isApplyingEffect;
-  final String? errorMessage;
+  final RecordingError? error;
 
   const VideoRecordingState({
     this.phase = RecordingPhase.idle,
@@ -73,7 +85,7 @@ class VideoRecordingState {
     this.selectedEffect = AudioEffect.none,
     this.isSaved = false,
     this.isApplyingEffect = false,
-    this.errorMessage,
+    this.error,
   });
 
   String? get playbackPath => finalVideoPath ?? rawVideoPath;
@@ -86,7 +98,7 @@ class VideoRecordingState {
     AudioEffect? selectedEffect,
     bool? isSaved,
     bool? isApplyingEffect,
-    String? errorMessage,
+    RecordingError? error,
   }) =>
       VideoRecordingState(
         phase: phase ?? this.phase,
@@ -96,6 +108,6 @@ class VideoRecordingState {
         selectedEffect: selectedEffect ?? this.selectedEffect,
         isSaved: isSaved ?? this.isSaved,
         isApplyingEffect: isApplyingEffect ?? this.isApplyingEffect,
-        errorMessage: errorMessage ?? this.errorMessage,
+        error: error ?? this.error,
       );
 }

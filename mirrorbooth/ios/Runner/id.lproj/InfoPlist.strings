@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth menggunakan kamera untuk membuat pratinjau cermin simetris Anda.";
+"NSMicrophoneUsageDescription" = "MirrorBooth menggunakan mikrofon untuk merekam suara video cermin Anda.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth menyimpan foto dan video cermin Anda ke galeri foto.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth menyimpan foto dan video cermin Anda ke galeri foto.";
