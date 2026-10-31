@@ -266,4 +266,12 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get connecting => 'Připojování…';
+
+  @override
+  String get share => 'Sdílet';
+
+  @override
+  String shareMessage(String url) {
+    return 'Vytvořeno v Mirror Booth: $url';
+  }
 }

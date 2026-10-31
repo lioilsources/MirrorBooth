@@ -605,6 +605,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connecting…'**
   String get connecting;
+
+  /// Button: share the photo or video to other apps
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// Text sent along with a shared photo or video
+  ///
+  /// In en, this message translates to:
+  /// **'Made with Mirror Booth: {url}'**
+  String shareMessage(String url);
 }
 
 class _AppLocalizationsDelegate

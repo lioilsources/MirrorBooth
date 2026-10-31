@@ -263,4 +263,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get connecting => 'Bağlanıyor…';
+
+  @override
+  String get share => 'Paylaş';
+
+  @override
+  String shareMessage(String url) {
+    return 'Mirror Booth ile yapıldı: $url';
+  }
 }

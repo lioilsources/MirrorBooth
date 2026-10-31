@@ -260,4 +260,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get connecting => '연결 중…';
+
+  @override
+  String get share => '공유';
+
+  @override
+  String shareMessage(String url) {
+    return 'Mirror Booth로 제작: $url';
+  }
 }
