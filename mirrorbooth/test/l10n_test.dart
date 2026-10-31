@@ -20,6 +20,7 @@ void main() {
         expect(e.localizedLabel(l), isNotEmpty, reason: '$locale $e');
       }
       expect(l.unlockFor(r'$1.99'), contains(r'$1.99'));
+      expect(l.shareMessage('https://x.y'), contains('https://x.y'));
     }
   });
 

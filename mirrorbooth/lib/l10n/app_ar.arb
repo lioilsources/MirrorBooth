@@ -80,5 +80,7 @@
   "mirrorSideTitle": "جهة المرآة",
   "joinCall": "انضمام إلى المكالمة",
   "failedToJoin": "تعذّر الانضمام: {error}",
-  "connecting": "جارٍ الاتصال…"
+  "connecting": "جارٍ الاتصال…",
+  "share": "مشاركة",
+  "shareMessage": "صُنع باستخدام Mirror Booth:‏ {url}"
 }

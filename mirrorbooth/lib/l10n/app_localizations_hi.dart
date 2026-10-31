@@ -268,4 +268,12 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get connecting => 'कनेक्ट हो रहा है…';
+
+  @override
+  String get share => 'शेयर करें';
+
+  @override
+  String shareMessage(String url) {
+    return 'Mirror Booth से बनाया गया: $url';
+  }
 }

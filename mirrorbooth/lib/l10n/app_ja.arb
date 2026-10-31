@@ -80,5 +80,7 @@
   "mirrorSideTitle": "ミラーの向き",
   "joinCall": "通話に参加",
   "failedToJoin": "参加できませんでした: {error}",
-  "connecting": "接続中…"
+  "connecting": "接続中…",
+  "share": "共有",
+  "shareMessage": "Mirror Boothで作成: {url}"
 }

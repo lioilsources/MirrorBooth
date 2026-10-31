@@ -30,6 +30,7 @@ import 'filtered_mirror_canvas.dart';
 import 'mirror_geometry.dart';
 import 'mirror_preview_controller.dart';
 import 'photo_composer.dart';
+import '../../services/share_service.dart';
 import 'side_toggle_button.dart';
 
 // ── Screen ───────────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ class MirrorPreviewScreen extends ConsumerStatefulWidget {
 
 class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     with TickerProviderStateMixin {
+  File? _sharePhoto;
   late final AnimationController _flashController;
   late final Animation<double> _flashOpacity;
   bool _isSaving = false;
@@ -98,6 +100,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   void dispose() {
     _shutterSub?.cancel();
     if (_shutterClaimed) ShutterButtonChannel.setEnabled(false);
+    _sharePhoto?.delete().ignore();
     _flashController.dispose();
     _recordingTicker?.dispose();
     super.dispose();
@@ -195,6 +198,10 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       await Gal.putImage(tempFile.path);
       _log('Gal.putImage OK ✓');
       _flashController.forward(from: 0.0);
+      if (ShareService.isSupported) {
+        _offerPhotoShare(tempFile);
+        tempFile = null; // kept until the next capture, for the share action
+      }
     } on GalException catch (e) {
       _log('GalException: ${e.type.code}');
       _showError((l) => galErrorMessage(l, e.type));
@@ -205,6 +212,44 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     } finally {
       tempFile?.delete().ignore();
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  /// Saving stays one tap; sharing is offered afterwards for a few seconds.
+  void _offerPhotoShare(File photo) {
+    _sharePhoto?.delete().ignore();
+    _sharePhoto = photo;
+    if (!mounted) return;
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(l10n.saved),
+        duration: const Duration(seconds: 4),
+        // Above the filter strip and shutter row, so burst shots stay possible.
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.fromLTRB(
+            16, 0, 16, MediaQuery.paddingOf(context).bottom + 190),
+        action: SnackBarAction(
+          label: l10n.share,
+          onPressed: () => _shareSavedPhoto(photo),
+        ),
+      ));
+  }
+
+  Future<void> _shareSavedPhoto(File photo) async {
+    final size = MediaQuery.sizeOf(context);
+    final message = context.l10n.shareMessage(ShareService.storeUrl);
+    try {
+      await ShareService.sharePhoto(
+        photo.path,
+        message: message,
+        origin: Rect.fromCenter(
+            center: size.center(Offset.zero), width: 1, height: 1),
+      );
+    } catch (e) {
+      _log('share failed: $e');
+      _showError((l) => l.genericError);
     }
   }
 

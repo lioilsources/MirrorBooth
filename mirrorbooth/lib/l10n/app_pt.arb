@@ -80,5 +80,7 @@
   "mirrorSideTitle": "Lado do espelho",
   "joinCall": "Entrar na chamada",
   "failedToJoin": "Não foi possível entrar: {error}",
-  "connecting": "Conectando…"
+  "connecting": "Conectando…",
+  "share": "Compartilhar",
+  "shareMessage": "Feito com o Mirror Booth: {url}"
 }

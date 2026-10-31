@@ -268,4 +268,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get connecting => 'Connexion…';
+
+  @override
+  String get share => 'Partager';
+
+  @override
+  String shareMessage(String url) {
+    return 'Créé avec Mirror Booth : $url';
+  }
 }

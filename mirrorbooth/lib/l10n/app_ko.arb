@@ -80,5 +80,7 @@
   "mirrorSideTitle": "미러 방향",
   "joinCall": "통화 참여",
   "failedToJoin": "참여 실패: {error}",
-  "connecting": "연결 중…"
+  "connecting": "연결 중…",
+  "share": "공유",
+  "shareMessage": "Mirror Booth로 제작: {url}"
 }
