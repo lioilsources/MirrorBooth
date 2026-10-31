@@ -27,17 +27,22 @@ def _token():
     )
 
 
-def call(method, path, body=None):
-    req = urllib.request.Request(
-        path if path.startswith("http") else API + path,
-        method=method,
-        data=None if body is None else json.dumps(body).encode(),
-        headers={"Authorization": f"Bearer {_token()}",
-                 "Content-Type": "application/json"},
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=120) as res:
-            raw = res.read()
-    except urllib.error.HTTPError as e:
-        raise SystemExit(f"{method} {path}: {e.code} {e.read().decode()[:800]}")
-    return json.loads(raw) if raw else None
+def call(method, path, body=None, attempts=5):
+    for attempt in range(1, attempts + 1):
+        req = urllib.request.Request(
+            path if path.startswith("http") else API + path,
+            method=method,
+            data=None if body is None else json.dumps(body).encode(),
+            headers={"Authorization": f"Bearer {_token()}",
+                     "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as res:
+                raw = res.read()
+            return json.loads(raw) if raw else None
+        except urllib.error.HTTPError as e:
+            raise SystemExit(f"{method} {path}: {e.code} {e.read().decode()[:800]}")
+        except OSError:
+            if attempt == attempts:
+                raise
+            time.sleep(5 * attempt)
