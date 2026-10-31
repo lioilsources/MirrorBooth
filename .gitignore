@@ -19,3 +19,4 @@ mirrorbooth/ios/.symlinks/
 .idea/
 *.iml
 store/appstore/screenshots/
+__pycache__/

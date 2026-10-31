@@ -28,20 +28,18 @@ files. `en-GB`, `en-AU` and `en-CA` are copies of `en-US`.
 
 ## Upload
 
-Screenshots need a new App Store version; the same build is enough if only
-metadata changes. The folder matches the `fastlane deliver` layout:
+Screenshots need a new App Store version in Prepare for Submission. Use an App
+Manager key; the CI key (Developer) gets 403 on metadata changes.
 
-    fastlane deliver --app_identifier com.ol1n.mirrorbooth --app_version 2.3.4 \
-      --api_key_path <key.json> --screenshots_path store/appstore/screenshots \
-      --skip_binary_upload --skip_metadata --overwrite_screenshots --force
+    cd store/appstore
+    ASC_KEY_PATH=… ASC_KEY_ID=… ASC_ISSUER_ID=… python3 upload_screenshots.py 2.3.4
 
 ## pt-BR keywords (100 characters max)
 
 ```
-simetria,facial,espelho,teste,beleza,filtro,selfie,câmera,caleidoscópio,efeitos,fotos,vídeo,voz
+simetria,facial,espelho,teste,beleza,feio,bonito,gêmeo,clone,distorcer,câmera,efeito,zoeira,chibi
 ```
 
-Words already in the title (`Mirror Booth: rosto simétrico`) are left out,
-because the App Store indexes them anyway and combines single words into
-phrases such as "simetria facial" and "filtro espelho". Before pasting, remove
-any word that also appears in the current pt-BR subtitle.
+Words from the title (`Mirror Booth: rosto simétrico`) and the subtitle
+(`Filtros engraçados para selfie`) are left out: the App Store indexes them
+anyway and combines single words into phrases such as "simetria facial".
