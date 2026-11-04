@@ -19,4 +19,5 @@ mirrorbooth/ios/.symlinks/
 .idea/
 *.iml
 store/appstore/screenshots/
+store/appstore/previews/
 __pycache__/

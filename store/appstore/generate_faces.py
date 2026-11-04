@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the fictional demo faces used in the App Store screenshots.
 
-    python3 store/appstore/generate_faces.py [--seeds 3]
+    python3 store/appstore/generate_faces.py [--seeds 3] [name ...]
 
 Needs COMFYUI_API_URL (default https://comfyui.ol1n.com) and the
 CF_ACCESS_CLIENT_ID / CF_ACCESS_CLIENT_SECRET service token. Every face is a
@@ -29,7 +29,28 @@ STYLE = (
     "higher than the other, photorealistic, sharp focus on the eyes."
 )
 
-# name -> (seed base, person)
+# The video previews flip between left+left and right+right, which only
+# reads if the two halves differ a lot; replaces STYLE for those faces.
+WINK_STYLE = (
+    "Candid front-camera selfie photo, head and shoulders, the face dead centre "
+    "of the frame, looking straight into the lens, head perfectly upright, "
+    "playful wink: the left eye firmly shut, the right eye wide open, a crooked "
+    "grin pulled up on one side only, the eyebrow above the open eye arched "
+    "high, natural soft window daylight, plain softly blurred apartment "
+    "background, real skin texture, photorealistic, sharp focus."
+)
+
+# Drawn rather than photographed, with the same wink.
+MANGA_STYLE = (
+    "Clean manga anime illustration, cel shading, crisp ink line art, the face "
+    "dead centre of the frame, looking straight at the viewer, head perfectly "
+    "upright, head and shoulders, playful wink: one eye shut as a curved line, "
+    "the other big sparkling eye wide open, a crooked grin on one side only, "
+    "soft pastel background."
+)
+
+# name -> (seed base, person[, style]). ana, rafa and lea are the screenshot
+# faces; bia, zoe, theo and miko star in the video previews (make_previews.py).
 FACES = {
     "ana": (4101, "A 29 year old Brazilian woman with warm brown skin and long "
                   "dark curly hair falling over one shoulder, parted to one side."),
@@ -37,6 +58,19 @@ FACES = {
                    "swept to one side and a trimmed beard."),
     "lea": (4303, "A 31 year old French woman with fair freckled skin and a "
                   "chestnut asymmetric bob haircut tucked behind one ear."),
+    "bia": (4711, "A 32 year old Brazilian woman with warm brown skin, cheekily "
+                  "winking at the camera with one eye squeezed shut, long dark "
+                  "hair all swept over one shoulder and a single big hoop "
+                  "earring on one ear.", WINK_STYLE),
+    "zoe": (4801, "A cheerful 10 year old girl with light brown skin, freckles "
+                  "and a single thick braid over one shoulder, wearing a "
+                  "yellow t-shirt.", WINK_STYLE),
+    "theo": (4901, "A cheeky 11 year old boy with pale skin, messy sandy blond "
+                   "hair flopping over one side of his forehead and a "
+                   "gap-toothed grin.", WINK_STYLE),
+    "miko": (5001, "A teenage anime girl with short teal hair, a long fringe "
+                   "covering one side of her forehead and a hair clip on the "
+                   "other side.", MANGA_STYLE),
 }
 
 
@@ -79,13 +113,17 @@ def main():
     out = HERE / "faces"
     out.mkdir(exist_ok=True)
 
+    only = [a for a in argv if a in FACES]
+
     pending = {}
-    for name, (base, person) in FACES.items():
+    for name, (base, person, *style) in FACES.items():
+        if only and name not in only:
+            continue
         for seed in range(base, base + count):
             dest = out / f"{name}_{seed}.png"
             if dest.exists():
                 continue
-            body = json.dumps({"prompt": workflow(f"{person} {STYLE}", seed)}).encode()
+            body = json.dumps({"prompt": workflow(f"{person} {style[0] if style else STYLE}", seed)}).encode()
             pending[json.loads(request("/prompt", body))["prompt_id"]] = dest
 
     while pending:
