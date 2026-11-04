@@ -1,7 +1,7 @@
 name: mirrorbooth
 description: "Real-time symmetric face mirror using selfie camera."
 publish_to: 'none'
-version: 2.3.3
+version: 2.3.4
 
 environment:
   sdk: ^3.11.4
@@ -29,6 +29,7 @@ dependencies:
   video_player: ^2.9.2
   in_app_purchase: ^3.2.0
   shared_preferences: ^2.3.0
+  share_plus: ^13.3.1
 
 dev_dependencies:
   flutter_test:

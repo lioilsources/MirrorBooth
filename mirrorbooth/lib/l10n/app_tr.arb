@@ -80,5 +80,7 @@
   "mirrorSideTitle": "Ayna tarafı",
   "joinCall": "Görüşmeye katıl",
   "failedToJoin": "Katılınamadı: {error}",
-  "connecting": "Bağlanıyor…"
+  "connecting": "Bağlanıyor…",
+  "share": "Paylaş",
+  "shareMessage": "Mirror Booth ile yapıldı: {url}"
 }

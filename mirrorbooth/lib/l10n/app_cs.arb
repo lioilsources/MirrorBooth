@@ -80,5 +80,7 @@
   "mirrorSideTitle": "Strana zrcadlení",
   "joinCall": "Připojit se",
   "failedToJoin": "Připojení se nezdařilo: {error}",
-  "connecting": "Připojování…"
+  "connecting": "Připojování…",
+  "share": "Sdílet",
+  "shareMessage": "Vytvořeno v Mirror Booth: {url}"
 }

@@ -4,6 +4,7 @@ import 'package:video_player/video_player.dart';
 import 'dart:io';
 
 import '../../l10n/l10n.dart';
+import '../../services/share_service.dart';
 import 'audio_effect_strip.dart';
 import 'video_recording_notifier.dart';
 import 'video_recording_state.dart';
@@ -18,6 +19,7 @@ class VideoPlaybackScreen extends ConsumerStatefulWidget {
 class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
   VideoPlayerController? _controller;
   String? _currentPath;
+  bool _isSharing = false;
 
   @override
   void dispose() {
@@ -35,6 +37,28 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
     await c.setLooping(true);
     await c.play();
     if (mounted) setState(() {});
+  }
+
+  Future<void> _share(Rect origin) async {
+    final path = ref.read(videoRecordingProvider).playbackPath;
+    final controller = _controller;
+    if (_isSharing || path == null || controller == null) return;
+    final notifier = ref.read(videoRecordingProvider.notifier);
+    final message = context.l10n.shareMessage(ShareService.storeUrl);
+    setState(() => _isSharing = true);
+    try {
+      await ShareService.shareVideo(
+        path,
+        size: controller.value.size,
+        message: message,
+        origin: origin,
+      );
+    } catch (e) {
+      debugPrint('shareVideo failed: $e');
+      notifier.reportError(RecordingError.unexpected);
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
+    }
   }
 
   Future<bool> _onWillPop() async {
@@ -196,31 +220,72 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                 ),
               ),
 
-              // Save button
+              // Save + share buttons
               Positioned(
                 bottom: 32,
                 left: 40,
                 right: 40,
-                child: GestureDetector(
-                  onTap: state.isSaved ? null : notifier.saveVideo,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color: state.isSaved ? Colors.white24 : Colors.white,
-                      borderRadius: BorderRadius.circular(27),
-                    ),
-                    child: Center(
-                      child: Text(
-                        state.isSaved ? l10n.saved : l10n.saveToCameraRoll,
-                        style: TextStyle(
-                          color: state.isSaved ? Colors.white54 : Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: state.isSaved ? null : notifier.saveVideo,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: 54,
+                          decoration: BoxDecoration(
+                            color: state.isSaved ? Colors.white24 : Colors.white,
+                            borderRadius: BorderRadius.circular(27),
+                          ),
+                          child: Center(
+                            child: Text(
+                              state.isSaved ? l10n.saved : l10n.saveToCameraRoll,
+                              style: TextStyle(
+                                color: state.isSaved ? Colors.white54 : Colors.black,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    if (ShareService.isSupported) ...[
+                      const SizedBox(width: 12),
+                      Builder(
+                        builder: (buttonContext) => Semantics(
+                          button: true,
+                          label: l10n.share,
+                          child: GestureDetector(
+                            onTap: state.isApplyingEffect
+                                ? null
+                                : () {
+                                    final box = buttonContext.findRenderObject()
+                                        as RenderBox;
+                                    _share(box.localToGlobal(Offset.zero) & box.size);
+                                  },
+                            child: Container(
+                              width: 54,
+                              height: 54,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: _isSharing
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(Icons.ios_share, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],

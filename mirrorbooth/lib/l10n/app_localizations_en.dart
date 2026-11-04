@@ -264,4 +264,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get connecting => 'Connecting…';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String shareMessage(String url) {
+    return 'Made with Mirror Booth: $url';
+  }
 }

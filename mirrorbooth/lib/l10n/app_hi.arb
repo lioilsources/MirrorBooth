@@ -80,5 +80,7 @@
   "mirrorSideTitle": "मिरर की तरफ़",
   "joinCall": "कॉल में जुड़ें",
   "failedToJoin": "जुड़ नहीं सके: {error}",
-  "connecting": "कनेक्ट हो रहा है…"
+  "connecting": "कनेक्ट हो रहा है…",
+  "share": "शेयर करें",
+  "shareMessage": "Mirror Booth से बनाया गया: {url}"
 }

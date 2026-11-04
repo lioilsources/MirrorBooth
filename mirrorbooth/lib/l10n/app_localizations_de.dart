@@ -269,4 +269,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get connecting => 'Verbinde…';
+
+  @override
+  String get share => 'Teilen';
+
+  @override
+  String shareMessage(String url) {
+    return 'Erstellt mit Mirror Booth: $url';
+  }
 }

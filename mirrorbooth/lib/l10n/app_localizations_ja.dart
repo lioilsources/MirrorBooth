@@ -260,4 +260,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get connecting => '接続中…';
+
+  @override
+  String get share => '共有';
+
+  @override
+  String shareMessage(String url) {
+    return 'Mirror Boothで作成: $url';
+  }
 }

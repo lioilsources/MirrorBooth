@@ -263,4 +263,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get connecting => 'Menghubungkan…';
+
+  @override
+  String get share => 'Bagikan';
+
+  @override
+  String shareMessage(String url) {
+    return 'Dibuat dengan Mirror Booth: $url';
+  }
 }

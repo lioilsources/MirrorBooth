@@ -177,6 +177,10 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     }
   }
 
+  void reportError(RecordingError error) {
+    state = state.copyWith(error: error);
+  }
+
   /// Discard recording and return to camera, cleaning up all temp files.
   Future<void> discardAndReturnToCamera() async {
     _elapsedTimer?.cancel();

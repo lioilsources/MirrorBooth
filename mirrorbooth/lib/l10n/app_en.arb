@@ -152,5 +152,18 @@
       }
     }
   },
-  "connecting": "Connecting…"
+  "connecting": "Connecting…",
+  "share": "Share",
+  "shareMessage": "Made with Mirror Booth: {url}",
+  "@share": {
+    "description": "Button: share the photo or video to other apps"
+  },
+  "@shareMessage": {
+    "description": "Text sent along with a shared photo or video",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  }
 }

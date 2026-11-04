@@ -80,5 +80,7 @@
   "mirrorSideTitle": "Spiegelseite",
   "joinCall": "Anruf beitreten",
   "failedToJoin": "Beitreten fehlgeschlagen: {error}",
-  "connecting": "Verbinde…"
+  "connecting": "Verbinde…",
+  "share": "Teilen",
+  "shareMessage": "Erstellt mit Mirror Booth: {url}"
 }

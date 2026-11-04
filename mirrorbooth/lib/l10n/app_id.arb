@@ -80,5 +80,7 @@
   "mirrorSideTitle": "Sisi cermin",
   "joinCall": "Gabung panggilan",
   "failedToJoin": "Gagal bergabung: {error}",
-  "connecting": "Menghubungkan…"
+  "connecting": "Menghubungkan…",
+  "share": "Bagikan",
+  "shareMessage": "Dibuat dengan Mirror Booth: {url}"
 }

@@ -62,6 +62,28 @@ class FFmpegService {
     return _run(args, outputPath);
   }
 
+  /// Burns the transparent [overlayPath] image, the same size as the video,
+  /// into [inputPath]. Audio is copied. Returns output path on success.
+  static Future<String?> overlayImage({
+    required String inputPath,
+    required String overlayPath,
+    required String outputPath,
+  }) async {
+    final args = [
+      '-y',
+      '-i', inputPath,
+      '-i', overlayPath,
+      '-filter_complex', 'overlay=0:0',
+      '-c:v', 'libx264',
+      '-preset', 'ultrafast',
+      '-crf', '23',
+      '-pix_fmt', 'yuv420p',
+      '-c:a', 'copy',
+      outputPath,
+    ];
+    return _run(args, outputPath);
+  }
+
   static List<String> _filterFor(AudioEffect effect) {
     switch (effect) {
       case AudioEffect.none:

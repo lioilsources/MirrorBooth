@@ -80,5 +80,7 @@
   "mirrorSideTitle": "Côté du miroir",
   "joinCall": "Rejoindre l’appel",
   "failedToJoin": "Impossible de rejoindre : {error}",
-  "connecting": "Connexion…"
+  "connecting": "Connexion…",
+  "share": "Partager",
+  "shareMessage": "Créé avec Mirror Booth : {url}"
 }
