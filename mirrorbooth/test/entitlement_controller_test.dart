@@ -82,8 +82,8 @@ Future<(EntitlementController, FakePurchaseService, SharedPreferences)>
   return (controller, service, prefs);
 }
 
-const _artId = 'com.ol1n.mirrorbooth.collection.art';
-const _fantasyId = 'com.ol1n.mirrorbooth.collection.fantasy';
+const _artId = 'com.ol1n.mirrorbooth.collection.art_unlock';
+const _fantasyId = 'com.ol1n.mirrorbooth.collection.fantasy_unlock';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
