@@ -19,8 +19,9 @@ enum FilterCollection {
   /// Store product ID (identical on App Store and Play), null for free
   /// collections.
   String? get productId => switch (this) {
-        FilterCollection.art => 'com.ol1n.mirrorbooth.collection.art',
-        FilterCollection.fantasy => 'com.ol1n.mirrorbooth.collection.fantasy',
+        FilterCollection.art => 'com.ol1n.mirrorbooth.collection.art_unlock',
+        FilterCollection.fantasy =>
+          'com.ol1n.mirrorbooth.collection.fantasy_unlock',
         _ => null,
       };
 
