@@ -49,6 +49,27 @@ MANGA_STYLE = (
     "soft pastel background."
 )
 
+# Non-human stars (animals, toys, cartoons): the subject sentence carries the
+# look, this adds the framing and the lopsided expression the L/R flip needs.
+CHARACTER_STYLE = (
+    "Front-facing close-up portrait, the face dead centre of the frame, "
+    "looking straight into the lens, head perfectly upright, head and "
+    "shoulders, playful wink: one eye shut, the other eye wide open, a crooked "
+    "grin pulled up on one side only, one ear or eyebrow raised higher than "
+    "the other, soft even light, plain softly blurred pastel background, "
+    "sharp focus."
+)
+
+# Strongly lopsided human faces for the left+left vs right+right demos.
+ASYM_STYLE = (
+    "Candid front-camera selfie photo, head and shoulders, the face dead centre "
+    "of the frame, looking straight into the lens, head perfectly upright, "
+    "a strongly asymmetric face: one eye squinting, the other wide open, a "
+    "crooked smile on one side only, one eyebrow raised high, natural soft "
+    "window daylight, plain softly blurred apartment background, real skin "
+    "texture, photorealistic, sharp focus."
+)
+
 # name -> (seed base, person[, style]). ana, rafa and lea are the screenshot
 # faces; bia, zoe, theo and miko star in the video previews (make_previews.py).
 FACES = {
@@ -71,6 +92,40 @@ FACES = {
     "miko": (5001, "A teenage anime girl with short teal hair, a long fringe "
                    "covering one side of her forehead and a hair clip on the "
                    "other side.", MANGA_STYLE),
+    # Characters for the extra previews (make_previews.py). Generic designs
+    # only: no branded toy or comic character.
+    "cat": (6101, "Photo of a fluffy ginger tabby cat with one ear folded "
+                  "down and a white patch over one eye.", CHARACTER_STYLE),
+    "dog": (6201, "Photo of a scruffy beagle puppy with one floppy ear flipped "
+                  "inside out and a brown patch around one eye.", CHARACTER_STYLE),
+    "bear": (6301, "Photo of a well-loved brown plush teddy bear with a "
+                   "stitched patch on one cheek, one button eye larger than "
+                   "the other and a ribbon bow on one ear.", CHARACTER_STYLE),
+    "bunny": (6401, "Photo of a soft pastel pink plush bunny toy with one long "
+                    "ear standing up and the other flopped down.", CHARACTER_STYLE),
+    "fashiondoll": (6501, "Photo of a generic plastic fashion doll with glossy "
+                          "platinum blonde hair swept over one shoulder, pink "
+                          "lipstick, a pink outfit and one big heart earring, "
+                          "unbranded.", CHARACTER_STYLE),
+    "porcelain": (6601, "Photo of an antique porcelain doll with painted rosy "
+                        "cheeks, glass eyes, auburn ringlets on one side and a "
+                        "lace bonnet tilted to one side.", CHARACTER_STYLE),
+    "chibi": (6701, "Cute chibi anime character illustration, huge head, "
+                    "pink twin tails of different lengths, a star hair clip on "
+                    "one side, big sparkling eyes.", CHARACTER_STYLE),
+    "comic": (6811, "Bold retro comic book illustration of an original "
+                    "superheroine with spiky orange hair, a small red domino "
+                    "eye mask and a lightning bolt badge, no hood, no cowl, "
+                    "no ears on the mask, thick ink outlines, halftone dots, "
+                    "a strand of hair falling over one side.",
+              CHARACTER_STYLE),
+    "alien": (6901, "Photo of a friendly green alien with big glossy black "
+                    "eyes, a single antenna bent to one side and a smooth "
+                    "head.", CHARACTER_STYLE),
+    "nora": (7001, "A 27 year old Nigerian woman with dark skin and short "
+                   "natural hair shaved on one side.", ASYM_STYLE),
+    "kenji": (7101, "A 40 year old Japanese man with a salt and pepper beard "
+                    "and hair parted hard to one side.", ASYM_STYLE),
 }
 
 

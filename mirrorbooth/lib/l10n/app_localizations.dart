@@ -617,6 +617,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Made with Mirror Booth: {url}'**
   String shareMessage(String url);
+
+  /// VoiceOver/TalkBack label of the shutter button
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get a11yTakePhoto;
+
+  /// Screen-reader label of the record button
+  ///
+  /// In en, this message translates to:
+  /// **'Start video recording'**
+  String get a11yStartRecording;
+
+  /// Screen-reader label of the record button while recording
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording'**
+  String get a11yStopRecording;
+
+  /// Screen-reader label of the front/back camera button
+  ///
+  /// In en, this message translates to:
+  /// **'Switch camera'**
+  String get a11ySwitchCamera;
+
+  /// Screen-reader label of the inner ring that turns the mirror axis
+  ///
+  /// In en, this message translates to:
+  /// **'Mirror axis'**
+  String get a11yMirrorAxis;
+
+  /// Screen-reader label of the outer ring that rotates the whole image
+  ///
+  /// In en, this message translates to:
+  /// **'Image rotation'**
+  String get a11yRotation;
+
+  /// Screen-reader value of a ring, e.g. '90 degrees'
+  ///
+  /// In en, this message translates to:
+  /// **'{degrees} degrees'**
+  String a11yDegrees(int degrees);
+
+  /// Screen-reader label of an X close button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get a11yClose;
+
+  /// Screen-reader label of the small button that shows the diagnostic log
+  ///
+  /// In en, this message translates to:
+  /// **'Show or hide the log'**
+  String get a11yToggleLog;
+
+  /// Paywall button: buy the bundle with every paid filter collection
+  ///
+  /// In en, this message translates to:
+  /// **'All filters for {price}'**
+  String unlockAllFor(String price);
 }
 
 class _AppLocalizationsDelegate

@@ -82,5 +82,15 @@
   "failedToJoin": "참여 실패: {error}",
   "connecting": "연결 중…",
   "share": "공유",
-  "shareMessage": "Mirror Booth로 제작: {url}"
+  "shareMessage": "Mirror Booth로 제작: {url}",
+  "a11yTakePhoto": "사진 찍기",
+  "a11yStartRecording": "동영상 녹화 시작",
+  "a11yStopRecording": "녹화 중지",
+  "a11ySwitchCamera": "카메라 전환",
+  "a11yMirrorAxis": "거울 축",
+  "a11yRotation": "이미지 회전",
+  "a11yDegrees": "{degrees}도",
+  "a11yClose": "닫기",
+  "a11yToggleLog": "로그 표시/숨기기",
+  "unlockAllFor": "모든 필터 {price}"
 }

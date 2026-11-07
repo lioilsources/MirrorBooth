@@ -82,5 +82,15 @@
   "failedToJoin": "Beitreten fehlgeschlagen: {error}",
   "connecting": "Verbinde…",
   "share": "Teilen",
-  "shareMessage": "Erstellt mit Mirror Booth: {url}"
+  "shareMessage": "Erstellt mit Mirror Booth: {url}",
+  "a11yTakePhoto": "Foto aufnehmen",
+  "a11yStartRecording": "Videoaufnahme starten",
+  "a11yStopRecording": "Aufnahme beenden",
+  "a11ySwitchCamera": "Kamera wechseln",
+  "a11yMirrorAxis": "Spiegelachse",
+  "a11yRotation": "Bilddrehung",
+  "a11yDegrees": "{degrees} Grad",
+  "a11yClose": "Schließen",
+  "a11yToggleLog": "Protokoll ein- oder ausblenden",
+  "unlockAllFor": "Alle Filter für {price}"
 }

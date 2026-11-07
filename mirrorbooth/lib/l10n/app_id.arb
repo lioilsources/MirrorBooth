@@ -82,5 +82,15 @@
   "failedToJoin": "Gagal bergabung: {error}",
   "connecting": "Menghubungkan…",
   "share": "Bagikan",
-  "shareMessage": "Dibuat dengan Mirror Booth: {url}"
+  "shareMessage": "Dibuat dengan Mirror Booth: {url}",
+  "a11yTakePhoto": "Ambil foto",
+  "a11yStartRecording": "Mulai rekam video",
+  "a11yStopRecording": "Hentikan rekaman",
+  "a11ySwitchCamera": "Ganti kamera",
+  "a11yMirrorAxis": "Sumbu cermin",
+  "a11yRotation": "Rotasi gambar",
+  "a11yDegrees": "{degrees} derajat",
+  "a11yClose": "Tutup",
+  "a11yToggleLog": "Tampilkan atau sembunyikan log",
+  "unlockAllFor": "Semua filter seharga {price}"
 }

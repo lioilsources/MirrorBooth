@@ -82,5 +82,15 @@
   "failedToJoin": "Impossible de rejoindre : {error}",
   "connecting": "Connexion…",
   "share": "Partager",
-  "shareMessage": "Créé avec Mirror Booth : {url}"
+  "shareMessage": "Créé avec Mirror Booth : {url}",
+  "a11yTakePhoto": "Prendre une photo",
+  "a11yStartRecording": "Démarrer l'enregistrement vidéo",
+  "a11yStopRecording": "Arrêter l'enregistrement",
+  "a11ySwitchCamera": "Changer de caméra",
+  "a11yMirrorAxis": "Axe du miroir",
+  "a11yRotation": "Rotation de l'image",
+  "a11yDegrees": "{degrees} degrés",
+  "a11yClose": "Fermer",
+  "a11yToggleLog": "Afficher ou masquer le journal",
+  "unlockAllFor": "Tous les filtres pour {price}"
 }

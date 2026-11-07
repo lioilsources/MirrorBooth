@@ -26,6 +26,19 @@ replace them with a real person without a signed release. Headlines live in
 `make_appstore_shots.py`; filter and voice-effect names come from the app's ARB
 files. `en-GB`, `en-AU` and `en-CA` are copies of `en-US`.
 
+## Character candidates
+
+    python3 store/appstore/make_character_shots.py   # 3 iPhone shots per character
+    python3 store/appstore/make_previews.py 05_cat_oil … 15_kenji_zombie
+
+Animals, plush toys, dolls, cartoons, an alien and two strongly lopsided
+faces (`generate_faces.py`, `CHARACTER_STYLE` / `ASYM_STYLE`), each with a
+left/right shot, a filter grid and a live filter that lean on the paid Art
+and Fantasy collections. Shots land in `screenshots/candidates/` (with
+440 px JPEG thumbs for curation), previews in `previews/en/`. They are
+candidates: copy the picked ones into a locale folder before uploading.
+Keep every character generic; no branded toy, doll or comic hero.
+
 ## Upload
 
 Screenshots need a new App Store version in Prepare for Submission. Use an App

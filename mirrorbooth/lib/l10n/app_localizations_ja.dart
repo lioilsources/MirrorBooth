@@ -268,4 +268,38 @@ class AppLocalizationsJa extends AppLocalizations {
   String shareMessage(String url) {
     return 'Mirror Boothで作成: $url';
   }
+
+  @override
+  String get a11yTakePhoto => '写真を撮る';
+
+  @override
+  String get a11yStartRecording => 'ビデオ撮影を開始';
+
+  @override
+  String get a11yStopRecording => '撮影を停止';
+
+  @override
+  String get a11ySwitchCamera => 'カメラを切り替え';
+
+  @override
+  String get a11yMirrorAxis => 'ミラーの軸';
+
+  @override
+  String get a11yRotation => '画像の回転';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees度';
+  }
+
+  @override
+  String get a11yClose => '閉じる';
+
+  @override
+  String get a11yToggleLog => 'ログの表示/非表示';
+
+  @override
+  String unlockAllFor(String price) {
+    return '全フィルター $price';
+  }
 }

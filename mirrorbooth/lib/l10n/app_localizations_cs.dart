@@ -274,4 +274,38 @@ class AppLocalizationsCs extends AppLocalizations {
   String shareMessage(String url) {
     return 'Vytvořeno v Mirror Booth: $url';
   }
+
+  @override
+  String get a11yTakePhoto => 'Vyfotit';
+
+  @override
+  String get a11yStartRecording => 'Spustit nahrávání videa';
+
+  @override
+  String get a11yStopRecording => 'Zastavit nahrávání';
+
+  @override
+  String get a11ySwitchCamera => 'Přepnout kameru';
+
+  @override
+  String get a11yMirrorAxis => 'Osa zrcadlení';
+
+  @override
+  String get a11yRotation => 'Otočení obrazu';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees stupňů';
+  }
+
+  @override
+  String get a11yClose => 'Zavřít';
+
+  @override
+  String get a11yToggleLog => 'Zobrazit nebo skrýt log';
+
+  @override
+  String unlockAllFor(String price) {
+    return 'Všechny filtry za $price';
+  }
 }

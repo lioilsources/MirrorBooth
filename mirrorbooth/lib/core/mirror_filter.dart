@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum FilterCollection {
   pretty('Pretty'),
   ugly('Ugly'),
@@ -16,8 +18,10 @@ enum FilterCollection {
         FilterCollection.art || FilterCollection.fantasy => true,
       };
 
-  /// Store product ID (identical on App Store and Play), null for free
-  /// collections.
+  /// Preferred store product ID, null for free collections: the
+  /// non-consumable `*_unlock` item. The original IDs were created on the
+  /// App Store as consumables, which Restore Purchases cannot bring back,
+  /// and Apple allows neither changing the type nor reusing an ID.
   String? get productId => switch (this) {
         FilterCollection.art => 'com.ol1n.mirrorbooth.collection.art_unlock',
         FilterCollection.fantasy =>
@@ -25,13 +29,66 @@ enum FilterCollection {
         _ => null,
       };
 
-  /// Reverse lookup for purchase-stream events.
+  /// Product IDs the store is asked for, in order of preference; the first
+  /// one the store returns is sold. The App Store only sells `*_unlock`.
+  /// Play also falls back to the original IDs while they are still the
+  /// ones set up there (Play has no consumable type at product level).
+  List<String> get candidateProductIds => [
+        ?productId,
+        if (!_apple) ...grantingIds.difference({productId}),
+      ];
+
+  /// Every product ID that has ever granted this collection on any platform,
+  /// including the App Store consumables sold up to 2.3.4.
+  Set<String> get grantingIds => switch (this) {
+        FilterCollection.art => const {
+            'com.ol1n.mirrorbooth.collection.art',
+            'com.ol1n.mirrorbooth.collection.art_unlock',
+          },
+        FilterCollection.fantasy => const {
+            'com.ol1n.mirrorbooth.collection.fantasy',
+            'com.ol1n.mirrorbooth.collection.fantasy_unlock',
+          },
+        _ => const {},
+      };
+
+  /// The "All filters" bundle: one purchase that unlocks every paid
+  /// collection. Optional: the paywall offers it only when the store returns
+  /// one of these products (same preference as [candidateProductIds]).
+  static List<String> get bundleProductIds => [
+        'com.ol1n.mirrorbooth.collection.all_unlock',
+        if (!_apple) 'com.ol1n.mirrorbooth.collection.all',
+      ];
+
+  /// Every product ID this platform asks the store for, bundle included.
+  static Set<String> get storeProductIds => {
+        for (final c in values) ...c.candidateProductIds,
+        ...bundleProductIds,
+      };
+
+  /// Reverse lookup for a single-collection product (current or legacy).
   static FilterCollection? byProductId(String id) {
     for (final c in values) {
-      if (c.productId == id) return c;
+      if (c.grantingIds.contains(id)) return c;
     }
     return null;
   }
+
+  /// Collections a purchase of [id] unlocks; empty for unknown products.
+  static Set<FilterCollection> grantedBy(String id) {
+    if (const {
+      'com.ol1n.mirrorbooth.collection.all',
+      'com.ol1n.mirrorbooth.collection.all_unlock',
+    }.contains(id)) {
+      return values.where((c) => c.isPaid).toSet();
+    }
+    final c = byProductId(id);
+    return c == null ? const {} : {c};
+  }
+
+  static bool get _apple =>
+      defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.macOS;
 }
 
 // `// @shadergen:*` markers are insertion points for pipeline/integrate.py

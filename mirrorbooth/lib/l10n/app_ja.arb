@@ -82,5 +82,15 @@
   "failedToJoin": "参加できませんでした: {error}",
   "connecting": "接続中…",
   "share": "共有",
-  "shareMessage": "Mirror Boothで作成: {url}"
+  "shareMessage": "Mirror Boothで作成: {url}",
+  "a11yTakePhoto": "写真を撮る",
+  "a11yStartRecording": "ビデオ撮影を開始",
+  "a11yStopRecording": "撮影を停止",
+  "a11ySwitchCamera": "カメラを切り替え",
+  "a11yMirrorAxis": "ミラーの軸",
+  "a11yRotation": "画像の回転",
+  "a11yDegrees": "{degrees}度",
+  "a11yClose": "閉じる",
+  "a11yToggleLog": "ログの表示/非表示",
+  "unlockAllFor": "全フィルター {price}"
 }

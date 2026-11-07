@@ -65,12 +65,16 @@ class _PaywallSheet extends ConsumerWidget {
               children: [
                 const Icon(Icons.lock, color: Colors.white70, size: 18),
                 const SizedBox(width: 8),
-                Text(
-                  l10n.collectionFilters(collectionName),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                // Flexible so the title wraps at large text sizes.
+                Flexible(
+                  child: Text(
+                    l10n.collectionFilters(collectionName),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -122,6 +126,31 @@ class _PaywallSheet extends ConsumerWidget {
                       ),
               ),
             ),
+            // The bundle, when the store sells it: every paid collection in
+            // one purchase. Outlined so the single collection stays the
+            // primary action.
+            if (state.bundle case final bundle? when state.storeAvailable) ...[
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: state.purchasePending ? null : notifier.buyBundle,
+                child: Container(
+                  height: 44,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: Colors.white54, width: 1.5),
+                  ),
+                  child: Text(
+                    l10n.unlockAllFor(bundle.price),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
             if (state.error != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),

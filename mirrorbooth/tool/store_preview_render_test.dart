@@ -33,7 +33,12 @@ import 'package:mirrorbooth/l10n/l10n.dart';
 const _screen = Size(443, 960);
 const _dpr = 2.0;
 const _fps = 30;
-const _seconds = 26.0;
+// PREVIEW_SHORT=1 cuts a ~17 s clip for the App Store, where previews
+// autoplay muted in search results: it opens straight on the mirrored face
+// (no plain original first) and skips the image-rotation phase.
+final _short = Platform.environment['PREVIEW_SHORT'] == '1';
+
+final _seconds = _short ? 17.0 : 26.0;
 
 final _locale = Locale(Platform.environment['PREVIEW_LOCALE'] ?? 'en');
 
@@ -42,14 +47,14 @@ const _outerRingDiameterFrac = 0.88;
 const _innerRingDiameterFrac = 0.44;
 
 // Phase boundaries in seconds.
-const _sidesAt = 1.8;
-const _filtersAt = 7.2;
-const _axisAt = 13.2;
-const _rotateAt = 18.8;
-const _outroAt = 24.4;
+final _sidesAt = _short ? 0.0 : 1.8;
+final _filtersAt = _short ? 4.4 : 7.2;
+final _axisAt = _short ? 10.4 : 13.2;
+final _rotateAt = _short ? 15.4 : 18.8;
+final _outroAt = _short ? 15.4 : 24.4;
 
 // Side toggle taps: left from _sidesAt, then right, left, right.
-const _sideTaps = [3.3, 4.8, 6.0];
+final _sideTaps = _short ? [1.0, 2.2, 3.4] : [3.3, 4.8, 6.0];
 
 const _captions =
     'Your real face|Left + left|Right + right|Pick a filter|'
@@ -188,6 +193,11 @@ void main() {
         // Taps whose time has come go to the real widgets: the strip switches
         // tabs itself and reports filter picks through onSelect.
         for (final tap in taps) {
+          // Chips past the edge of the strip scroll in before the tap.
+          final reveal = tap.at - 0.6;
+          if (tap.filter != null && t >= reveal && t < reveal + 1 / _fps) {
+            _reveal(tester, tap);
+          }
           if (t >= tap.at && t < tap.at + 1 / _fps) {
             await tester.tap(_finderOf(tap));
           }
@@ -310,13 +320,43 @@ Offset _onCircle(double radius, double deg) {
   return _screen.center(Offset.zero) + Offset(cos(a), sin(a)) * radius;
 }
 
-Finder _finderOf(_Tap tap) {
+Finder _finderOf(_Tap tap, {bool skipOffstage = true}) {
   if (tap.isSide) return find.byType(SideToggleButton);
   final l10n = lookupAppLocalizations(_locale);
   return find.text(
     tap.tab != null
         ? tap.tab!.localizedLabel(l10n).toUpperCase()
         : '${tap.filter!.icon} ${tap.filter!.localizedLabel(l10n)}',
+    skipOffstage: skipOffstage,
+  );
+}
+
+/// Starts a scroll of the filter row that brings [tap]'s chip on screen;
+/// the frames pumped before the tap play it. A chip the lazy list has not
+/// built yet lies past the end of what is built, so the row heads there.
+void _reveal(WidgetTester tester, _Tap tap) {
+  const duration = Duration(milliseconds: 450);
+  final chip = _finderOf(tap, skipOffstage: false);
+  if (chip.evaluate().isEmpty) {
+    final row = find.descendant(
+      of: find.byType(FilterStrip),
+      matching: find.byType(Scrollable),
+    );
+    final position = tester.state<ScrollableState>(row.last).position;
+    position.animateTo(
+      position.maxScrollExtent,
+      duration: duration,
+      curve: Curves.easeInOut,
+    );
+    return;
+  }
+  final rect = tester.getRect(chip.first);
+  if (rect.left >= 8 && rect.right <= _screen.width - 8) return;
+  Scrollable.ensureVisible(
+    chip.evaluate().first,
+    alignment: 0.5,
+    duration: duration,
+    curve: Curves.easeInOut,
   );
 }
 

@@ -19,6 +19,9 @@ class EntitlementState {
   /// Store metadata for paid collections, for price display on the paywall.
   final Map<FilterCollection, ProductDetails> products;
 
+  /// The optional "All filters" bundle; null when the store does not sell it.
+  final ProductDetails? bundle;
+
   /// False on desktop platforms and when the store is unreachable.
   final bool storeAvailable;
 
@@ -31,6 +34,7 @@ class EntitlementState {
   const EntitlementState({
     this.owned = const {},
     this.products = const {},
+    this.bundle,
     this.storeAvailable = false,
     this.purchasePending = false,
     this.error,
@@ -41,6 +45,7 @@ class EntitlementState {
   EntitlementState copyWith({
     Set<FilterCollection>? owned,
     Map<FilterCollection, ProductDetails>? products,
+    ProductDetails? bundle,
     bool? storeAvailable,
     bool? purchasePending,
     String? error,
@@ -49,6 +54,7 @@ class EntitlementState {
     return EntitlementState(
       owned: owned ?? this.owned,
       products: products ?? this.products,
+      bundle: bundle ?? this.bundle,
       storeAvailable: storeAvailable ?? this.storeAvailable,
       purchasePending: purchasePending ?? this.purchasePending,
       error: clearError ? null : (error ?? this.error),
@@ -64,6 +70,11 @@ class EntitlementController extends StateNotifier<EntitlementState> {
   final PurchaseService _service;
   final SharedPreferences _prefs;
   StreamSubscription<List<PurchaseDetails>>? _sub;
+  StreamSubscription<String>? _promotedSub;
+
+  /// Completes once product metadata has been queried (or the query failed),
+  /// so a purchase started from the App Store can wait for it.
+  final _productsLoaded = Completer<void>();
 
   EntitlementController(
     this._service,
@@ -97,27 +108,64 @@ class EntitlementController extends StateNotifier<EntitlementState> {
     // (interrupted purchases, Ask-to-Buy approvals) are not missed.
     _sub = _service.purchaseStream.listen(_onPurchaseUpdates);
 
+    // Purchases started on the App Store product page arrive here, possibly
+    // before the products are loaded; they wait for them in [_onPromoted].
+    _promotedSub = _service.promotedPurchases().listen(_onPromoted);
+
     try {
       final available = await _service.isAvailable();
       state = state.copyWith(storeAvailable: available);
       if (!available) return;
 
-      final ids = {
-        for (final c in FilterCollection.values)
-          if (c.productId != null) c.productId!,
-      };
-      final response = await _service.queryProducts(ids);
+      final response =
+          await _service.queryProducts(FilterCollection.storeProductIds);
       if (response.notFoundIDs.isNotEmpty) {
         debugPrint('IAP products not found: ${response.notFoundIDs}');
       }
-      state = state.copyWith(products: {
-        for (final p in response.productDetails)
-          ?FilterCollection.byProductId(p.id): p,
-      });
+      final byId = {for (final p in response.productDetails) p.id: p};
+      ProductDetails? pick(Iterable<String> ids) =>
+          ids.map((id) => byId[id]).nonNulls.firstOrNull;
+      final products = <FilterCollection, ProductDetails>{
+        for (final c in FilterCollection.values)
+          c: ?pick(c.candidateProductIds),
+      };
+      final bundle = pick(FilterCollection.bundleProductIds);
+      state = state.copyWith(products: products, bundle: bundle);
     } catch (e) {
       debugPrint('IAP init failed: $e');
       state = state.copyWith(storeAvailable: false);
+    } finally {
+      if (!_productsLoaded.isCompleted) _productsLoaded.complete();
     }
+
+    await _migrateFromHistory();
+  }
+
+  /// Unlocks collections found in the store's transaction history. Covers the
+  /// App Store consumables sold up to 2.3.x, which Restore Purchases never
+  /// returns, after a reinstall or on a new device.
+  Future<void> _migrateFromHistory() async {
+    final paid = FilterCollection.values.where((c) => c.isPaid);
+    if (paid.every(state.owned.contains)) return;
+    for (final id in await _service.purchasedProductIds()) {
+      _grant(id);
+    }
+  }
+
+  Future<void> _onPromoted(String productId) async {
+    await _productsLoaded.future;
+    final ProductDetails? product = productId == state.bundle?.id
+        ? state.bundle
+        : state.products[FilterCollection.byProductId(productId)];
+    if (product == null) {
+      debugPrint('Promoted purchase for unknown product $productId');
+      return;
+    }
+    // Already owned: nothing to sell, the unlock listener still opens it.
+    if (FilterCollection.grantedBy(productId).every(state.owned.contains)) {
+      return;
+    }
+    await _buyProduct(product);
   }
 
   Future<void> _onPurchaseUpdates(List<PurchaseDetails> purchases) async {
@@ -159,20 +207,32 @@ class EntitlementController extends StateNotifier<EntitlementState> {
   /// is ours and the store attached signed verification data. Accepted risk:
   /// a patched device can forge this; refunds are never revoked.
   bool _verify(PurchaseDetails purchase) =>
-      FilterCollection.byProductId(purchase.productID) != null &&
+      FilterCollection.grantedBy(purchase.productID).isNotEmpty &&
       purchase.verificationData.serverVerificationData.isNotEmpty;
 
   void _grant(String productId) {
-    final collection = FilterCollection.byProductId(productId);
-    if (collection == null) return;
-    final owned = {...state.owned, collection};
+    final granted = FilterCollection.grantedBy(productId);
+    if (granted.isEmpty || granted.every(state.owned.contains)) return;
+    final owned = {...state.owned, ...granted};
     state = state.copyWith(owned: owned);
     _prefs.setStringList(_prefsKey, owned.map((c) => c.name).toList());
   }
 
   Future<void> buy(FilterCollection collection) async {
     final product = state.products[collection];
-    if (product == null || state.purchasePending) return;
+    if (product == null) return;
+    await _buyProduct(product);
+  }
+
+  /// Buys the "All filters" bundle, when the store sells it.
+  Future<void> buyBundle() async {
+    final product = state.bundle;
+    if (product == null) return;
+    await _buyProduct(product);
+  }
+
+  Future<void> _buyProduct(ProductDetails product) async {
+    if (state.purchasePending) return;
     state = state.copyWith(purchasePending: true, clearError: true);
     try {
       await _service.buyNonConsumable(product);
@@ -203,6 +263,7 @@ class EntitlementController extends StateNotifier<EntitlementState> {
   @override
   void dispose() {
     _sub?.cancel();
+    _promotedSub?.cancel();
     super.dispose();
   }
 }

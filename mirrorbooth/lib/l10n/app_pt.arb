@@ -82,5 +82,15 @@
   "failedToJoin": "Não foi possível entrar: {error}",
   "connecting": "Conectando…",
   "share": "Compartilhar",
-  "shareMessage": "Feito com o Mirror Booth: {url}"
+  "shareMessage": "Feito com o Mirror Booth: {url}",
+  "a11yTakePhoto": "Tirar foto",
+  "a11yStartRecording": "Começar a gravar vídeo",
+  "a11yStopRecording": "Parar gravação",
+  "a11ySwitchCamera": "Trocar câmera",
+  "a11yMirrorAxis": "Eixo do espelho",
+  "a11yRotation": "Rotação da imagem",
+  "a11yDegrees": "{degrees} graus",
+  "a11yClose": "Fechar",
+  "a11yToggleLog": "Mostrar ou ocultar o registro",
+  "unlockAllFor": "Todos os filtros por {price}"
 }
