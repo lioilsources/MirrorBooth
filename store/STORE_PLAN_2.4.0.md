@@ -12,11 +12,12 @@ screenshoty, ikony, metadata). Nic z toho není odeslané ke schválení.
   kolekci zpět z historie transakcí (StoreKit 2 `Transaction.all` +
   `SKIncludeConsumableInAppPurchaseHistory`, iOS 18+). Na starším iOS
   zůstane odemčení z lokální cache, po přeinstalaci se ale neobnoví.
-  Android používá dál původní ID (Play typ consumable na úrovni produktu nemá).
+  Android (od 2.3.5 také `*_unlock`) se ptá na obě sady a prodává `*_unlock`,
+  pokud v Play existuje, jinak původní ID. Nákupy obou sad odemykají.
 - **Restore Purchases** na paywallu obnoví `*_unlock` (StoreKit 2
   `currentEntitlements`).
-- **Balíček „All filters“** (`collection.all_unlock` na iOS,
-  `collection.all` na Play). Na paywallu se objeví až ve chvíli, kdy produkt
+- **Balíček „All filters“** (`collection.all_unlock`; na Play případně i
+  `collection.all`). Na paywallu se objeví až ve chvíli, kdy produkt
   v obchodě existuje; do té doby se nic nezmění.
 - **Nákup zahájený v App Storu** (propagované nákupy): nativní posluchač
   `PurchaseIntent` (iOS 16.4+) předá produkt do Flutteru, ten ho koupí
@@ -107,8 +108,9 @@ Vyplnit pro iPhone:
    `store/appstore/screenshots/candidates/play/`: `cat_01_lr`,
    `comic_01_lr`, `alien_01_lr`, `alien_02_filters` (1080×1920).
 2. **Experiment ikony:** varianta `store/play/graphics/icon-512-kaleido.png`.
-3. Volitelně produkt **`com.ol1n.mirrorbooth.collection.all`**
-   (jednorázový). Play Billing Library v appce je 8.0.0
+3. Ověřit, že v Play existují **`collection.art_unlock` a
+   `collection.fantasy_unlock`** (2.3.5 je už používá); volitelně
+   **`collection.all_unlock`** (jednorázový). Play Billing Library v appce je 8.0.0
    (`in_app_purchase_android` 0.5.4), takže slevové nabídky na jednorázové
    produkty jsou technicky možné; plugin ale do Dartu posílá jen výchozí
    nabídku, takže sleva musí být nastavená jako ta výchozí.

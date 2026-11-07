@@ -18,24 +18,28 @@ enum FilterCollection {
         FilterCollection.art || FilterCollection.fantasy => true,
       };
 
-  /// Store product ID sold on this platform, null for free collections.
-  ///
-  /// The App Store sells the non-consumable `*_unlock` products: the original
-  /// IDs were created there as consumables, which Restore Purchases cannot
-  /// bring back. Play has no consumable type at product level (the app never
-  /// consumes), so it keeps the original IDs.
+  /// Preferred store product ID, null for free collections: the
+  /// non-consumable `*_unlock` item. The original IDs were created on the
+  /// App Store as consumables, which Restore Purchases cannot bring back,
+  /// and Apple allows neither changing the type nor reusing an ID.
   String? get productId => switch (this) {
-        FilterCollection.art => _apple
-            ? 'com.ol1n.mirrorbooth.collection.art_unlock'
-            : 'com.ol1n.mirrorbooth.collection.art',
-        FilterCollection.fantasy => _apple
-            ? 'com.ol1n.mirrorbooth.collection.fantasy_unlock'
-            : 'com.ol1n.mirrorbooth.collection.fantasy',
+        FilterCollection.art => 'com.ol1n.mirrorbooth.collection.art_unlock',
+        FilterCollection.fantasy =>
+          'com.ol1n.mirrorbooth.collection.fantasy_unlock',
         _ => null,
       };
 
+  /// Product IDs the store is asked for, in order of preference; the first
+  /// one the store returns is sold. The App Store only sells `*_unlock`.
+  /// Play also falls back to the original IDs while they are still the
+  /// ones set up there (Play has no consumable type at product level).
+  List<String> get candidateProductIds => [
+        ?productId,
+        if (!_apple) ...grantingIds.difference({productId}),
+      ];
+
   /// Every product ID that has ever granted this collection on any platform,
-  /// including the App Store consumables sold up to 2.3.x.
+  /// including the App Store consumables sold up to 2.3.4.
   Set<String> get grantingIds => switch (this) {
         FilterCollection.art => const {
             'com.ol1n.mirrorbooth.collection.art',
@@ -50,21 +54,16 @@ enum FilterCollection {
 
   /// The "All filters" bundle: one purchase that unlocks every paid
   /// collection. Optional: the paywall offers it only when the store returns
-  /// the product.
-  static String get bundleProductId => _apple
-      ? 'com.ol1n.mirrorbooth.collection.all_unlock'
-      : 'com.ol1n.mirrorbooth.collection.all';
+  /// one of these products (same preference as [candidateProductIds]).
+  static List<String> get bundleProductIds => [
+        'com.ol1n.mirrorbooth.collection.all_unlock',
+        if (!_apple) 'com.ol1n.mirrorbooth.collection.all',
+      ];
 
-  static const _bundleIds = {
-    'com.ol1n.mirrorbooth.collection.all',
-    'com.ol1n.mirrorbooth.collection.all_unlock',
-  };
-
-  /// Every product ID this platform sells, bundle included.
+  /// Every product ID this platform asks the store for, bundle included.
   static Set<String> get storeProductIds => {
-        for (final c in values)
-          if (c.productId != null) c.productId!,
-        bundleProductId,
+        for (final c in values) ...c.candidateProductIds,
+        ...bundleProductIds,
       };
 
   /// Reverse lookup for a single-collection product (current or legacy).
@@ -77,7 +76,10 @@ enum FilterCollection {
 
   /// Collections a purchase of [id] unlocks; empty for unknown products.
   static Set<FilterCollection> grantedBy(String id) {
-    if (_bundleIds.contains(id)) {
+    if (const {
+      'com.ol1n.mirrorbooth.collection.all',
+      'com.ol1n.mirrorbooth.collection.all_unlock',
+    }.contains(id)) {
       return values.where((c) => c.isPaid).toSet();
     }
     final c = byProductId(id);

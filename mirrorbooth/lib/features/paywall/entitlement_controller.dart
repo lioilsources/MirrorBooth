@@ -122,15 +122,14 @@ class EntitlementController extends StateNotifier<EntitlementState> {
       if (response.notFoundIDs.isNotEmpty) {
         debugPrint('IAP products not found: ${response.notFoundIDs}');
       }
-      ProductDetails? bundle;
-      final products = <FilterCollection, ProductDetails>{};
-      for (final p in response.productDetails) {
-        if (p.id == FilterCollection.bundleProductId) {
-          bundle = p;
-        } else if (FilterCollection.byProductId(p.id) case final c?) {
-          products[c] = p;
-        }
-      }
+      final byId = {for (final p in response.productDetails) p.id: p};
+      ProductDetails? pick(Iterable<String> ids) =>
+          ids.map((id) => byId[id]).nonNulls.firstOrNull;
+      final products = <FilterCollection, ProductDetails>{
+        for (final c in FilterCollection.values)
+          c: ?pick(c.candidateProductIds),
+      };
+      final bundle = pick(FilterCollection.bundleProductIds);
       state = state.copyWith(products: products, bundle: bundle);
     } catch (e) {
       debugPrint('IAP init failed: $e');

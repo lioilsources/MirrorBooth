@@ -106,11 +106,13 @@ Future<(EntitlementController, FakePurchaseService, SharedPreferences)>
   return (controller, service, prefs);
 }
 
-// The tests run as Android (flutter_test's default platform), so these are
-// the Play IDs; the App Store group below overrides the platform.
-const _artId = 'com.ol1n.mirrorbooth.collection.art';
-const _fantasyId = 'com.ol1n.mirrorbooth.collection.fantasy';
-const _bundleId = 'com.ol1n.mirrorbooth.collection.all';
+// The tests run as Android (flutter_test's default platform); the App Store
+// group below overrides the platform.
+const _artId = 'com.ol1n.mirrorbooth.collection.art_unlock';
+const _fantasyId = 'com.ol1n.mirrorbooth.collection.fantasy_unlock';
+const _bundleId = 'com.ol1n.mirrorbooth.collection.all_unlock';
+const _legacyArtId = 'com.ol1n.mirrorbooth.collection.art';
+const _legacyFantasyId = 'com.ol1n.mirrorbooth.collection.fantasy';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -202,8 +204,20 @@ void main() {
       expect(service.restoreCalls, 1);
     });
 
+    test('Play sells *_unlock when it exists, else the original ID',
+        () async {
+      final (c, _, _) = await _makeController(products: [
+        _product(_legacyArtId),
+        _product(_artId),
+        _product(_legacyFantasyId),
+      ]);
+      expect(c.state.products[FilterCollection.art]?.id, _artId);
+      expect(c.state.products[FilterCollection.fantasy]?.id, _legacyFantasyId);
+    });
+
     test('transaction history unlocks old purchases at launch', () async {
-      final (c, _, prefs) = await _makeController(history: {_fantasyId});
+      final (c, _, prefs) =
+          await _makeController(history: {_legacyFantasyId});
       expect(c.state.owns(FilterCollection.fantasy), isTrue);
       expect(c.state.owns(FilterCollection.art), isFalse);
       expect(prefs.getStringList('owned_collections'), ['fantasy']);
@@ -257,9 +271,15 @@ void main() {
       });
     });
 
+    test('never sells the old consumables', () {
+      for (final id in FilterCollection.storeProductIds) {
+        expect(id, endsWith('_unlock'));
+      }
+    });
+
     test('old consumables still grant their collection', () {
-      expect(FilterCollection.grantedBy(_artId), {FilterCollection.art});
-      expect(FilterCollection.grantedBy(_fantasyId),
+      expect(FilterCollection.grantedBy(_legacyArtId), {FilterCollection.art});
+      expect(FilterCollection.grantedBy(_legacyFantasyId),
           {FilterCollection.fantasy});
       expect(
           FilterCollection.grantedBy(
