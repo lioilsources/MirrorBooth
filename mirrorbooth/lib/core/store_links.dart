@@ -1,16 +1,16 @@
 /// Store links the app hands out, with campaign tags so App Analytics and the
 /// Play Console can tell shared-post installs apart from everything else.
 ///
-/// Fill in [providerToken] and [sharedPhotoPageId] from App Store Connect
-/// (App Analytics → Campaigns → Generate a campaign link; App Store → Custom
-/// Product Pages → the "Shared photo" page). Empty values are left out of the
-/// link, which still works, just without that attribution.
+/// [providerToken] comes from App Store Connect (App Analytics → Campaigns →
+/// Generate a Campaign Link). Fill in [sharedPhotoPageId] from App Store →
+/// Custom Product Pages → the "Shared photo" page. An empty value is left out
+/// of the link, which still works, just without that attribution.
 class StoreLinks {
   static const appStoreId = '6767824892';
   static const playPackage = 'com.ab.mirrorbooth';
 
-  /// App Analytics provider token (`pt=`). TODO(ol1n): fill in.
-  static const providerToken = '';
+  /// App Analytics provider token (`pt=`) of the Ol1n developer account.
+  static const providerToken = '128849798';
 
   /// Custom Product Page ID for the "Shared photo" page (`ppid=`).
   /// TODO(ol1n): fill in once the page is approved.

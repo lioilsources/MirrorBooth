@@ -7,10 +7,9 @@ void main() {
     expect(uri.host, 'apps.apple.com');
     expect(uri.path, '/app/id6767824892');
     expect(uri.queryParameters['ct'], 'share');
-    // Optional values stay out of the link until they are filled in.
-    for (final key in ['pt', 'ppid']) {
-      expect(uri.queryParameters[key], isNot(''), reason: key);
-    }
+    expect(uri.queryParameters['pt'], '128849798');
+    // The custom product page stays out of the link until it is filled in.
+    expect(uri.queryParameters['ppid'], isNot(''));
   });
 
   test('Play link carries an install referrer', () {
