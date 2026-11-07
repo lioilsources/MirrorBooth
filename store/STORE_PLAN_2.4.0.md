@@ -4,6 +4,32 @@ Stav k 7. 11. 2026. Kód pokrývá body 1–8 z `MIRRORBOOTH_STORE_PLAN.md`, kó
 části plánů viditelnosti pro App Store a Google Play a podklady (videa,
 screenshoty, ikony, metadata). Nic z toho není odeslané ke schválení.
 
+## Stav k 7. 11. 2026 odpoledne
+
+**App Store Connect (hotovo přes API, nic neodesláno ke schválení):**
+- Verze 2.4.0 založená (Prepare for Submission), připojený build 2.4.0 (47),
+  šifrování „ne“.
+- `art_unlock` a `fantasy_unlock`: doplněný screenshot pro review, stav
+  READY_TO_SUBMIT. Při odeslání verze je přidat do submission.
+- Preview videa v en-US, en-GB, en-AU, en-CA nahrazená třemi krátkými
+  klipy (kočka, komiksová hrdinka, ufon); ostatní jazyky mají dosavadní.
+- iPhone screenshoty v en-US, en-GB, en-AU, en-CA: 5 původních + 5 nových
+  postav (10/10). iPad beze změny.
+- Klíčová slova: en-US a en-GB přepsaná (bez duplicit s názvem, bez
+  vzájemného překryvu), u ar-SA, es-ES, es-MX, fr-FR, hi, ko odstraněné
+  duplicity s názvem/podtitulem a doplněné. Názvy a podtituly už byly ve
+  všech 17 jazycích, ty se neměnily.
+- Promo text en-*: „New: mirror your cat, your teddy or a comic hero too…“
+- „Co je nového“ ve všech 17 jazycích.
+- `store/appstore/metadata/` je kopie živého stavu verze 2.4.0
+  (kontrola `check_metadata.py` bez problémů).
+
+**Google Play:** `python3 store/play/upload_play.py 2.4.0 --dry-run`, pak bez
+`--dry-run`. Nahraje AAB 2.4.0 z GitHub release do interního testování a
+přidá 4 screenshoty postav do en-US. Produkce zůstává na kliknutí v Console.
+
+**Web olin.now:** nasazeno (Smart App Banner, `olin.now/mirror`).
+
 ## Changelog 2.4.0
 
 - **Kolekce jako non-consumable na iOS.** Appka prodává

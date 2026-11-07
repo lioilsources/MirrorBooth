@@ -1,1 +1,1 @@
-half,side,split,reflection,symmetric,kaleidoscope,photo,morph,twin,clone,left,right,distort,prank
+symmetrical,half,side,split,reflection,kaleidoscope,twin,clone,morph,distort,prank,ugly,pretty,chibi
