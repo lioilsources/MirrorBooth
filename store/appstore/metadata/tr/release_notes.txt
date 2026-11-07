@@ -1,0 +1,4 @@
+• Art ve Fantasy filtreleri artık kalıcı olarak açılıyor: Satın Alımları Geri Yükle yeni cihazda veya yeniden yüklemeden sonra geri getirir
+• Filtre koleksiyonlarını doğrudan App Store sayfasından satın al
+• Daha iyi VoiceOver ve büyük metin desteği
+• Paylaşılan fotoğraf ve videolar artık Mirror Booth'a bağlanıyor

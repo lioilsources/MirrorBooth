@@ -1,0 +1,4 @@
+• Art- und Fantasy-Filter werden jetzt dauerhaft freigeschaltet: „Käufe wiederherstellen“ holt sie auf ein neues Gerät oder nach einer Neuinstallation zurück
+• Filtersammlungen direkt auf der App-Store-Seite kaufen
+• Bessere Unterstützung für VoiceOver und größere Schrift
+• Geteilte Fotos und Videos verlinken jetzt auf Mirror Booth

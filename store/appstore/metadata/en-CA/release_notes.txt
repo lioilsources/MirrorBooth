@@ -1,0 +1,4 @@
+• Art and Fantasy filters are now permanent unlocks: Restore Purchases brings them back on a new device or after a reinstall
+• Buy filter collections right from the App Store page
+• Better VoiceOver support and larger text
+• Shared photos and videos now link back to Mirror Booth

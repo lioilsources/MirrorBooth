@@ -1,0 +1,4 @@
+• Les filtres Art et Fantasy sont désormais débloqués pour de bon : Restaurer les achats les récupère sur un nouvel appareil ou après réinstallation
+• Achète les collections de filtres directement depuis la page App Store
+• Meilleure prise en charge de VoiceOver et du texte agrandi
+• Les photos et vidéos partagées renvoient vers Mirror Booth

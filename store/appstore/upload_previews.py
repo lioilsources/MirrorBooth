@@ -2,11 +2,12 @@
 """Replace the iPhone app previews of an editable App Store version.
 
     ASC_KEY_PATH=… ASC_KEY_ID=… ASC_ISSUER_ID=… \
-        python3 store/appstore/upload_previews.py 2.3.4 [pt-BR fr-FR …]
+        python3 store/appstore/upload_previews.py 2.3.4 [--clips a,b,c] [pt-BR fr-FR …]
 
 Takes the clips rendered by make_previews.py from previews/<lang>/, where
 <lang> is the store locale's language (pt-BR -> pt). App Store shows at most
-three previews per locale; CLIPS picks them. Defaults to the locales that have
+three previews per locale; CLIPS picks them unless --clips names others
+(e.g. the *_short cuts). Defaults to the locales that have
 localized screenshots.
 """
 import hashlib
@@ -82,7 +83,13 @@ def wait_complete(set_id):
 
 
 def main():
-    version, *wanted = sys.argv[1:]
+    argv = sys.argv[1:]
+    clips = CLIPS
+    if "--clips" in argv:
+        i = argv.index("--clips")
+        clips = argv[i + 1].split(",")
+        del argv[i:i + 2]
+    version, *wanted = argv
     version_id = find_version(version)
     locales = call("GET", f"/v1/appStoreVersions/{version_id}"
                           "/appStoreVersionLocalizations?limit=50")["data"]
@@ -94,7 +101,7 @@ def main():
             print(locale, "not in this version, skipped", flush=True)
             continue
         folder = HERE / "previews" / locale.split("-")[0]
-        files = [folder / f"{name}.mp4" for name in CLIPS]
+        files = [folder / f"{name}.mp4" for name in clips]
         missing = [f.name for f in files if not f.exists()]
         if missing:
             raise SystemExit(f"{locale}: missing {missing} in {folder}")
