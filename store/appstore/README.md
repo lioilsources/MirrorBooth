@@ -56,3 +56,11 @@ simetria,facial,espelho,teste,beleza,feio,bonito,gêmeo,clone,distorcer,câmera,
 Words from the title (`Mirror Booth: rosto simétrico`) and the subtitle
 (`Filtros engraçados para selfie`) are left out: the App Store indexes them
 anyway and combines single words into phrases such as "simetria facial".
+
+## Promoted in-app purchases
+
+    python3 store/appstore/make_iap_promo.py      # promo/<product>.png, 1024×1024
+    python3 store/appstore/upload_iap_promo.py    # image + promotion, App Manager key
+
+Run the upload once the `*_unlock` purchases are approved: while a purchase is
+waiting for review, ASC refuses a new image ("change pending review").
