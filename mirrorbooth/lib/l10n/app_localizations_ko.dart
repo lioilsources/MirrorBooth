@@ -268,4 +268,38 @@ class AppLocalizationsKo extends AppLocalizations {
   String shareMessage(String url) {
     return 'Mirror Booth로 제작: $url';
   }
+
+  @override
+  String get a11yTakePhoto => '사진 찍기';
+
+  @override
+  String get a11yStartRecording => '동영상 녹화 시작';
+
+  @override
+  String get a11yStopRecording => '녹화 중지';
+
+  @override
+  String get a11ySwitchCamera => '카메라 전환';
+
+  @override
+  String get a11yMirrorAxis => '거울 축';
+
+  @override
+  String get a11yRotation => '이미지 회전';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees도';
+  }
+
+  @override
+  String get a11yClose => '닫기';
+
+  @override
+  String get a11yToggleLog => '로그 표시/숨기기';
+
+  @override
+  String unlockAllFor(String price) {
+    return '모든 필터 $price';
+  }
 }

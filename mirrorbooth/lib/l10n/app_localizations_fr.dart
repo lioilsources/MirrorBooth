@@ -276,4 +276,38 @@ class AppLocalizationsFr extends AppLocalizations {
   String shareMessage(String url) {
     return 'Créé avec Mirror Booth : $url';
   }
+
+  @override
+  String get a11yTakePhoto => 'Prendre une photo';
+
+  @override
+  String get a11yStartRecording => 'Démarrer l\'enregistrement vidéo';
+
+  @override
+  String get a11yStopRecording => 'Arrêter l\'enregistrement';
+
+  @override
+  String get a11ySwitchCamera => 'Changer de caméra';
+
+  @override
+  String get a11yMirrorAxis => 'Axe du miroir';
+
+  @override
+  String get a11yRotation => 'Rotation de l\'image';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees degrés';
+  }
+
+  @override
+  String get a11yClose => 'Fermer';
+
+  @override
+  String get a11yToggleLog => 'Afficher ou masquer le journal';
+
+  @override
+  String unlockAllFor(String price) {
+    return 'Tous les filtres pour $price';
+  }
 }

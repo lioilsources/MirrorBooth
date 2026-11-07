@@ -271,4 +271,38 @@ class AppLocalizationsTr extends AppLocalizations {
   String shareMessage(String url) {
     return 'Mirror Booth ile yapıldı: $url';
   }
+
+  @override
+  String get a11yTakePhoto => 'Fotoğraf çek';
+
+  @override
+  String get a11yStartRecording => 'Video kaydını başlat';
+
+  @override
+  String get a11yStopRecording => 'Kaydı durdur';
+
+  @override
+  String get a11ySwitchCamera => 'Kamerayı değiştir';
+
+  @override
+  String get a11yMirrorAxis => 'Ayna ekseni';
+
+  @override
+  String get a11yRotation => 'Görüntü döndürme';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees derece';
+  }
+
+  @override
+  String get a11yClose => 'Kapat';
+
+  @override
+  String get a11yToggleLog => 'Günlüğü göster veya gizle';
+
+  @override
+  String unlockAllFor(String price) {
+    return 'Tüm filtreler $price';
+  }
 }

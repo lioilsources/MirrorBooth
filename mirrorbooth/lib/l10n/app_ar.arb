@@ -82,5 +82,15 @@
   "failedToJoin": "تعذّر الانضمام: {error}",
   "connecting": "جارٍ الاتصال…",
   "share": "مشاركة",
-  "shareMessage": "صُنع باستخدام Mirror Booth:‏ {url}"
+  "shareMessage": "صُنع باستخدام Mirror Booth:‏ {url}",
+  "a11yTakePhoto": "التقاط صورة",
+  "a11yStartRecording": "بدء تسجيل الفيديو",
+  "a11yStopRecording": "إيقاف التسجيل",
+  "a11ySwitchCamera": "تبديل الكاميرا",
+  "a11yMirrorAxis": "محور المرآة",
+  "a11yRotation": "تدوير الصورة",
+  "a11yDegrees": "{degrees} درجة",
+  "a11yClose": "إغلاق",
+  "a11yToggleLog": "إظهار السجل أو إخفاؤه",
+  "unlockAllFor": "كل الفلاتر مقابل {price}"
 }

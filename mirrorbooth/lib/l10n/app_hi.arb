@@ -82,5 +82,15 @@
   "failedToJoin": "जुड़ नहीं सके: {error}",
   "connecting": "कनेक्ट हो रहा है…",
   "share": "शेयर करें",
-  "shareMessage": "Mirror Booth से बनाया गया: {url}"
+  "shareMessage": "Mirror Booth से बनाया गया: {url}",
+  "a11yTakePhoto": "फ़ोटो लें",
+  "a11yStartRecording": "वीडियो रिकॉर्डिंग शुरू करें",
+  "a11yStopRecording": "रिकॉर्डिंग रोकें",
+  "a11ySwitchCamera": "कैमरा बदलें",
+  "a11yMirrorAxis": "मिरर अक्ष",
+  "a11yRotation": "छवि घुमाव",
+  "a11yDegrees": "{degrees} डिग्री",
+  "a11yClose": "बंद करें",
+  "a11yToggleLog": "लॉग दिखाएँ या छिपाएँ",
+  "unlockAllFor": "सभी फ़िल्टर {price} में"
 }

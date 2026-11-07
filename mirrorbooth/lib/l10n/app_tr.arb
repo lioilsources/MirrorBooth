@@ -82,5 +82,15 @@
   "failedToJoin": "Katılınamadı: {error}",
   "connecting": "Bağlanıyor…",
   "share": "Paylaş",
-  "shareMessage": "Mirror Booth ile yapıldı: {url}"
+  "shareMessage": "Mirror Booth ile yapıldı: {url}",
+  "a11yTakePhoto": "Fotoğraf çek",
+  "a11yStartRecording": "Video kaydını başlat",
+  "a11yStopRecording": "Kaydı durdur",
+  "a11ySwitchCamera": "Kamerayı değiştir",
+  "a11yMirrorAxis": "Ayna ekseni",
+  "a11yRotation": "Görüntü döndürme",
+  "a11yDegrees": "{degrees} derece",
+  "a11yClose": "Kapat",
+  "a11yToggleLog": "Günlüğü göster veya gizle",
+  "unlockAllFor": "Tüm filtreler {price}"
 }

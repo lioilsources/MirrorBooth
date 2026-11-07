@@ -82,5 +82,15 @@
   "failedToJoin": "Připojení se nezdařilo: {error}",
   "connecting": "Připojování…",
   "share": "Sdílet",
-  "shareMessage": "Vytvořeno v Mirror Booth: {url}"
+  "shareMessage": "Vytvořeno v Mirror Booth: {url}",
+  "a11yTakePhoto": "Vyfotit",
+  "a11yStartRecording": "Spustit nahrávání videa",
+  "a11yStopRecording": "Zastavit nahrávání",
+  "a11ySwitchCamera": "Přepnout kameru",
+  "a11yMirrorAxis": "Osa zrcadlení",
+  "a11yRotation": "Otočení obrazu",
+  "a11yDegrees": "{degrees} stupňů",
+  "a11yClose": "Zavřít",
+  "a11yToggleLog": "Zobrazit nebo skrýt log",
+  "unlockAllFor": "Všechny filtry za {price}"
 }

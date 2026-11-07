@@ -8,6 +8,7 @@ import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../services/review_prompter.dart';
 import 'audio_recorder_service.dart';
 import 'ffmpeg_service.dart';
 import 'frame_recorder.dart';
@@ -163,6 +164,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     try {
       await Gal.putVideo(path);
       state = state.copyWith(isSaved: true);
+      ref.read(reviewPrompterProvider).videoDone().ignore();
     } on GalException catch (e) {
       state = state.copyWith(error: switch (e.type) {
         GalExceptionType.accessDenied => RecordingError.galleryAccessDenied,

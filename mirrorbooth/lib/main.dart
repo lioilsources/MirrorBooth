@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +10,8 @@ import 'features/mirror_preview/mirror_preview_screen.dart';
 import 'features/paywall/entitlement_controller.dart';
 import 'features/video_call/room_entry_screen.dart';
 import 'l10n/app_localizations.dart';
+import 'services/deep_link.dart';
+import 'services/review_prompter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,12 +29,45 @@ Future<void> main() async {
   ));
 }
 
-class MirrorBoothApp extends StatelessWidget {
+class MirrorBoothApp extends ConsumerStatefulWidget {
   const MirrorBoothApp({super.key});
+
+  @override
+  ConsumerState<MirrorBoothApp> createState() => _MirrorBoothAppState();
+}
+
+class _MirrorBoothAppState extends ConsumerState<MirrorBoothApp> {
+  final _navigator = GlobalKey<NavigatorState>();
+  StreamSubscription<Uri>? _links;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(reviewPrompterProvider).recordLaunch();
+    // Emits the link that launched the app first, then any later ones.
+    _links = AppLinks().uriLinkStream.listen(
+      _open,
+      onError: (Object e) => debugPrint('deep link: $e'),
+    );
+  }
+
+  void _open(Uri uri) {
+    debugPrint('deep link: $uri');
+    // Back to the camera from playback or the call screen.
+    _navigator.currentState?.popUntil((route) => route.isFirst);
+    ref.read(pendingDeepLinkProvider.notifier).state = DeepLink.parse(uri);
+  }
+
+  @override
+  void dispose() {
+    _links?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _navigator,
       title: 'MirrorBooth',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

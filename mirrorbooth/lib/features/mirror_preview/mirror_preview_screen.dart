@@ -16,7 +16,10 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/jpeg_encode_utils.dart';
 import '../../core/shader_provider.dart';
+import '../../core/mirror_filter.dart';
 import '../../l10n/l10n.dart';
+import '../../services/deep_link.dart';
+import '../../services/review_prompter.dart';
 import '../../services/shutter_button_channel.dart';
 import '../paywall/entitlement_controller.dart';
 import '../paywall/paywall_sheet.dart';
@@ -89,6 +92,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       // Deferred to the first frame: the native side attaches to the root
       // view, which only exists once the view hierarchy is up.
       _setShutterClaimed(true);
+      // A link that launched the app arrived before this screen existed.
+      _applyDeepLink(ref.read(pendingDeepLinkProvider));
       ShutterButtonChannel.isSupported().then((supported) {
         if (mounted) setState(() => _shutterSupported = supported);
       });
@@ -198,6 +203,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       await Gal.putImage(tempFile.path);
       _log('Gal.putImage OK ✓');
       _flashController.forward(from: 0.0);
+      ref.read(reviewPrompterProvider).photoDone().ignore();
       if (ShareService.isSupported) {
         _offerPhotoShare(tempFile);
         tempFile = null; // kept until the next capture, for the share action
@@ -247,6 +253,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         origin: Rect.fromCenter(
             center: size.center(Offset.zero), width: 1, height: 1),
       );
+      ref.read(reviewPrompterProvider).photoDone().ignore();
     } catch (e) {
       _log('share failed: $e');
       _showError((l) => l.genericError);
@@ -385,7 +392,33 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
+  /// Switches to the filter a deep link names (In-App Event, Custom Product
+  /// Page, shared post). Unknown links just leave the camera as it is.
+  void _applyDeepLink(DeepLink? link) {
+    if (link == null) return;
+    ref.read(pendingDeepLinkProvider.notifier).state = null;
+    if (link.filter case final filter?) {
+      ref.read(mirrorPreviewProvider.notifier).setFilter(filter);
+    }
+  }
+
+  /// After a purchase, including one started on the App Store page, opens the
+  /// collection it unlocked unless a filter from it is already on.
+  void _openUnlocked(EntitlementState? previous, EntitlementState next) {
+    if (previous == null) return;
+    final unlocked = next.owned.difference(previous.owned);
+    if (unlocked.isEmpty) return;
+    final current = ref.read(mirrorPreviewProvider).selectedFilter.collection;
+    if (unlocked.contains(current)) return;
+    final first = FilterCollection.values.firstWhere(unlocked.contains);
+    final filters = MirrorFilter.inCollection(first);
+    if (filters.isNotEmpty) {
+      ref.read(mirrorPreviewProvider.notifier).setFilter(filters.first);
+    }
+  }
+
   void _showError(String Function(AppLocalizations l) message) {
+    ref.read(reviewPrompterProvider).errorShown();
     if (!mounted) return;
     showDialog<void>(
       context: context,
@@ -410,11 +443,18 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     final recordingState = ref.watch(videoRecordingProvider);
 
+    ref.listen<DeepLink?>(pendingDeepLinkProvider, (_, next) {
+      // Outside the build phase: applying it writes other providers.
+      if (next != null) Future.microtask(() => _applyDeepLink(next));
+    });
+    ref.listen<EntitlementState>(entitlementProvider, _openUnlocked);
+
     ref.listen<VideoRecordingState>(videoRecordingProvider, (_, next) {
       // Hand the volume keys back while the playback screen is up so they
       // control playback volume as usual.
       _setShutterClaimed(next.phase == RecordingPhase.idle ||
           next.phase == RecordingPhase.recording);
+      if (next.error != null) ref.read(reviewPrompterProvider).errorShown();
       if (next.error != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -523,22 +563,36 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
         // Outer rotation ring overlay — decorative circle showing the drag
         // target for whole-image rotation.
-        IgnorePointer(
-          child: Center(
-            child: _RotationRing(
-              rotationDeg: state.rotationDeg,
-              diameterFrac: _outerRingDiameterFrac,
+        // Screen readers can't do the circular drag, so the ring is also an
+        // adjustable control: swipe up or down turns it by 15°.
+        Semantics(
+          label: context.l10n.a11yRotation,
+          value: context.l10n.a11yDegrees(_wrapDegrees(state.rotationDeg)),
+          onIncrease: () => notifier.setRotation(state.rotationDeg + 15),
+          onDecrease: () => notifier.setRotation(state.rotationDeg - 15),
+          child: IgnorePointer(
+            child: Center(
+              child: _RotationRing(
+                rotationDeg: state.rotationDeg,
+                diameterFrac: _outerRingDiameterFrac,
+              ),
             ),
           ),
         ),
 
         // Inner mirror-axis ring — dashed circle with a thin line indicating
         // the current mirror axis direction through the screen centre.
-        IgnorePointer(
-          child: Center(
-            child: _MirrorAxisRing(
-              mirrorAxisDeg: state.mirrorAxisDeg,
-              diameterFrac: _innerRingDiameterFrac,
+        Semantics(
+          label: context.l10n.a11yMirrorAxis,
+          value: context.l10n.a11yDegrees(_wrapDegrees(state.mirrorAxisDeg)),
+          onIncrease: () => notifier.setMirrorAxis(state.mirrorAxisDeg + 15),
+          onDecrease: () => notifier.setMirrorAxis(state.mirrorAxisDeg - 15),
+          child: IgnorePointer(
+            child: Center(
+              child: _MirrorAxisRing(
+                mirrorAxisDeg: state.mirrorAxisDeg,
+                diameterFrac: _innerRingDiameterFrac,
+              ),
             ),
           ),
         ),
@@ -610,20 +664,25 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                   _CallButton(),
                   const SizedBox(height: 12),
                 ],
-                GestureDetector(
-                  onTap: () => setState(() => _showDebug = !_showDebug),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white24, width: 1),
-                    ),
-                    child: Icon(
-                      _showDebug ? Icons.bug_report : Icons.bug_report_outlined,
-                      color: _showDebug ? Colors.greenAccent : Colors.white54,
-                      size: 20,
+                Semantics(
+                  button: true,
+                  label: context.l10n.a11yToggleLog,
+                  excludeSemantics: true,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _showDebug = !_showDebug),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white24, width: 1),
+                      ),
+                      child: Icon(
+                        _showDebug ? Icons.bug_report : Icons.bug_report_outlined,
+                        color: _showDebug ? Colors.greenAccent : Colors.white54,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -712,6 +771,9 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
 // ── Small helpers ────────────────────────────────────────────────────────────
 
+/// Whole degrees in 0…359, for screen-reader values.
+int _wrapDegrees(double deg) => deg.round() % 360;
+
 class _PhotoButton extends StatelessWidget {
   final bool enabled;
   final VoidCallback onTap;
@@ -719,22 +781,29 @@ class _PhotoButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: context.l10n.a11yTakePhoto,
       onTap: enabled ? onTap : null,
-      child: Container(
-        width: 78,
-        height: 78,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 3.5),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Container(
-            decoration: BoxDecoration(
-              color: enabled ? Colors.white : Colors.white54,
-              shape: BoxShape.circle,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: enabled ? onTap : null,
+        child: Container(
+          width: 78,
+          height: 78,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 3.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: Container(
+              decoration: BoxDecoration(
+                color: enabled ? Colors.white : Colors.white54,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
         ),
@@ -750,27 +819,35 @@ class _RecButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: isRecording
+          ? context.l10n.a11yStopRecording
+          : context.l10n.a11yStartRecording,
       onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: Colors.black54,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isRecording ? Colors.redAccent : Colors.white70,
-            width: 2,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isRecording ? Colors.redAccent : Colors.white70,
+              width: 2,
+            ),
           ),
-        ),
-        child: Center(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: isRecording ? 22 : 28,
-            height: isRecording ? 22 : 28,
-            decoration: BoxDecoration(
-              color: Colors.redAccent,
-              borderRadius: BorderRadius.circular(isRecording ? 4 : 14),
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: isRecording ? 22 : 28,
+              height: isRecording ? 22 : 28,
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                borderRadius: BorderRadius.circular(isRecording ? 4 : 14),
+              ),
             ),
           ),
         ),

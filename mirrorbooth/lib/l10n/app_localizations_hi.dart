@@ -276,4 +276,38 @@ class AppLocalizationsHi extends AppLocalizations {
   String shareMessage(String url) {
     return 'Mirror Booth से बनाया गया: $url';
   }
+
+  @override
+  String get a11yTakePhoto => 'फ़ोटो लें';
+
+  @override
+  String get a11yStartRecording => 'वीडियो रिकॉर्डिंग शुरू करें';
+
+  @override
+  String get a11yStopRecording => 'रिकॉर्डिंग रोकें';
+
+  @override
+  String get a11ySwitchCamera => 'कैमरा बदलें';
+
+  @override
+  String get a11yMirrorAxis => 'मिरर अक्ष';
+
+  @override
+  String get a11yRotation => 'छवि घुमाव';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees डिग्री';
+  }
+
+  @override
+  String get a11yClose => 'बंद करें';
+
+  @override
+  String get a11yToggleLog => 'लॉग दिखाएँ या छिपाएँ';
+
+  @override
+  String unlockAllFor(String price) {
+    return 'सभी फ़िल्टर $price में';
+  }
 }

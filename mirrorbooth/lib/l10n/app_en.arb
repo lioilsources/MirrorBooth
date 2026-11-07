@@ -165,5 +165,55 @@
         "type": "String"
       }
     }
+  },
+  "a11yTakePhoto": "Take photo",
+  "@a11yTakePhoto": {
+    "description": "VoiceOver/TalkBack label of the shutter button"
+  },
+  "a11yStartRecording": "Start video recording",
+  "@a11yStartRecording": {
+    "description": "Screen-reader label of the record button"
+  },
+  "a11yStopRecording": "Stop recording",
+  "@a11yStopRecording": {
+    "description": "Screen-reader label of the record button while recording"
+  },
+  "a11ySwitchCamera": "Switch camera",
+  "@a11ySwitchCamera": {
+    "description": "Screen-reader label of the front/back camera button"
+  },
+  "a11yMirrorAxis": "Mirror axis",
+  "@a11yMirrorAxis": {
+    "description": "Screen-reader label of the inner ring that turns the mirror axis"
+  },
+  "a11yRotation": "Image rotation",
+  "@a11yRotation": {
+    "description": "Screen-reader label of the outer ring that rotates the whole image"
+  },
+  "a11yDegrees": "{degrees} degrees",
+  "@a11yDegrees": {
+    "description": "Screen-reader value of a ring, e.g. '90 degrees'",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "a11yClose": "Close",
+  "@a11yClose": {
+    "description": "Screen-reader label of an X close button"
+  },
+  "a11yToggleLog": "Show or hide the log",
+  "@a11yToggleLog": {
+    "description": "Screen-reader label of the small button that shows the diagnostic log"
+  },
+  "unlockAllFor": "All filters for {price}",
+  "@unlockAllFor": {
+    "description": "Paywall button: buy the bundle with every paid filter collection",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
   }
 }

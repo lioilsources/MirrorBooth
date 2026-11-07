@@ -4,6 +4,7 @@ import 'package:video_player/video_player.dart';
 import 'dart:io';
 
 import '../../l10n/l10n.dart';
+import '../../services/review_prompter.dart';
 import '../../services/share_service.dart';
 import 'audio_effect_strip.dart';
 import 'video_recording_notifier.dart';
@@ -53,6 +54,7 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
         message: message,
         origin: origin,
       );
+      ref.read(reviewPrompterProvider).videoDone().ignore();
     } catch (e) {
       debugPrint('shareVideo failed: $e');
       notifier.reportError(RecordingError.unexpected);
@@ -201,7 +203,10 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white24),
                     ),
-                    child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    child: Icon(Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                        semanticLabel: context.l10n.a11yClose),
                   ),
                 ),
               ),
@@ -313,7 +318,10 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
                         ),
                         GestureDetector(
                           onTap: notifier.clearError,
-                          child: const Icon(Icons.close, color: Colors.white, size: 18),
+                          child: Icon(Icons.close,
+                        color: Colors.white,
+                        size: 18,
+                        semanticLabel: context.l10n.a11yClose),
                         ),
                       ],
                     ),

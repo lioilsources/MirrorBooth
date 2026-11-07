@@ -7,27 +7,34 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../core/jpeg_encode_utils.dart';
+import '../core/store_links.dart';
 import '../features/video_recording/ffmpeg_service.dart';
 
 /// Shares a finished photo or video with the app name burned in and a store
 /// link in the message, so a post leads back to the app. Only the shared copy
 /// is marked: files saved to the gallery stay clean.
 class ShareService {
-  static const _appStoreUrl = 'https://apps.apple.com/app/id6767824892';
-  static const _playUrl =
-      'https://play.google.com/store/apps/details?id=com.ab.mirrorbooth';
   static const brand = 'Mirror Booth';
 
   /// The Linux share path only opens a mailto: link, which can't carry a file.
   static bool get isSupported => !kIsWeb && !Platform.isLinux;
 
-  static String get storeUrl => Platform.isAndroid ? _playUrl : _appStoreUrl;
+  /// Store link sent with a shared post, tagged so the install is counted
+  /// as coming from sharing.
+  static String get storeUrl => (Platform.isAndroid
+          ? StoreLinks.play()
+          : StoreLinks.appStore())
+      .toString();
 
-  /// Paints the brand into a transparent [width]×[height] layer, bottom-right.
-  /// Sized from the image width so it reads the same at any resolution.
+  /// Paints the brand, with the short web address in small type under it,
+  /// into a transparent [width]×[height] layer, bottom-right. Sized from the
+  /// image width so it reads the same at any resolution.
   static ui.Image watermarkLayer(int width, int height) {
     final fontSize = width * 0.042;
     final margin = width * 0.03;
+    final shadows = [
+      Shadow(color: const Color(0x99000000), blurRadius: fontSize / 4),
+    ];
     final text = TextPainter(
       text: TextSpan(
         text: brand,
@@ -35,11 +42,21 @@ class ShareService {
           color: const Color(0xE6FFFFFF),
           fontSize: fontSize,
           fontWeight: FontWeight.w700,
-          shadows: [
-            Shadow(color: const Color(0x99000000), blurRadius: fontSize / 4),
-          ],
+          shadows: shadows,
         ),
+        children: [
+          TextSpan(
+            text: '\n${StoreLinks.shortUrl}',
+            style: TextStyle(
+              color: const Color(0xCCFFFFFF),
+              fontSize: fontSize * 0.55,
+              fontWeight: FontWeight.w500,
+              shadows: shadows,
+            ),
+          ),
+        ],
       ),
+      textAlign: TextAlign.right,
       textDirection: ui.TextDirection.ltr,
     )..layout();
 

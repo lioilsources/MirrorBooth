@@ -82,5 +82,15 @@
   "failedToJoin": "Impossibile partecipare: {error}",
   "connecting": "Connessione…",
   "share": "Condividi",
-  "shareMessage": "Creato con Mirror Booth: {url}"
+  "shareMessage": "Creato con Mirror Booth: {url}",
+  "a11yTakePhoto": "Scatta foto",
+  "a11yStartRecording": "Avvia registrazione video",
+  "a11yStopRecording": "Interrompi registrazione",
+  "a11ySwitchCamera": "Cambia fotocamera",
+  "a11yMirrorAxis": "Asse dello specchio",
+  "a11yRotation": "Rotazione immagine",
+  "a11yDegrees": "{degrees} gradi",
+  "a11yClose": "Chiudi",
+  "a11yToggleLog": "Mostra o nascondi il registro",
+  "unlockAllFor": "Tutti i filtri a {price}"
 }
