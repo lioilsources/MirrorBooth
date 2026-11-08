@@ -43,7 +43,7 @@ Náhledy potřebují OpenGL 3.3 bez okna: na macOS funguje rovnou, na Linuxu
 | `SPARK_API_KEY` | klíč gateway | |
 | `SPARK_VISION_MODEL` | vizuální ranker | `openclaw-default` (qwen36 vidí obrázky) |
 | `LLM_PROVIDER`, `LLM_PROVIDER_VISION` | `spark` (výchozí) nebo `anthropic` | Anthropic potřebuje `ANTHROPIC_API_KEY` |
-| `SHADERTOY_API_KEY` | harvest, port | zdarma na <https://www.shadertoy.com/myapps> |
+| `SHADERTOY_API_KEY` | volitelné, jen `harvest.py --query` | App Key na <https://www.shadertoy.com/myapps> se novým žadatelům v praxi skoro nevydává — bez něj použij `import_manual.py` (ruční sběr, žádné HTTP na shadertoy.com) |
 | `FLUTTER_ROOT` | `impellerc` validace | `$(dirname $(dirname $(readlink -f $(which flutter))))` — absolutní cesta |
 
 **SPARK okno:** LLM pro ShaderGen běží jen **17:00–01:00** (rozvrh SPARKu, session
@@ -59,15 +59,25 @@ označen „NOT verified by impellerc“ — `integrate.py` takový běh odmítn
 
 ### 1. Harvest ze Shadertoy
 
+**Bez `SHADERTOY_API_KEY`** (App Key se novým žadatelům v praxi skoro
+nevydává) — ruční sběr, žádné volání shadertoy.com:
+
+```bash
+python shadertoy/import_manual.py shadertoy_manual/   # viz shadertoy_manual/README.md
+python shadertoy/harvest.py --from-cache              # klasifikuje vše v rag/shadertoy_cache/
+```
+
+**S klíčem** — totéž navíc automaticky přes oficiální API:
+
 ```bash
 python shadertoy/harvest.py --query webcam --query postprocessing --sort popular --num 50
-python shadertoy/harvest.py --from-cache        # jen překlasifikovat cache (offline)
 ```
 
 Výstup `output/harvest_<ts>/harvest_report.md` (licence, kategorie, skóre, URL) a
-`candidates.json`. Stažené shadery jsou v `rag/shadertoy_cache/` — přerušený harvest
-stačí pustit znovu. Doporučené dotazy: `webcam`, `postprocessing`, `filter`, `image`,
-`cartoon`, `pixel`, `halftone`, `kaleidoscope`, `vhs`, `thermal`, `sketch`.
+`candidates.json`. Stažené i ručně importované shadery jsou ve stejné
+`rag/shadertoy_cache/` — přerušený harvest stačí pustit znovu. Doporučené
+dotazy/hledání: `webcam`, `postprocessing`, `filter`, `image`, `cartoon`,
+`pixel`, `halftone`, `kaleidoscope`, `vhs`, `thermal`, `sketch`.
 
 Kategorie: `image_filter` (vzorkuje kameru, přímý port) › `procedural` (fraktály,
 plasma… — míchá se s kamerou přes kompozitní šablonu) › `data_texture` (šumová
@@ -185,7 +195,8 @@ Goldeny transpileru po záměrné změně: `UPDATE_GOLDEN=1 python -m pytest tes
 
 | Cesta | Co dělá |
 |---|---|
-| `shadertoy/` | API klient + cache, licence, přenositelnost, harvest, transpiler |
+| `shadertoy/` | API klient + cache, ruční import (`import_manual.py`), licence, přenositelnost, harvest, transpiler |
+| `shadertoy_manual/` | staging pro ruční sběr bez API klíče (`_TEMPLATE.json`, `README.md`) |
 | `agents/` | uzly grafu: architect, retriever, coder, transpiler, fixer, validator, preview, ranker, vision ranker |
 | `checks/` | validator v2: kontrakt (regexy + pořadí uniformů), výkonový rozpočet, `impellerc` |
 | `preview/` | headless render (moderngl) + metriky |

@@ -7,3 +7,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 rag/shadertoy_cache/
+shadertoy_manual/*
+!shadertoy_manual/_TEMPLATE.json
+!shadertoy_manual/README.md
