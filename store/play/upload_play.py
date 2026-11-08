@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Push a release and new phone screenshots to Google Play in one edit.
 
-    python3 store/play/upload_play.py 2.4.0 [--track internal] [--no-shots] [--dry-run]
+    python3 store/play/upload_play.py 2.4.1 [--track internal] [--no-shots] [--icon] [--dry-run]
 
 - Downloads app-release.aab from the GitHub release v<version> (gh CLI) and
   uploads it to --track (default internal: testers only, nothing public).
 - Appends the character shots in SHOTS to the en-US phone screenshots, up to
   Play's limit of 8; ones already there (same SHA-1) are skipped.
+- --icon replaces the listing icon with graphics/icon-512-kaleido.png (the
+  launcher icon since 2.4.1; store and launcher icons should match).
 - Release notes come from RELEASE_NOTES.
 
 Uses store/play/play_api.py (service account from PLAY_SA_PATH). --dry-run
@@ -26,10 +28,12 @@ CANDIDATES = HERE.parent / "appstore/screenshots/candidates/play"
 SHOTS = ["cat_01_lr", "comic_01_lr", "alien_01_lr", "alien_02_filters"]
 MAX_SHOTS = 8
 RELEASE_NOTES = {
-    "en-US": "• Art and Fantasy purchases restore on a new phone\n"
+    "en-US": "• New app icon\n"
+             "• Art and Fantasy purchases restore on a new phone\n"
              "• Better TalkBack support and larger text\n"
              "• Shared photos and videos link back to Mirror Booth",
-    "cs-CZ": "• Nákupy Art a Fantasy se obnoví i na novém telefonu\n"
+    "cs-CZ": "• Nová ikona aplikace\n"
+             "• Nákupy Art a Fantasy se obnoví i na novém telefonu\n"
              "• Lepší podpora TalkBacku a většího písma\n"
              "• Sdílené fotky a videa odkazují zpět na Mirror Booth",
 }
@@ -83,6 +87,13 @@ def main():
                     call("POST", base + "/listings/en-US/phoneScreenshots?uploadType=media",
                          base=UPLOAD, raw=data, content_type="image/png")
                 room -= 1
+
+        if "--icon" in argv:
+            print("listing icon", "would be replaced" if dry else "replaced")
+            if not dry:
+                call("POST", base + "/listings/en-US/icon?uploadType=media", base=UPLOAD,
+                     raw=(HERE / "graphics/icon-512-kaleido.png").read_bytes(),
+                     content_type="image/png")
 
         if dry:
             call("DELETE", base)
