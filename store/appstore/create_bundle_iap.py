@@ -36,7 +36,7 @@ def put(part, chunk):
 
 def main():
     argv = sys.argv[1:]
-    price = argv[argv.index("--price") + 1] if "--price" in argv else "5.99"
+    price = argv[argv.index("--price") + 1] if "--price" in argv else "4.99"
     iaps = {i["attributes"]["productId"]: i
             for i in call("GET", f"/v1/apps/{APP_ID}/inAppPurchasesV2?limit=50")["data"]}
     template = iaps[TEMPLATE]["id"]

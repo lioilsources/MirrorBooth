@@ -65,7 +65,7 @@ anyway and combines single words into phrases such as "simetria facial".
 Run the upload once the `*_unlock` purchases are approved: while a purchase is
 waiting for review, ASC refuses a new image ("change pending review").
 
-## Bundle: all collections ($5.99, includes every future collection)
+## Bundle: all collections ($4.99, includes every future collection)
 
     python3 store/appstore/create_bundle_iap.py   # ASC: create, price, territories, submit
     python3 store/play/create_bundle_product.py   # Play: create and activate

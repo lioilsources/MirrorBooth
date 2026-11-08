@@ -30,7 +30,7 @@ def money(usd):
 
 def main():
     argv = sys.argv[1:]
-    usd = argv[argv.index("--price") + 1] if "--price" in argv else "5.99"
+    usd = argv[argv.index("--price") + 1] if "--price" in argv else "4.99"
     base = f"/applications/{PACKAGE}/oneTimeProducts"
     template = call("GET", f"{base}/{TEMPLATE}")
     option = template["purchaseOptions"][0]
