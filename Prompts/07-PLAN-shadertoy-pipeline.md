@@ -16,7 +16,7 @@ a integrace do aplikace je ruční („zkopíruj .frag, zaregistruj v pubspec a
 Cíl v2: napojit pipeline na **Shadertoy** (největší veřejná knihovna GLSL
 shaderů, oficiální REST API) a udělat z ní end-to-end nástroj, který
 
-1. sklízí kandidátní shadery ze Shadertoy (vyhledávání, cache, licenční filtr),
+1. sklízí kandidátní shadery ze Shadertoy (seznam vybraný uživatelem nebo API, cache, licenční filtr),
 2. buď je **deterministicky portuje** na MirrorBooth kontrakt (režim *port*),
    nebo je použije jen jako **RAG inspiraci** pro nový shader (režim *inspire*),
 3. ověří výsledek skutečným Flutter kompilátorem (`impellerc`), ne regexem,
@@ -30,7 +30,7 @@ shaderů, oficiální REST API) a udělat z ní end-to-end nástroj, který
 
 | # | Rozhodnutí | Důvod |
 |---|-----------|-------|
-| A | „ToyShader knihovna“ = **Shadertoy** (shadertoy.com), přístup přes oficiální API `https://www.shadertoy.com/api/v1/…?key=APPKEY`. App key si uživatel vytvoří na `shadertoy.com/myapps` a uloží do `pipeline/.env` jako `SHADERTOY_API_KEY`. | Jiná knihovna s tímto jménem neexistuje. Pokud se ukáže, že autor myslel jiný zdroj, změní se pouze modul `shadertoy/client.py`. |
+| A | „ToyShader knihovna“ = **Shadertoy** (shadertoy.com). Oficiální App Key (`shadertoy.com/myapps`) se v praxi dlouhodobě novým žadatelům nevydává — formulář běžně nikdy neodpoví, takže na něj pipeline nesmí být závislá. `shadertoy/client.py` má proto **dva zaměnitelné backendy** se stejným výstupním tvarem (`model.py`): `api` (oficiální `/api/v1/…?key=`, aktivní **jen** když je v `.env` nastaven `SHADERTOY_API_KEY`) a `scrape` (**výchozí**, bez klíče) — stáhne veřejnou view-stránku `https://www.shadertoy.com/view/<id>` a vyparsuje shader JSON, který stránka sama vkládá do `<script>` pro svůj WebGL přehrávač; žádné přihlášení ani klíč není potřeba pro shadery, které autor nechal veřejné. `scrape` backend **nikdy neprohledává/nekrawluje** vyhledávání ani výpis — stahuje výhradně jednotlivé shadery podle ID/URL, které si uživatel sám vybral prohlížením shadertoy.com v běžném prohlížeči (viz Fáze 1). Pokud klíč přesto později přijde (manuální žádost, Shadertoy Discord), přepnutí na `api` backend je jen změna konfigurace, downstream kód se nemění. | Klíč nikdy nebyl zaručený; stahování jediné view-stránky po jedné je podstatně menší riziko vůči ToS než automatizované hromadné vyhledávání a zachovává stejné rozhraní pro zbytek pipeline. |
 | B | **Výchozí licence Shadertoy je CC BY-NC-SA 3.0 — nekomerční.** MirrorBooth prodává kolekce Art/Fantasy jako IAP. Proto: režim *port* smí přímo převzít kód **pouze** ze shaderů, které mají v hlavičce explicitně permisivní licenci (MIT, CC0, public domain, CC BY, Unlicense, BSD). Vše ostatní jde jen do RAG jako inspirace (technika, ne kód) a výstupní shader píše LLM od nuly. Každý portovaný `.frag` má povinnou atribuční hlavičku (autor, URL, licence). | Právní riziko pro placené kolekce. Toto pravidlo nesmí obejít žádný CLI přepínač; jen `--i-accept-nc-license` pro lokální experimenty, který zapíše `license_ok=false` do metadat a `integrate.py` takový shader odmítne. |
 | C | LLM zůstává na lokálním OpenAI-kompatibilním endpointu („Spark“, viz `config.py`). Přidej ale abstrakci `llm.py` s providerem `spark` (výchozí) a volitelně `anthropic` (oficiální `anthropic` SDK, model `claude-opus-5`) — ten je potřeba hlavně pro vizuálního rankera (Fáze 5), protože lokální llama3 nevidí obrázky. Bez nastaveného `ANTHROPIC_API_KEY` se vizuální ranker vypne a pipeline funguje jako dnes. | Uživatel má lokální inferenci; nechceme tvrdou závislost na cloudu. |
 | D | Cílová Flutter verze je ta z CI (`FLUTTER_VERSION: '3.41.x'`, Impeller). Kompilační validace používá `impellerc` z Flutter SDK (`FLUTTER_ROOT`), ne `glslangValidator`. `glslangValidator` zůstává jen jako fallback, když `FLUTTER_ROOT` není nastaven. | Regex validace dnes propouští konstrukty, které Impeller odmítne (`fwidth`, `texelFetch`, `bool` uniformy, `uint`…). |
@@ -43,9 +43,9 @@ shaderů, oficiální REST API) a udělat z ní end-to-end nástroj, který
 
 ```
                      ┌──────────────── harvest.py (dávkově) ────────────────┐
-Shadertoy API ──────►│ client (cache JSON) → license_classifier            │
-                     │        → portability_classifier → harvest_report.md │
-                     └──────────────┬─────────────────────┬────────────────┘
+Shadertoy (scrape  ─►│ client (cache JSON) → license_classifier            │
+view-page, bez klíče;│        → portability_classifier → harvest_report.md │
+volitelně API)       └──────────────┬─────────────────────┬────────────────┘
                                     │ permisivní licence    │ všechny (jen text)
                                     ▼                       ▼
                              režim PORT              rag/ingest_shadertoy.py → ChromaDB
@@ -136,12 +136,26 @@ protože každá fáze staví na předchozí.
 
 Nový balíček `pipeline/shadertoy/`:
 
-- `client.py` — `list_ids()`, `search(query, sort="popular"|"newest"|"love"|"hot", filter=…, from_=0, num=25)`,
-  `get(id)`. Endpointy: `GET /api/v1/shaders`, `GET /api/v1/shaders/query/{q}`,
-  `GET /api/v1/shaders/{id}`, vždy s `?key=`. API vrací jen shadery s viditelností
-  „public + API“. Cache surového JSON do `pipeline/rag/shadertoy_cache/<id>.json`
-  (gitignore). Zdvořilý rate limit (≤ 1 req/s, exponenciální backoff na 429/5xx).
-  Bez klíče: jasná chybová hláška s odkazem na `shadertoy.com/myapps`.
+- `client.py` — jedno rozhraní `get(id) -> Shader`, dva backendy voleny podle
+  přítomnosti `SHADERTOY_API_KEY`:
+  - **`ScrapeBackend` (výchozí, bez klíče).** `GET https://www.shadertoy.com/view/<id>`
+    jako běžný prohlížeč (vlastní `User-Agent`, bez cookies), z HTML vytáhne
+    inline JSON, který stránka sama posílá do WebGL přehrávače (hledej
+    `var gShaderInfo` / proměnnou předávanou do `useShader`/`initShader` —
+    přesný identifikátor si ověř v aktuálním zdroji stránky, Shadertoy ho
+    nedokumentuje a může se změnit). Funguje jen pro shadery, které autor
+    nechal **veřejné** (ne „Private“/„Unlisted“ vyžadující přihlášení).
+    Nikdy nevolá vyhledávání ani výpis (`/results`, interní `POST /shadertoy`
+    search endpoint) — jen jednotlivé view-stránky podle ID, které dodá
+    uživatel (viz `harvest.py` níže). Žádné přihlašovací údaje se nikam
+    neukládají.
+  - **`ApiBackend` (volitelný, jen když je klíč v `.env`).** Oficiální
+    `GET /api/v1/shaders/{id}?key=` + `GET /api/v1/shaders/query/{q}?key=`
+    pro vyhledávání — tohle backend `scrape` nedělá vůbec.
+  - Oba backendy vrací stejný tvar (`model.py`), downstream kód o výběru neví.
+  - Cache surového JSON do `pipeline/rag/shadertoy_cache/<id>.json` (gitignore).
+    Zdvořilý rate limit (≤ 1 req/s, exponenciální backoff na 429/5xx) platí pro
+    oba backendy — `scrape` obzvlášť, ať nevypadá jako bot.
 - `model.py` — pydantic modely pro odpověď: `Shader.info` (id, name, username, description,
   tags, likes, viewed, date), `renderpass[]` (`type`: image/common/buffer/sound/cubemap,
   `code`, `inputs[].ctype`: texture/webcam/video/buffer/cubemap/keyboard/music/musicstream/
@@ -152,14 +166,25 @@ Nový balíček `pipeline/shadertoy/`:
   `license="CC BY-NC-SA 3.0 (default)"`. Testy na fixturách (min. 10 reálných hlaviček).
 - `portability.py` — kategorizace podle tabulky výše + `portability_score` 0–100
   (odečty za každý problematický konstrukt, počet řádků, odhad smyček).
-- `harvest.py` (CLI): `--query webcam --sort popular --num 50 [--tags postprocessing]`
-  → stáhne, klasifikuje, zapíše `output/harvest_<ts>/harvest_report.md` (tabulka:
-  id, název, autor, licence, kategorie, skóre, URL) a `candidates.json`.
-  Doporučené dotazy pro první běh: `webcam`, `postprocessing`, `filter`, `image`,
-  `cartoon`, `pixel`, `halftone`, `kaleidoscope`, `vhs`, `thermal`, `sketch`.
+- `harvest.py` (CLI): **primární režim** `--urls candidates.txt` (jeden
+  Shadertoy URL nebo holé ID na řádek) — vezme seznam, který si uživatel
+  sestavil sám procházením shadertoy.com ve svém prohlížeči (vlastní
+  přihlášení, vlastní vyhledávání na webu — to API klíč nepotřebuje, jen náš
+  CLI ho bez klíče nedělá za něj), stáhne je přes `ScrapeBackend`, klasifikuje
+  a zapíše `output/harvest_<ts>/harvest_report.md` (tabulka: id, název, autor,
+  licence, kategorie, skóre, URL) a `candidates.json`. **Volitelný režim**
+  `--query webcam --sort popular --num 50` dělá totéž přes `ApiBackend` a
+  funguje jen s nastaveným `SHADERTOY_API_KEY` — bez klíče skončí jasnou
+  hláškou, ne tracebackem. Tipy na hledání přímo na shadertoy.com při
+  sestavování `candidates.txt`: `webcam`, `postprocessing`, `filter`, `image`,
+  `cartoon`, `pixel`, `halftone`, `kaleidoscope`, `vhs`, `thermal`, `sketch`,
+  a u každého kandidáta rovnou zkontrolovat licenci v popisu/kódu dřív, než se
+  přidá do seznamu.
 
-**Hotovo, když:** `harvest.py` na 50 shaderech proběhne, report ukazuje rozdělení
-licencí a kategorií; testy klienta běží na nahraných fixturách (`responses`/`respx`), bez sítě.
+**Hotovo, když:** `harvest.py --urls candidates.txt` na ručně sestaveném seznamu
+~20–50 shaderů proběhne bez klíče, report ukazuje rozdělení licencí a kategorií;
+testy klienta běží na nahraných fixturách obou backendů (`responses`/`respx` pro
+`api`, uložené HTML fixtury pro `scrape`), bez sítě.
 
 ### Fáze 2 — RAG ingest Shadertoy
 
@@ -286,7 +311,7 @@ Pak `pipeline/integrate.py --run-dir output/<run> --enum-name hologram --label H
 | Vrstva | Nástroj | Síť/LLM | CI |
 |--------|---------|---------|----|
 | licence, portability, transpile, contract checks, integrate (na kopiích souborů v tmp) | `pytest`, golden soubory | ne | ano |
-| Shadertoy klient | `pytest` + nahrané fixtury (`respx`) | ne (marker `network` pro živý smoke test) | ano |
+| Shadertoy klient (oba backendy) | `pytest` + nahrané fixtury (`respx` pro `api`, uložené HTML pro `scrape`) | ne (marker `network` pro živý smoke test obou) | ano |
 | kompilace `impellerc` nad 24 stávajícími shadery | `pytest -m flutter` | ne, ale potřebuje SDK | lokálně; v CI skip |
 | headless render | `pytest -m gl` | ne, potřebuje EGL | lokálně |
 | celý graf | `pytest -m llm` s mock LLM (předpřipravené odpovědi) | ne | ano |
@@ -304,8 +329,18 @@ Pak `pipeline/integrate.py --run-dir output/<run> --enum-name hologram --label H
   kompilace `impellerc`; regexy jsou jen rychlý předfiltr.
 - **Y-flip** dvakrát (fragCoord i UV textury) — nejčastější zdroj „obraz vzhůru nohama“.
   Golden test s asymetrickým testovacím obrázkem v headless renderu to musí odhalit.
-- **Shadertoy API** — nedokumentované limity, občasné 403 přes proxy. Cache + backoff;
-  harvest musí být přerušitelný a znovu spustitelný.
+- **Shadertoy nedává API klíče** — proto je `scrape` backend výchozí (viz
+  rozhodnutí A), ne krize, kterou je třeba řešit znovu později. Riziko se tím
+  přesouvá na jiné: formát view-stránky je nedokumentovaný a Shadertoy ho může
+  změnit beze varování → `ScrapeBackend.get()` musí při neúspěšném parsování
+  selhat hlasitě s jasnou hláškou (ne tiše vrátit prázdný shader), a `license.py`
+  i `portability.py` testovat proti uloženým HTML fixturám, aby změna na webu
+  shodila testy dřív než produkci. Zkusit o klíč zažádat znovu (e-mail, Shadertoy
+  Discord) může běžet souběžně, ale nic na něm nečeká — přepnutí na `ApiBackend`
+  je jen `.env`.
+- **Shadertoy API** (když klíč přece přijde) — nedokumentované limity, občasné
+  403 přes proxy. Cache + backoff; harvest musí být přerušitelný a znovu
+  spustitelný.
 - **Stínění `fragColor`** — pokud kompilátor odmítne, přejmenovat parametr (viz tabulka).
 
 ## Co NEDĚLAT
@@ -314,12 +349,15 @@ Pak `pipeline/integrate.py --run-dir output/<run> --enum-name hologram --label H
 - Nepřidávat závislost aplikace na pipeline (pipeline zůstává vývojářský nástroj mimo Flutter build).
 - Nevkládat do repa žádný Shadertoy kód s nepermisivní licencí, ani „dočasně“.
 - Nevkládat do repa fotky lidí bez jasné licence.
+- Nedávat `ScrapeBackend` do ruky automatické vyhledávání/crawlování — jen
+  jednotlivé shadery podle ID/URL, které do seznamu přidal člověk.
 - Neobcházet `flutter analyze`/`flutter test` v `integrate.py`.
 - Neimplementovat multi-pass buffery v této iteraci.
 
 ## Definition of Done
 
-1. `harvest.py --query webcam --num 50` vytvoří report s licencemi a kategoriemi.
+1. `harvest.py --urls candidates.txt` (bez API klíče) vytvoří report s licencemi
+   a kategoriemi pro ručně sestavený seznam shaderů.
 2. `run.py --from-shadertoy <permisivní image_filter id>` vyprodukuje `.frag`, který
    projde `impellerc` pro Metal/GLES/Vulkan a má náhledy.
 3. `run.py --style "…"` (inspire) používá Shadertoy RAG s atribucí.

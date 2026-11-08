@@ -95,7 +95,8 @@ pip install -r requirements.txt            # po Fázi 0 navíc: pip install -e "
 
 První `pip install` a první běh stáhnou z internetu embedding model z Hugging
 Face (~90 MB) a PyTorch pro CPU (~200 MB). Potom pipeline běží offline, s výjimkou
-Shadertoy API a případného Anthropic API.
+`harvest.py` (scrape view-stránek shadertoy.com, nebo volitelně oficiální API)
+a případného Anthropic API.
 
 ### 2.2 Klíče a `.env`
 
@@ -108,16 +109,42 @@ cp .env.example .env
 | `SPARK_BASE_URL=http://192.168.88.66:8000/v1` | SPARK | vše |
 | `SPARK_MODEL=<id z /v1/models>` | SPARK | vše |
 | `SPARK_API_KEY=dummy` | – | vLLM bez auth; jinak skutečný token |
-| `SHADERTOY_API_KEY=…` | shadertoy.com → přihlásit → *Profile → Apps* → *Create app* → zkopírovat App Key | harvest, port režim (Fáze 1+) |
+| `SHADERTOY_API_KEY=…` (volitelné) | shadertoy.com → *Profile → Apps* → *Create app*. **V praxi se novým žadatelům dlouho nevydává** — formulář běžně nikdy neodpoví. Zkus zažádat (nebo napsat na Shadertoy Discord), ale neblokuj na tom; bez klíče běží výchozí `scrape` backend a proměnná se nenastavuje vůbec. | jen volitelný `--query` režim harvestu (ApiBackend) |
 | `FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))` | M2 | `impellerc` validace (Fáze 4) |
 | `LLM_PROVIDER=spark` | – | výchozí |
 | `SPARK_VISION_BASE_URL`, `SPARK_VISION_MODEL` **nebo** `ANTHROPIC_API_KEY` | viz 1.2 | vision ranker (Fáze 5), volitelné |
 
-Shadertoy: účet je zdarma, App Key vzniká okamžitě. Ověření:
+Shadertoy bez klíče (výchozí stav — nic se nenastavuje). Ověření, že scraping
+view-stránky funguje z tvé sítě/IP (žádné přihlášení, jen běžný GET jako
+prohlížeč; vyber si jakékoli ID veřejného shaderu, které znáš z webu):
+
+```bash
+curl -sA "Mozilla/5.0" "https://www.shadertoy.com/view/<ID>" | grep -o 'renderpass' | head -1
+#   → řádek "renderpass" znamená, že stránka obsahuje vložený shader JSON;
+#     prázdný výstup = Shadertoy formát stránky změnil nebo shader je neveřejný
+#     → zkontroluj ScrapeBackend parsování dřív, než pustíš harvest na víc ID.
+```
+
+Pokud později přece dorazí App Key (viz tabulka výše), ověření oficiálního API:
 
 ```bash
 curl -s "https://www.shadertoy.com/api/v1/shaders/query/webcam?num=3&key=$SHADERTOY_API_KEY"
 ```
+
+### 2.2b Sestavení `candidates.txt` (bez API klíče)
+
+Bez klíče nejde dělat programové vyhledávání, takže výběr kandidátů je ruční,
+jednou za čas, přímo na webu — API klíč k vyhledávání na samotném webu
+potřebný není, chybí jen pro to, aby to dělal CLI za tebe:
+
+1. Procházej shadertoy.com ve svém prohlížeči (přihlášený vlastním účtem,
+   žádný app key potřeba), hledej podle tipů v `07-PLAN-shadertoy-pipeline.md`
+   Fáze 1 (`webcam`, `postprocessing`, `kaleidoscope`, `vhs`, `halftone`…).
+2. U každého kandidáta hned na stránce zkontroluj licenci v popisu / hlavičce
+   kódu — MIT/CC0/public domain/Unlicense/BSD/čisté CC BY je ok pro *port*,
+   cokoli jiné (včetně chybějící hlavičky) jde jen do *inspire*.
+3. Zkopíruj URL (nebo jen ID z konce URL) do `pipeline/candidates.txt`, jeden
+   na řádek. 20–50 shaderů stačí na první harvest.
 
 ### 2.3 Telefon a Flutter
 
@@ -166,7 +193,9 @@ export PYOPENGL_PLATFORM=egl
 
 1. `curl …/v1/models` ze M2 vrací tvůj coder model. ☐
 2. `find … -name impellerc` na M2 najde binárku; `flutter --version` = 3.41.x. ☐
-3. `curl` na Shadertoy API s klíčem vrací JSON, ne 401. ☐
+3. `curl` na veřejnou view-stránku známého shaderu (bez klíče) obsahuje
+   `renderpass` v HTML — scrape backend má na čem parsovat. ☐
+   (Jen pokud máš App Key: `curl` na Shadertoy API s klíčem vrací JSON, ne 401.) ☐
 4. `cd pipeline && source .venv/bin/activate && python rag/ingest.py` proběhne
    (stáhne embedding model, naplní `rag/db/`). ☐
 5. `python run.py --style "kaleidoscope mirror" --name kaleido_test` doběhne na
@@ -180,7 +209,9 @@ export PYOPENGL_PLATFORM=egl
 ```bash
 cd MirrorBooth/pipeline && source .venv/bin/activate
 
-python shadertoy/harvest.py --query webcam --sort popular --num 50
+python shadertoy/harvest.py --urls candidates.txt
+#   (bez SHADERTOY_API_KEY → scrape backend; s klíčem místo toho jde i
+#   `--query webcam --sort popular --num 50`)
 #   → output/harvest_<ts>/harvest_report.md ; vyber permisivní image_filter id
 
 python run.py --from-shadertoy <id> --name hologram
