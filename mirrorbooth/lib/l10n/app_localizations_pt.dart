@@ -310,3 +310,311 @@ class AppLocalizationsPt extends AppLocalizations {
     return 'Todos os filtros por $price';
   }
 }
+
+/// The translations for Portuguese, as used in Portugal (`pt_PT`).
+class AppLocalizationsPtPt extends AppLocalizationsPt {
+  AppLocalizationsPtPt() : super('pt_PT');
+
+  @override
+  String get filterNone => 'Nenhum';
+
+  @override
+  String get filterGlow => 'Brilho';
+
+  @override
+  String get filterSlim => 'Magro';
+
+  @override
+  String get filterDoll => 'Boneca';
+
+  @override
+  String get filterChibi => 'Chibi';
+
+  @override
+  String get filterLips => 'Lábios';
+
+  @override
+  String get filterBigNose => 'Nariz';
+
+  @override
+  String get filterAlien => 'Alien';
+
+  @override
+  String get filterMelt => 'Derreter';
+
+  @override
+  String get filterBigEars => 'Orelhas';
+
+  @override
+  String get filterLongNeck => 'Pescoço';
+
+  @override
+  String get filterPencil => 'Lápis';
+
+  @override
+  String get filterComic => 'BD';
+
+  @override
+  String get filterGlitch => 'Glitch';
+
+  @override
+  String get filterNeon => 'Néon';
+
+  @override
+  String get filterThermal => 'Calor';
+
+  @override
+  String get filterOil => 'Óleo';
+
+  @override
+  String get filterCrt => 'CRT';
+
+  @override
+  String get filterPopArt => 'Pop';
+
+  @override
+  String get filterVampire => 'Vampiro';
+
+  @override
+  String get filterZombie => 'Zombie';
+
+  @override
+  String get filterGhost => 'Fantasma';
+
+  @override
+  String get filterDemon => 'Demónio';
+
+  @override
+  String get filterCyborg => 'Ciborgue';
+
+  @override
+  String get filterFrozen => 'Geada';
+
+  @override
+  String get collectionPretty => 'Bonito';
+
+  @override
+  String get collectionUgly => 'Feio';
+
+  @override
+  String get collectionArt => 'Arte';
+
+  @override
+  String get collectionFantasy => 'Fantasia';
+
+  @override
+  String get audioEffectNone => 'Normal';
+
+  @override
+  String get audioEffectChiptune => '8 bits';
+
+  @override
+  String get audioEffectSlowMo => 'Lento';
+
+  @override
+  String get audioEffectChipmunk => 'Esquilo';
+
+  @override
+  String get audioEffectEcho => 'Eco';
+
+  @override
+  String get audioEffectUnderwater => 'Debaixo de água';
+
+  @override
+  String get audioEffectRobot => 'Robô';
+
+  @override
+  String get audioEffectReverse => 'Ao contrário';
+
+  @override
+  String get mirrorSideLeftShort => 'E';
+
+  @override
+  String get mirrorSideRightShort => 'D';
+
+  @override
+  String get mirrorSideLeft => 'Esquerda';
+
+  @override
+  String get mirrorSideRight => 'Direita';
+
+  @override
+  String get lensFront => 'FRONTAL';
+
+  @override
+  String get lensBack => 'TRASEIRA';
+
+  @override
+  String get photoSaveFailedTitle => 'Não foi possível guardar a fotografia';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get galleryAccessDenied => 'O acesso à fototeca foi negado.';
+
+  @override
+  String get galleryNotEnoughSpace =>
+      'Não há espaço de armazenamento suficiente.';
+
+  @override
+  String get galleryUnsupportedFormat =>
+      'Este formato de ficheiro não é suportado.';
+
+  @override
+  String get genericError => 'Algo correu mal. Tente novamente.';
+
+  @override
+  String shaderLoadError(String error) {
+    return 'Não foi possível carregar os filtros: $error';
+  }
+
+  @override
+  String get cameraPermissionDenied => 'Acesso à câmara negado';
+
+  @override
+  String get noCamerasAvailable => 'Nenhuma câmara disponível';
+
+  @override
+  String get cameraStartFailed => 'Não foi possível iniciar a câmara.';
+
+  @override
+  String get controlsHint => 'arrastar = rodar  •  ⊙ = foto  •  ● = vídeo';
+
+  @override
+  String get controlsHintVolume => 'volume = foto  •  manter volume = vídeo';
+
+  @override
+  String collectionUnlocked(String collection) {
+    return 'Coleção $collection desbloqueada ✓';
+  }
+
+  @override
+  String collectionFilters(String collection) {
+    return 'Filtros $collection';
+  }
+
+  @override
+  String get paywallPreviewFree =>
+      'A pré-visualização é gratuita. Desbloqueie para guardar fotografias e vídeos.';
+
+  @override
+  String get storeUnavailable => 'Loja indisponível';
+
+  @override
+  String get loadingPrice => 'A carregar o preço…';
+
+  @override
+  String unlockFor(String price) {
+    return 'Desbloquear por $price';
+  }
+
+  @override
+  String get restorePurchases => 'Restaurar compras';
+
+  @override
+  String get purchaseFailed => 'A compra falhou';
+
+  @override
+  String get discardVideoTitle => 'Eliminar o vídeo?';
+
+  @override
+  String get discardVideoBody =>
+      'Esta gravação ainda não foi guardada na galeria.';
+
+  @override
+  String get keep => 'Manter';
+
+  @override
+  String get discard => 'Eliminar';
+
+  @override
+  String get processing => 'A processar…';
+
+  @override
+  String get applyingEffect => 'A aplicar o efeito…';
+
+  @override
+  String get saved => 'Guardado ✓';
+
+  @override
+  String get saveToCameraRoll => 'Guardar na galeria';
+
+  @override
+  String get micPermissionRequired =>
+      'É necessário acesso ao microfone para gravar vídeo.';
+
+  @override
+  String get recordingTooShort =>
+      'Gravação demasiado curta — mantenha premido mais tempo.';
+
+  @override
+  String get videoAssemblyFailed =>
+      'Não foi possível criar o vídeo. Tente novamente.';
+
+  @override
+  String get audioEffectFailed => 'O efeito de áudio falhou.';
+
+  @override
+  String get roomEntryPrompt =>
+      'Introduza o ID de uma sala para iniciar uma videochamada espelhada.';
+
+  @override
+  String get roomIdHint => 'ID da sala';
+
+  @override
+  String get mirrorSideTitle => 'Lado do espelho';
+
+  @override
+  String get joinCall => 'Entrar na chamada';
+
+  @override
+  String failedToJoin(String error) {
+    return 'Não foi possível entrar: $error';
+  }
+
+  @override
+  String get connecting => 'A ligar…';
+
+  @override
+  String get share => 'Partilhar';
+
+  @override
+  String shareMessage(String url) {
+    return 'Feito com o Mirror Booth: $url';
+  }
+
+  @override
+  String get a11yTakePhoto => 'Tirar fotografia';
+
+  @override
+  String get a11yStartRecording => 'Iniciar gravação de vídeo';
+
+  @override
+  String get a11yStopRecording => 'Parar gravação';
+
+  @override
+  String get a11ySwitchCamera => 'Trocar de câmara';
+
+  @override
+  String get a11yMirrorAxis => 'Eixo do espelho';
+
+  @override
+  String get a11yRotation => 'Rotação da imagem';
+
+  @override
+  String a11yDegrees(int degrees) {
+    return '$degrees graus';
+  }
+
+  @override
+  String get a11yClose => 'Fechar';
+
+  @override
+  String get a11yToggleLog => 'Mostrar ou ocultar o registo';
+
+  @override
+  String unlockAllFor(String price) {
+    return 'Todos os filtros por $price';
+  }
+}
