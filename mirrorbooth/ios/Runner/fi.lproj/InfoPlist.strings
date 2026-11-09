@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth käyttää kameraa symmetrisen peilin esikatselun luomiseen.";
+"NSMicrophoneUsageDescription" = "MirrorBooth käyttää mikrofonia äänen tallentamiseen peilivideoihisi.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth tallentaa peilikuvasi ja -videosi kuvakirjastoon.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth tallentaa peilikuvasi ja -videosi kuvakirjastoon.";

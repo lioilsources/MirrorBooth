@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth utilitza la càmera per crear la vista prèvia simètrica del mirall.";
+"NSMicrophoneUsageDescription" = "MirrorBooth utilitza el micròfon per gravar el so dels teus vídeos mirall.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth desa les teves fotos i vídeos mirall a la fototeca.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth desa les teves fotos i vídeos mirall a la fototeca.";

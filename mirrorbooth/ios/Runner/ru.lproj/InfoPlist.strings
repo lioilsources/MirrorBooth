@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth использует камеру для создания симметричного зеркального предпросмотра.";
+"NSMicrophoneUsageDescription" = "MirrorBooth использует микрофон для записи звука ваших зеркальных видео.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth сохраняет ваши зеркальные фото и видео в медиатеку.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth сохраняет ваши зеркальные фото и видео в медиатеку.";

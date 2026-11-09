@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth உங்கள் சமச்சீர் கண்ணாடி முன்னோட்டத்தை உருவாக்க கேமராவைப் பயன்படுத்துகிறது.";
+"NSMicrophoneUsageDescription" = "MirrorBooth உங்கள் கண்ணாடி வீடியோக்களுக்கு ஒலியைப் பதிவு செய்ய மைக்ரோஃபோனைப் பயன்படுத்துகிறது.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth உங்கள் கண்ணாடி புகைப்படங்களையும் வீடியோக்களையும் புகைப்பட நூலகத்தில் சேமிக்கிறது.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth உங்கள் கண்ணாடி புகைப்படங்களையும் வீடியோக்களையும் புகைப்பட நூலகத்தில் சேமிக்கிறது.";

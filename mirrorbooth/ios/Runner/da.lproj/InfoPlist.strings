@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth bruger kameraet til at skabe din symmetriske spejlvisning.";
+"NSMicrophoneUsageDescription" = "MirrorBooth bruger mikrofonen til at optage lyd til dine spejlvideoer.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth gemmer dine spejlbilleder og -videoer i fotobiblioteket.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth gemmer dine spejlbilleder og -videoer i fotobiblioteket.";

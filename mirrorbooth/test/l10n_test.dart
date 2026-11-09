@@ -7,7 +7,7 @@ import 'package:mirrorbooth/l10n/l10n.dart';
 void main() {
   test('every supported locale loads and labels every filter and effect',
       () async {
-    expect(AppLocalizations.supportedLocales.length, 13);
+    expect(AppLocalizations.supportedLocales.length, 45);
     for (final locale in AppLocalizations.supportedLocales) {
       final l = await AppLocalizations.delegate.load(locale);
       for (final f in MirrorFilter.values) {

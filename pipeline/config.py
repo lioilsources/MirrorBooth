@@ -14,7 +14,7 @@ LLMProvider = Literal["spark", "anthropic"]
 
 # LiteLLM gateway on SPARK. ShaderGen window per the SPARK schedule: llm 17:00-01:00 with
 # `openclaw-default` (qwen36, also vision) and `bench-nano` (Nano-30B); outside it no LLM is served.
-DEFAULT_GATEWAY_URL = "http://192.168.88.66:8080/v1"
+DEFAULT_GATEWAY_URL = "http://localhost:8080/v1"
 
 
 class Settings(BaseSettings):

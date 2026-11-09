@@ -38,7 +38,7 @@ Náhledy potřebují OpenGL 3.3 bez okna: na macOS funguje rovnou, na Linuxu
 
 | Proměnná | K čemu | Poznámka |
 |---|---|---|
-| `SPARK_BASE_URL` | LiteLLM gateway na SPARKu | `http://192.168.88.66:8080/v1` |
+| `SPARK_BASE_URL` | LiteLLM gateway na SPARKu | `http://SPARK_HOST:8080/v1` |
 | `SPARK_MODEL` | coder/architect/ranker/fixer | `openclaw-default` (qwen36) nebo `bench-nano` |
 | `SPARK_API_KEY` | klíč gateway | |
 | `SPARK_VISION_MODEL` | vizuální ranker | `openclaw-default` (qwen36 vidí obrázky) |

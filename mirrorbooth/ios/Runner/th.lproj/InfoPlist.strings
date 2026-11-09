@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth ใช้กล้องเพื่อสร้างตัวอย่างกระจกแบบสมมาตรของคุณ";
+"NSMicrophoneUsageDescription" = "MirrorBooth ใช้ไมโครโฟนเพื่ออัดเสียงสำหรับวิดีโอกระจกของคุณ";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth บันทึกภาพถ่ายและวิดีโอกระจกของคุณลงในคลังรูปภาพ";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth บันทึกภาพถ่ายและวิดีโอกระจกของคุณลงในคลังรูปภาพ";

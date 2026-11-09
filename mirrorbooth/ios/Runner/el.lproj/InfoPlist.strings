@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "Το MirrorBooth χρησιμοποιεί την κάμερα για να δημιουργήσει τη συμμετρική προεπισκόπηση καθρέφτη.";
+"NSMicrophoneUsageDescription" = "Το MirrorBooth χρησιμοποιεί το μικρόφωνο για να ηχογραφεί τον ήχο των βίντεο καθρέφτη σου.";
+"NSPhotoLibraryAddUsageDescription" = "Το MirrorBooth αποθηκεύει τις φωτογραφίες και τα βίντεο καθρέφτη στη βιβλιοθήκη φωτογραφιών.";
+"NSPhotoLibraryUsageDescription" = "Το MirrorBooth αποθηκεύει τις φωτογραφίες και τα βίντεο καθρέφτη στη βιβλιοθήκη φωτογραφιών.";

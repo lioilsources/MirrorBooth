@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth uporablja kamero za ustvarjanje simetričnega zrcalnega predogleda.";
+"NSMicrophoneUsageDescription" = "MirrorBooth uporablja mikrofon za snemanje zvoka tvojih zrcalnih videoposnetkov.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth shranjuje tvoje zrcalne fotografije in videoposnetke v knjižnico fotografij.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth shranjuje tvoje zrcalne fotografije in videoposnetke v knjižnico fotografij.";

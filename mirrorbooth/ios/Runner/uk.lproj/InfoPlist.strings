@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth використовує камеру для створення симетричного дзеркального попереднього перегляду.";
+"NSMicrophoneUsageDescription" = "MirrorBooth використовує мікрофон для запису звуку ваших дзеркальних відео.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth зберігає ваші дзеркальні фото та відео до медіатеки.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth зберігає ваші дзеркальні фото та відео до медіатеки.";
