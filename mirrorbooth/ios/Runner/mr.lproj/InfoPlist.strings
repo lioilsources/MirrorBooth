@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth तुमचे सममित मिरर पूर्वावलोकन तयार करण्यासाठी कॅमेरा वापरते.";
+"NSMicrophoneUsageDescription" = "MirrorBooth तुमच्या मिरर व्हिडिओंसाठी आवाज रेकॉर्ड करण्यासाठी मायक्रोफोन वापरते.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth तुमचे मिरर फोटो आणि व्हिडिओ फोटो लायब्ररीमध्ये जतन करते.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth तुमचे मिरर फोटो आणि व्हिडिओ फोटो लायब्ररीमध्ये जतन करते.";

@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth dùng máy ảnh để tạo bản xem trước gương đối xứng của bạn.";
+"NSMicrophoneUsageDescription" = "MirrorBooth dùng micrô để ghi âm cho video gương của bạn.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth lưu ảnh và video gương của bạn vào thư viện ảnh.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth lưu ảnh và video gương của bạn vào thư viện ảnh.";

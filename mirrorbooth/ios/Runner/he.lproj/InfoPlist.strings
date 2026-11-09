@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth משתמשת במצלמה כדי ליצור את תצוגת המראה הסימטרית שלך.";
+"NSMicrophoneUsageDescription" = "MirrorBooth משתמשת במיקרופון כדי להקליט צליל לסרטוני המראה שלך.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth שומרת את תמונות וסרטוני המראה שלך בספריית התמונות.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth שומרת את תמונות וסרטוני המראה שלך בספריית התמונות.";

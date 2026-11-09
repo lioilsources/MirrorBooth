@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth folosește camera pentru a crea previzualizarea simetrică în oglindă.";
+"NSMicrophoneUsageDescription" = "MirrorBooth folosește microfonul pentru a înregistra sunetul videoclipurilor tale în oglindă.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth salvează fotografiile și videoclipurile tale în oglindă în biblioteca foto.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth salvează fotografiile și videoclipurile tale în oglindă în biblioteca foto.";

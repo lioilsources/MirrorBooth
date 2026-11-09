@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth používa fotoaparát na vytvorenie symetrického zrkadlového náhľadu.";
+"NSMicrophoneUsageDescription" = "MirrorBooth používa mikrofón na nahrávanie zvuku tvojich zrkadlových videí.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth ukladá tvoje zrkadlové fotky a videá do knižnice fotiek.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth ukladá tvoje zrkadlové fotky a videá do knižnice fotiek.";

@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth 使用相机来创建对称的镜像预览。";
+"NSMicrophoneUsageDescription" = "MirrorBooth 使用麦克风为你的镜像视频录制声音。";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth 会将你的镜像照片和视频存入照片图库。";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth 会将你的镜像照片和视频存入照片图库。";

@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth używa aparatu do tworzenia symetrycznego podglądu lustra.";
+"NSMicrophoneUsageDescription" = "MirrorBooth używa mikrofonu do nagrywania dźwięku w twoich filmach lustrzanych.";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth zapisuje twoje lustrzane zdjęcia i filmy w bibliotece zdjęć.";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth zapisuje twoje lustrzane zdjęcia i filmy w bibliotece zdjęć.";

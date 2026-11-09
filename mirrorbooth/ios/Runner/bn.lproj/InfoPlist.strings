@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "MirrorBooth আপনার প্রতিসম মিরর প্রিভিউ তৈরি করতে ক্যামেরা ব্যবহার করে।";
+"NSMicrophoneUsageDescription" = "MirrorBooth আপনার মিরর ভিডিওর জন্য শব্দ রেকর্ড করতে মাইক্রোফোন ব্যবহার করে।";
+"NSPhotoLibraryAddUsageDescription" = "MirrorBooth আপনার মিরর ছবি ও ভিডিও ফটো লাইব্রেরিতে সংরক্ষণ করে।";
+"NSPhotoLibraryUsageDescription" = "MirrorBooth আপনার মিরর ছবি ও ভিডিও ফটো লাইব্রেরিতে সংরক্ষণ করে।";

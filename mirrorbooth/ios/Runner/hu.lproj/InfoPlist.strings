@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "A MirrorBooth a kamerát használja a szimmetrikus tükör előnézet létrehozásához.";
+"NSMicrophoneUsageDescription" = "A MirrorBooth a mikrofont használja a tükörvideóid hangjának rögzítéséhez.";
+"NSPhotoLibraryAddUsageDescription" = "A MirrorBooth a tükörfotóidat és -videóidat a fotótárba menti.";
+"NSPhotoLibraryUsageDescription" = "A MirrorBooth a tükörfotóidat és -videóidat a fotótárba menti.";
