@@ -27,7 +27,7 @@ def clean_env(monkeypatch):
 
 def test_defaults_point_to_litellm_gateway(clean_env):
     s = Settings(_env_file=None)
-    assert s.spark_base_url == "http://192.168.88.66:8080/v1" == DEFAULT_GATEWAY_URL
+    assert s.spark_base_url == "http://localhost:8080/v1" == DEFAULT_GATEWAY_URL
     assert s.spark_model == "openclaw-default"
     assert s.spark_api_key == "dummy"
     assert s.spark_vision_base_url == DEFAULT_GATEWAY_URL
@@ -75,7 +75,7 @@ def test_env_example_documents_all_keys():
 
     text = (PIPELINE_DIR / ".env.example").read_text()
     for key in [
-        "SPARK_BASE_URL=http://192.168.88.66:8080/v1",
+        "SPARK_BASE_URL=http://localhost:8080/v1",
         "SPARK_MODEL=openclaw-default",
         "SPARK_API_KEY",
         "SPARK_VISION_BASE_URL",

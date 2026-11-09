@@ -47,7 +47,7 @@ is created again in the A+B organization account:
 | Full description | 4000 | see below |
 | App category | — | **Photography** |
 | Tags (up to 5) | — | Photography, Selfie camera, Photo filters, Video editor, Entertainment — pick whichever of these Play offers |
-| Contact email | — | `oldrich.vorechovsky.jr@gmail.com` |
+| Contact email | — | `business@olin.now` |
 | Website | — | `https://lioilsources.github.io/MirrorBooth/` |
 | Privacy policy | — | `https://lioilsources.github.io/MirrorBooth/privacy.html` |
 
@@ -316,7 +316,7 @@ reviewer.
 
 | | |
 |---|---|
-| Local | `mirrorbooth/android/key.properties` (git-ignored) → `/Users/ol1n/Dev/Distribution/Android/MirrorBooth/upload-keystore.jks`, alias `upload` |
+| Local | `mirrorbooth/android/key.properties` (git-ignored) → `~/Dev/Distribution/Android/MirrorBooth/upload-keystore.jks`, alias `upload` |
 | CI | `release-android.yml` writes `key.properties` from secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_ALIAS`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_PASSWORD` |
 | Fallback | if `key.properties` is missing, release builds are signed with the **debug** key — Play rejects that AAB |
 

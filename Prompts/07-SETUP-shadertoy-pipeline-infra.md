@@ -8,7 +8,7 @@ skutečně spustit a výsledek dostat do aplikace.
 
 | Stroj | Role | Musí na něm být |
 |-------|------|-----------------|
-| **SPARK** (192.168.88.66) | Inference server. Jediné, co pipeline potřebuje po síti. | OpenAI-kompatibilní endpoint na `:8000/v1` s coder modelem; volitelně druhý (vision) model pro hodnocení náhledů. |
+| **SPARK** (SPARK_HOST) | Inference server. Jediné, co pipeline potřebuje po síti. | OpenAI-kompatibilní endpoint na `:8000/v1` s coder modelem; volitelně druhý (vision) model pro hodnocení náhledů. |
 | **M2** (Mac) | Vývojářský a integrační stroj. Tady se pipeline spouští, tady je Flutter, Xcode a připojený telefon. | Python 3.11+, Flutter SDK 3.41.x (kvůli `impellerc`), Xcode + CocoaPods, git, Claude Code CLI, `.env` s klíči. |
 | **JODA** | *Předpoklad:* Linux box (GPU/server). Volitelný. Dává smysl jen pro dávkové běhy (harvest + `--batch` přes desítky shaderů) a headless render mimo Mac. Když ho nechceš zapojovat, **SPARK + M2 stačí**. | Totéž jako M2 minus Flutter/Xcode, plus EGL/Mesa pro headless GL. |
 
@@ -43,8 +43,8 @@ testovat v cloudu nad fixturami, ale skutečné běhy (`harvest`, `run.py`,
 Kontrola z M2:
 
 ```bash
-curl -s http://192.168.88.66:8000/v1/models | jq '.data[].id'
-curl -s http://192.168.88.66:8000/v1/chat/completions \
+curl -s http://SPARK_HOST:8000/v1/models | jq '.data[].id'
+curl -s http://SPARK_HOST:8000/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{"model":"<SPARK_MODEL>","messages":[{"role":"user","content":"Write a GLSL function that returns luminance of vec3."}],"max_tokens":200}' | jq -r '.choices[0].message.content'
 ```
@@ -105,7 +105,7 @@ cp .env.example .env
 
 | Proměnná | Odkud | Nutná pro |
 |----------|-------|-----------|
-| `SPARK_BASE_URL=http://192.168.88.66:8000/v1` | SPARK | vše |
+| `SPARK_BASE_URL=http://SPARK_HOST:8000/v1` | SPARK | vše |
 | `SPARK_MODEL=<id z /v1/models>` | SPARK | vše |
 | `SPARK_API_KEY=dummy` | – | vLLM bez auth; jinak skutečný token |
 | `SHADERTOY_API_KEY=…` | shadertoy.com → přihlásit → *Profile → Apps* → *Create app* → zkopírovat App Key | harvest, port režim (Fáze 1+) |
