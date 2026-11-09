@@ -75,7 +75,7 @@ def test_env_example_documents_all_keys():
 
     text = (PIPELINE_DIR / ".env.example").read_text()
     for key in [
-        "SPARK_BASE_URL=http://localhost:8080/v1",
+        "SPARK_BASE_URL=http://SPARK_HOST:8080/v1",
         "SPARK_MODEL=openclaw-default",
         "SPARK_API_KEY",
         "SPARK_VISION_BASE_URL",
