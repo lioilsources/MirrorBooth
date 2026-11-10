@@ -82,9 +82,9 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
     if (_shaderFilter != filter) {
       _retireShader();
       _shaderFilter = filter;
-      final program = widget.shaderCache[filter];
-      if (program != null) _shader = program.fragmentShader();
     }
+    // The program may arrive after the filter was selected (lazy loading).
+    _shader ??= widget.shaderCache[filter]?.fragmentShader();
     return _shader;
   }
 
