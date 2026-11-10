@@ -169,6 +169,37 @@ enum MirrorFilter {
   c1787,
   c1348,
   c1062,
+  // Lab 23-52: outliers of the UC2 population (motion, distortion, lineage)
+  c1206,
+  c1632,
+  c1504,
+  c0044,
+  c1131,
+  c0108,
+  c0253,
+  c1058,
+  c1091,
+  c1861,
+  c0191,
+  c0242,
+  c1601,
+  c1086,
+  c1247,
+  c0094,
+  c1485,
+  c0008,
+  c0297,
+  c0098,
+  c1409,
+  c0026,
+  c1357,
+  c0324,
+  c0118,
+  c1470,
+  c1192,
+  c0825,
+  c0841,
+  c0035,
   // @shadergen:enum:experimental
   ;
 
@@ -220,6 +251,36 @@ enum MirrorFilter {
         MirrorFilter.c1787 => '20 c1787',
         MirrorFilter.c1348 => '21 c1348',
         MirrorFilter.c1062 => '22 c1062',
+        MirrorFilter.c1206 => '23 c1206',
+        MirrorFilter.c1632 => '24 c1632',
+        MirrorFilter.c1504 => '25 c1504',
+        MirrorFilter.c0044 => '26 c0044',
+        MirrorFilter.c1131 => '27 c1131',
+        MirrorFilter.c0108 => '28 c0108',
+        MirrorFilter.c0253 => '29 c0253',
+        MirrorFilter.c1058 => '30 c1058',
+        MirrorFilter.c1091 => '31 c1091',
+        MirrorFilter.c1861 => '32 c1861',
+        MirrorFilter.c0191 => '33 c0191',
+        MirrorFilter.c0242 => '34 c0242',
+        MirrorFilter.c1601 => '35 c1601',
+        MirrorFilter.c1086 => '36 c1086',
+        MirrorFilter.c1247 => '37 c1247',
+        MirrorFilter.c0094 => '38 c0094',
+        MirrorFilter.c1485 => '39 c1485',
+        MirrorFilter.c0008 => '40 c0008',
+        MirrorFilter.c0297 => '41 c0297',
+        MirrorFilter.c0098 => '42 c0098',
+        MirrorFilter.c1409 => '43 c1409',
+        MirrorFilter.c0026 => '44 c0026',
+        MirrorFilter.c1357 => '45 c1357',
+        MirrorFilter.c0324 => '46 c0324',
+        MirrorFilter.c0118 => '47 c0118',
+        MirrorFilter.c1470 => '48 c1470',
+        MirrorFilter.c1192 => '49 c1192',
+        MirrorFilter.c0825 => '50 c0825',
+        MirrorFilter.c0841 => '51 c0841',
+        MirrorFilter.c0035 => '52 c0035',
         // @shadergen:label
       };
 
@@ -271,6 +332,36 @@ enum MirrorFilter {
         MirrorFilter.c1787 => '◈',
         MirrorFilter.c1348 => '◈',
         MirrorFilter.c1062 => '◈',
+        MirrorFilter.c1206 => '◆',
+        MirrorFilter.c1632 => '◆',
+        MirrorFilter.c1504 => '◆',
+        MirrorFilter.c0044 => '◆',
+        MirrorFilter.c1131 => '◆',
+        MirrorFilter.c0108 => '◆',
+        MirrorFilter.c0253 => '◆',
+        MirrorFilter.c1058 => '◆',
+        MirrorFilter.c1091 => '◆',
+        MirrorFilter.c1861 => '◆',
+        MirrorFilter.c0191 => '◆',
+        MirrorFilter.c0242 => '◆',
+        MirrorFilter.c1601 => '◆',
+        MirrorFilter.c1086 => '◆',
+        MirrorFilter.c1247 => '◆',
+        MirrorFilter.c0094 => '◆',
+        MirrorFilter.c1485 => '◆',
+        MirrorFilter.c0008 => '◆',
+        MirrorFilter.c0297 => '◆',
+        MirrorFilter.c0098 => '◆',
+        MirrorFilter.c1409 => '◆',
+        MirrorFilter.c0026 => '◆',
+        MirrorFilter.c1357 => '◆',
+        MirrorFilter.c0324 => '◆',
+        MirrorFilter.c0118 => '◆',
+        MirrorFilter.c1470 => '◆',
+        MirrorFilter.c1192 => '◆',
+        MirrorFilter.c0825 => '◆',
+        MirrorFilter.c0841 => '◆',
+        MirrorFilter.c0035 => '◆',
         // @shadergen:icon
       };
 
@@ -304,6 +395,36 @@ enum MirrorFilter {
         MirrorFilter.c1787 => true,
         MirrorFilter.c1348 => true,
         MirrorFilter.c1062 => true,
+        MirrorFilter.c1206 => true,
+        MirrorFilter.c1632 => true,
+        MirrorFilter.c1504 => true,
+        MirrorFilter.c0044 => true,
+        MirrorFilter.c1131 => true,
+        MirrorFilter.c0108 => true,
+        MirrorFilter.c0253 => true,
+        MirrorFilter.c1058 => true,
+        MirrorFilter.c1091 => true,
+        MirrorFilter.c1861 => true,
+        MirrorFilter.c0191 => true,
+        MirrorFilter.c0242 => true,
+        MirrorFilter.c1601 => true,
+        MirrorFilter.c1086 => true,
+        MirrorFilter.c1247 => true,
+        MirrorFilter.c0094 => true,
+        MirrorFilter.c1485 => true,
+        MirrorFilter.c0008 => true,
+        MirrorFilter.c0297 => true,
+        MirrorFilter.c0098 => true,
+        MirrorFilter.c1409 => true,
+        MirrorFilter.c0026 => true,
+        MirrorFilter.c1357 => true,
+        MirrorFilter.c0324 => true,
+        MirrorFilter.c0118 => true,
+        MirrorFilter.c1470 => true,
+        MirrorFilter.c1192 => true,
+        MirrorFilter.c0825 => true,
+        MirrorFilter.c0841 => true,
+        MirrorFilter.c0035 => true,
         // @shadergen:needsTime
         _ => false,
       };
@@ -343,6 +464,30 @@ enum MirrorFilter {
         MirrorFilter.c1787 => true,
         MirrorFilter.c1348 => true,
         MirrorFilter.c1062 => true,
+        MirrorFilter.c1206 => true,
+        MirrorFilter.c1632 => true,
+        MirrorFilter.c1504 => true,
+        MirrorFilter.c0044 => true,
+        MirrorFilter.c1131 => true,
+        MirrorFilter.c0253 => true,
+        MirrorFilter.c1058 => true,
+        MirrorFilter.c1091 => true,
+        MirrorFilter.c1861 => true,
+        MirrorFilter.c0191 => true,
+        MirrorFilter.c1601 => true,
+        MirrorFilter.c1086 => true,
+        MirrorFilter.c1247 => true,
+        MirrorFilter.c1485 => true,
+        MirrorFilter.c0008 => true,
+        MirrorFilter.c0098 => true,
+        MirrorFilter.c1409 => true,
+        MirrorFilter.c1357 => true,
+        MirrorFilter.c0324 => true,
+        MirrorFilter.c0118 => true,
+        MirrorFilter.c1470 => true,
+        MirrorFilter.c1192 => true,
+        MirrorFilter.c0825 => true,
+        MirrorFilter.c0841 => true,
         // @shadergen:needsFace
         _ => false,
       };
@@ -385,6 +530,36 @@ enum MirrorFilter {
         MirrorFilter.frozen =>
           FilterCollection.fantasy,
         // @shadergen:collection:experimental
+        MirrorFilter.c0035 ||
+        MirrorFilter.c0841 ||
+        MirrorFilter.c0825 ||
+        MirrorFilter.c1192 ||
+        MirrorFilter.c1470 ||
+        MirrorFilter.c0118 ||
+        MirrorFilter.c0324 ||
+        MirrorFilter.c1357 ||
+        MirrorFilter.c0026 ||
+        MirrorFilter.c1409 ||
+        MirrorFilter.c0098 ||
+        MirrorFilter.c0297 ||
+        MirrorFilter.c0008 ||
+        MirrorFilter.c1485 ||
+        MirrorFilter.c0094 ||
+        MirrorFilter.c1247 ||
+        MirrorFilter.c1086 ||
+        MirrorFilter.c1601 ||
+        MirrorFilter.c0242 ||
+        MirrorFilter.c0191 ||
+        MirrorFilter.c1861 ||
+        MirrorFilter.c1091 ||
+        MirrorFilter.c1058 ||
+        MirrorFilter.c0253 ||
+        MirrorFilter.c0108 ||
+        MirrorFilter.c1131 ||
+        MirrorFilter.c0044 ||
+        MirrorFilter.c1504 ||
+        MirrorFilter.c1632 ||
+        MirrorFilter.c1206 ||
         MirrorFilter.c1348 ||
         MirrorFilter.c1787 ||
         MirrorFilter.c1304 ||
@@ -461,6 +636,36 @@ enum MirrorFilter {
         MirrorFilter.c1787 => 'shaders/filter_c1787.frag',
         MirrorFilter.c1348 => 'shaders/filter_c1348.frag',
         MirrorFilter.c1062 => 'shaders/filter_c1062.frag',
+        MirrorFilter.c1206 => 'shaders/filter_c1206.frag',
+        MirrorFilter.c1632 => 'shaders/filter_c1632.frag',
+        MirrorFilter.c1504 => 'shaders/filter_c1504.frag',
+        MirrorFilter.c0044 => 'shaders/filter_c0044.frag',
+        MirrorFilter.c1131 => 'shaders/filter_c1131.frag',
+        MirrorFilter.c0108 => 'shaders/filter_c0108.frag',
+        MirrorFilter.c0253 => 'shaders/filter_c0253.frag',
+        MirrorFilter.c1058 => 'shaders/filter_c1058.frag',
+        MirrorFilter.c1091 => 'shaders/filter_c1091.frag',
+        MirrorFilter.c1861 => 'shaders/filter_c1861.frag',
+        MirrorFilter.c0191 => 'shaders/filter_c0191.frag',
+        MirrorFilter.c0242 => 'shaders/filter_c0242.frag',
+        MirrorFilter.c1601 => 'shaders/filter_c1601.frag',
+        MirrorFilter.c1086 => 'shaders/filter_c1086.frag',
+        MirrorFilter.c1247 => 'shaders/filter_c1247.frag',
+        MirrorFilter.c0094 => 'shaders/filter_c0094.frag',
+        MirrorFilter.c1485 => 'shaders/filter_c1485.frag',
+        MirrorFilter.c0008 => 'shaders/filter_c0008.frag',
+        MirrorFilter.c0297 => 'shaders/filter_c0297.frag',
+        MirrorFilter.c0098 => 'shaders/filter_c0098.frag',
+        MirrorFilter.c1409 => 'shaders/filter_c1409.frag',
+        MirrorFilter.c0026 => 'shaders/filter_c0026.frag',
+        MirrorFilter.c1357 => 'shaders/filter_c1357.frag',
+        MirrorFilter.c0324 => 'shaders/filter_c0324.frag',
+        MirrorFilter.c0118 => 'shaders/filter_c0118.frag',
+        MirrorFilter.c1470 => 'shaders/filter_c1470.frag',
+        MirrorFilter.c1192 => 'shaders/filter_c1192.frag',
+        MirrorFilter.c0825 => 'shaders/filter_c0825.frag',
+        MirrorFilter.c0841 => 'shaders/filter_c0841.frag',
+        MirrorFilter.c0035 => 'shaders/filter_c0035.frag',
         // @shadergen:shaderAsset
       };
 }

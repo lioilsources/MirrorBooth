@@ -104,4 +104,34 @@ flutter:
     - shaders/filter_c1787.frag
     - shaders/filter_c1348.frag
     - shaders/filter_c1062.frag
+    - shaders/filter_c1206.frag
+    - shaders/filter_c1632.frag
+    - shaders/filter_c1504.frag
+    - shaders/filter_c0044.frag
+    - shaders/filter_c1131.frag
+    - shaders/filter_c0108.frag
+    - shaders/filter_c0253.frag
+    - shaders/filter_c1058.frag
+    - shaders/filter_c1091.frag
+    - shaders/filter_c1861.frag
+    - shaders/filter_c0191.frag
+    - shaders/filter_c0242.frag
+    - shaders/filter_c1601.frag
+    - shaders/filter_c1086.frag
+    - shaders/filter_c1247.frag
+    - shaders/filter_c0094.frag
+    - shaders/filter_c1485.frag
+    - shaders/filter_c0008.frag
+    - shaders/filter_c0297.frag
+    - shaders/filter_c0098.frag
+    - shaders/filter_c1409.frag
+    - shaders/filter_c0026.frag
+    - shaders/filter_c1357.frag
+    - shaders/filter_c0324.frag
+    - shaders/filter_c0118.frag
+    - shaders/filter_c1470.frag
+    - shaders/filter_c1192.frag
+    - shaders/filter_c0825.frag
+    - shaders/filter_c0841.frag
+    - shaders/filter_c0035.frag
     # @shadergen:shaders (pipeline/integrate.py inserts new shaders above this line)
