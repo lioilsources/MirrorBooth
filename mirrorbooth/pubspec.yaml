@@ -134,4 +134,34 @@ flutter:
     - shaders/filter_c0825.frag
     - shaders/filter_c0841.frag
     - shaders/filter_c0035.frag
+    - shaders/filter_lab_mosaic.frag
+    - shaders/filter_lab_hex.frag
+    - shaders/filter_lab_glass.frag
+    - shaders/filter_lab_halftone.frag
+    - shaders/filter_lab_dither.frag
+    - shaders/filter_lab_ascii.frag
+    - shaders/filter_lab_sketch.frag
+    - shaders/filter_lab_emboss.frag
+    - shaders/filter_lab_engrave.frag
+    - shaders/filter_lab_fisheye.frag
+    - shaders/filter_lab_twirl.frag
+    - shaders/filter_lab_black_hole.frag
+    - shaders/filter_lab_tiles.frag
+    - shaders/filter_lab_quad.frag
+    - shaders/filter_lab_blinds.frag
+    - shaders/filter_lab_blocks.frag
+    - shaders/filter_lab_vhs.frag
+    - shaders/filter_lab_gameboy.frag
+    - shaders/filter_lab_led.frag
+    - shaders/filter_lab_kuwahara.frag
+    - shaders/filter_lab_aquarelle.frag
+    - shaders/filter_lab_duotone.frag
+    - shaders/filter_lab_cutout.frag
+    - shaders/filter_lab_rays.frag
+    - shaders/filter_lab_tilt.frag
+    - shaders/filter_lab_rain.frag
+    - shaders/filter_lab_snow.frag
+    - shaders/filter_lab_matrix.frag
+    - shaders/filter_lab_tunnel.frag
+    - shaders/filter_lab_night.frag
     # @shadergen:shaders (pipeline/integrate.py inserts new shaders above this line)

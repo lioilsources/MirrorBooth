@@ -200,6 +200,37 @@ enum MirrorFilter {
   c0825,
   c0841,
   c0035,
+  // Lab 53-82: hand-written round B, one technique each (no polar warp)
+  labMosaic,
+  labHex,
+  labGlass,
+  labHalftone,
+  labDither,
+  labAscii,
+  labSketch,
+  labEmboss,
+  labEngrave,
+  labFisheye,
+  labTwirl,
+  labBlackHole,
+  labTiles,
+  labQuad,
+  labBlinds,
+  labBlocks,
+  labVhs,
+  labGameboy,
+  labLed,
+  labKuwahara,
+  labAquarelle,
+  labDuotone,
+  labCutout,
+  labRays,
+  labTilt,
+  labRain,
+  labSnow,
+  labMatrix,
+  labTunnel,
+  labNight,
   // @shadergen:enum:experimental
   ;
 
@@ -281,6 +312,36 @@ enum MirrorFilter {
         MirrorFilter.c0825 => '50 c0825',
         MirrorFilter.c0841 => '51 c0841',
         MirrorFilter.c0035 => '52 c0035',
+        MirrorFilter.labMosaic => '53 Mosaic',
+        MirrorFilter.labHex => '54 Hex',
+        MirrorFilter.labGlass => '55 Glass',
+        MirrorFilter.labHalftone => '56 Halftone',
+        MirrorFilter.labDither => '57 Dither',
+        MirrorFilter.labAscii => '58 Ascii',
+        MirrorFilter.labSketch => '59 Sketch',
+        MirrorFilter.labEmboss => '60 Emboss',
+        MirrorFilter.labEngrave => '61 Engrave',
+        MirrorFilter.labFisheye => '62 Fisheye',
+        MirrorFilter.labTwirl => '63 Twirl',
+        MirrorFilter.labBlackHole => '64 BlackHole',
+        MirrorFilter.labTiles => '65 Tiles',
+        MirrorFilter.labQuad => '66 Quad',
+        MirrorFilter.labBlinds => '67 Blinds',
+        MirrorFilter.labBlocks => '68 Blocks',
+        MirrorFilter.labVhs => '69 Vhs',
+        MirrorFilter.labGameboy => '70 Gameboy',
+        MirrorFilter.labLed => '71 Led',
+        MirrorFilter.labKuwahara => '72 Kuwahara',
+        MirrorFilter.labAquarelle => '73 Aquarelle',
+        MirrorFilter.labDuotone => '74 Duotone',
+        MirrorFilter.labCutout => '75 Cutout',
+        MirrorFilter.labRays => '76 Rays',
+        MirrorFilter.labTilt => '77 Tilt',
+        MirrorFilter.labRain => '78 Rain',
+        MirrorFilter.labSnow => '79 Snow',
+        MirrorFilter.labMatrix => '80 Matrix',
+        MirrorFilter.labTunnel => '81 Tunnel',
+        MirrorFilter.labNight => '82 Night',
         // @shadergen:label
       };
 
@@ -362,6 +423,36 @@ enum MirrorFilter {
         MirrorFilter.c0825 => '◆',
         MirrorFilter.c0841 => '◆',
         MirrorFilter.c0035 => '◆',
+        MirrorFilter.labMosaic => '▣',
+        MirrorFilter.labHex => '▣',
+        MirrorFilter.labGlass => '▣',
+        MirrorFilter.labHalftone => '▣',
+        MirrorFilter.labDither => '▣',
+        MirrorFilter.labAscii => '▣',
+        MirrorFilter.labSketch => '▣',
+        MirrorFilter.labEmboss => '▣',
+        MirrorFilter.labEngrave => '▣',
+        MirrorFilter.labFisheye => '▣',
+        MirrorFilter.labTwirl => '▣',
+        MirrorFilter.labBlackHole => '▣',
+        MirrorFilter.labTiles => '▣',
+        MirrorFilter.labQuad => '▣',
+        MirrorFilter.labBlinds => '▣',
+        MirrorFilter.labBlocks => '▣',
+        MirrorFilter.labVhs => '▣',
+        MirrorFilter.labGameboy => '▣',
+        MirrorFilter.labLed => '▣',
+        MirrorFilter.labKuwahara => '▣',
+        MirrorFilter.labAquarelle => '▣',
+        MirrorFilter.labDuotone => '▣',
+        MirrorFilter.labCutout => '▣',
+        MirrorFilter.labRays => '▣',
+        MirrorFilter.labTilt => '▣',
+        MirrorFilter.labRain => '▣',
+        MirrorFilter.labSnow => '▣',
+        MirrorFilter.labMatrix => '▣',
+        MirrorFilter.labTunnel => '▣',
+        MirrorFilter.labNight => '▣',
         // @shadergen:icon
       };
 
@@ -425,6 +516,17 @@ enum MirrorFilter {
         MirrorFilter.c0825 => true,
         MirrorFilter.c0841 => true,
         MirrorFilter.c0035 => true,
+        MirrorFilter.labGlass => true,
+        MirrorFilter.labTwirl => true,
+        MirrorFilter.labBlackHole => true,
+        MirrorFilter.labBlinds => true,
+        MirrorFilter.labBlocks => true,
+        MirrorFilter.labVhs => true,
+        MirrorFilter.labRain => true,
+        MirrorFilter.labSnow => true,
+        MirrorFilter.labMatrix => true,
+        MirrorFilter.labTunnel => true,
+        MirrorFilter.labNight => true,
         // @shadergen:needsTime
         _ => false,
       };
@@ -488,6 +590,11 @@ enum MirrorFilter {
         MirrorFilter.c1192 => true,
         MirrorFilter.c0825 => true,
         MirrorFilter.c0841 => true,
+        MirrorFilter.labFisheye => true,
+        MirrorFilter.labTwirl => true,
+        MirrorFilter.labBlackHole => true,
+        MirrorFilter.labRays => true,
+        MirrorFilter.labTilt => true,
         // @shadergen:needsFace
         _ => false,
       };
@@ -530,6 +637,36 @@ enum MirrorFilter {
         MirrorFilter.frozen =>
           FilterCollection.fantasy,
         // @shadergen:collection:experimental
+        MirrorFilter.labNight ||
+        MirrorFilter.labTunnel ||
+        MirrorFilter.labMatrix ||
+        MirrorFilter.labSnow ||
+        MirrorFilter.labRain ||
+        MirrorFilter.labTilt ||
+        MirrorFilter.labRays ||
+        MirrorFilter.labCutout ||
+        MirrorFilter.labDuotone ||
+        MirrorFilter.labAquarelle ||
+        MirrorFilter.labKuwahara ||
+        MirrorFilter.labLed ||
+        MirrorFilter.labGameboy ||
+        MirrorFilter.labVhs ||
+        MirrorFilter.labBlocks ||
+        MirrorFilter.labBlinds ||
+        MirrorFilter.labQuad ||
+        MirrorFilter.labTiles ||
+        MirrorFilter.labBlackHole ||
+        MirrorFilter.labTwirl ||
+        MirrorFilter.labFisheye ||
+        MirrorFilter.labEngrave ||
+        MirrorFilter.labEmboss ||
+        MirrorFilter.labSketch ||
+        MirrorFilter.labAscii ||
+        MirrorFilter.labDither ||
+        MirrorFilter.labHalftone ||
+        MirrorFilter.labGlass ||
+        MirrorFilter.labHex ||
+        MirrorFilter.labMosaic ||
         MirrorFilter.c0035 ||
         MirrorFilter.c0841 ||
         MirrorFilter.c0825 ||
@@ -666,6 +803,36 @@ enum MirrorFilter {
         MirrorFilter.c0825 => 'shaders/filter_c0825.frag',
         MirrorFilter.c0841 => 'shaders/filter_c0841.frag',
         MirrorFilter.c0035 => 'shaders/filter_c0035.frag',
+        MirrorFilter.labMosaic => 'shaders/filter_lab_mosaic.frag',
+        MirrorFilter.labHex => 'shaders/filter_lab_hex.frag',
+        MirrorFilter.labGlass => 'shaders/filter_lab_glass.frag',
+        MirrorFilter.labHalftone => 'shaders/filter_lab_halftone.frag',
+        MirrorFilter.labDither => 'shaders/filter_lab_dither.frag',
+        MirrorFilter.labAscii => 'shaders/filter_lab_ascii.frag',
+        MirrorFilter.labSketch => 'shaders/filter_lab_sketch.frag',
+        MirrorFilter.labEmboss => 'shaders/filter_lab_emboss.frag',
+        MirrorFilter.labEngrave => 'shaders/filter_lab_engrave.frag',
+        MirrorFilter.labFisheye => 'shaders/filter_lab_fisheye.frag',
+        MirrorFilter.labTwirl => 'shaders/filter_lab_twirl.frag',
+        MirrorFilter.labBlackHole => 'shaders/filter_lab_black_hole.frag',
+        MirrorFilter.labTiles => 'shaders/filter_lab_tiles.frag',
+        MirrorFilter.labQuad => 'shaders/filter_lab_quad.frag',
+        MirrorFilter.labBlinds => 'shaders/filter_lab_blinds.frag',
+        MirrorFilter.labBlocks => 'shaders/filter_lab_blocks.frag',
+        MirrorFilter.labVhs => 'shaders/filter_lab_vhs.frag',
+        MirrorFilter.labGameboy => 'shaders/filter_lab_gameboy.frag',
+        MirrorFilter.labLed => 'shaders/filter_lab_led.frag',
+        MirrorFilter.labKuwahara => 'shaders/filter_lab_kuwahara.frag',
+        MirrorFilter.labAquarelle => 'shaders/filter_lab_aquarelle.frag',
+        MirrorFilter.labDuotone => 'shaders/filter_lab_duotone.frag',
+        MirrorFilter.labCutout => 'shaders/filter_lab_cutout.frag',
+        MirrorFilter.labRays => 'shaders/filter_lab_rays.frag',
+        MirrorFilter.labTilt => 'shaders/filter_lab_tilt.frag',
+        MirrorFilter.labRain => 'shaders/filter_lab_rain.frag',
+        MirrorFilter.labSnow => 'shaders/filter_lab_snow.frag',
+        MirrorFilter.labMatrix => 'shaders/filter_lab_matrix.frag',
+        MirrorFilter.labTunnel => 'shaders/filter_lab_tunnel.frag',
+        MirrorFilter.labNight => 'shaders/filter_lab_night.frag',
         // @shadergen:shaderAsset
       };
 }
