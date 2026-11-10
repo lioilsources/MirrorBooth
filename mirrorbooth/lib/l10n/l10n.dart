@@ -53,6 +53,8 @@ extension FilterCollectionL10n on FilterCollection {
         FilterCollection.ugly => l.collectionUgly,
         FilterCollection.art => l.collectionArt,
         FilterCollection.fantasy => l.collectionFantasy,
+        // Dev-only tab, not localized on purpose.
+        FilterCollection.experimental => label,
       };
 }
 

@@ -32,7 +32,7 @@ from pathlib import Path
 from config import PROJECT_ROOT
 
 APP_DIR = PROJECT_ROOT / "mirrorbooth"
-COLLECTIONS = ("pretty", "ugly", "art", "fantasy")
+COLLECTIONS = ("pretty", "ugly", "art", "fantasy", "experimental")
 FLUTTER_STEPS = (["flutter", "pub", "get"], ["flutter", "analyze"], ["flutter", "test"])
 
 

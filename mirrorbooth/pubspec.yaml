@@ -82,4 +82,26 @@ flutter:
     - shaders/filter_demon.frag
     - shaders/filter_cyborg.frag
     - shaders/filter_frozen.frag
+    - shaders/filter_c1918.frag
+    - shaders/filter_c0874.frag
+    - shaders/filter_c0626.frag
+    - shaders/filter_c0842.frag
+    - shaders/filter_c1035.frag
+    - shaders/filter_c1856.frag
+    - shaders/filter_c1182.frag
+    - shaders/filter_c1400.frag
+    - shaders/filter_c1642.frag
+    - shaders/filter_c1938.frag
+    - shaders/filter_c1931.frag
+    - shaders/filter_c0735.frag
+    - shaders/filter_c1367.frag
+    - shaders/filter_c1422.frag
+    - shaders/filter_c0988.frag
+    - shaders/filter_c1011.frag
+    - shaders/filter_c1703.frag
+    - shaders/filter_c0012.frag
+    - shaders/filter_c1304.frag
+    - shaders/filter_c1787.frag
+    - shaders/filter_c1348.frag
+    - shaders/filter_c1062.frag
     # @shadergen:shaders (pipeline/integrate.py inserts new shaders above this line)

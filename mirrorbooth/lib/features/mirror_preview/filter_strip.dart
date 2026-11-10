@@ -28,6 +28,15 @@ class _FilterStripState extends State<FilterStrip> {
   late FilterCollection _activeCollection =
       widget.selected.collection ?? FilterCollection.pretty;
 
+  /// Page index inside the Lab collection (groups of labGroupSize).
+  late int _labGroup = _groupOf(widget.selected);
+
+  static int _groupOf(MirrorFilter f) {
+    if (f.collection != FilterCollection.experimental) return 0;
+    final i = MirrorFilter.inCollection(FilterCollection.experimental).indexOf(f);
+    return i ~/ FilterCollection.labGroupSize;
+  }
+
   @override
   void didUpdateWidget(FilterStrip old) {
     super.didUpdateWidget(old);
@@ -37,11 +46,22 @@ class _FilterStripState extends State<FilterStrip> {
     if (c != null && c != _activeCollection) {
       setState(() => _activeCollection = c);
     }
+    if (c == FilterCollection.experimental) {
+      final g = _groupOf(widget.selected);
+      if (g != _labGroup) setState(() => _labGroup = g);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final filters = MirrorFilter.inCollection(_activeCollection);
+    var filters = MirrorFilter.inCollection(_activeCollection);
+    final isLab = _activeCollection == FilterCollection.experimental;
+    const groupSize = FilterCollection.labGroupSize;
+    final groupCount = (filters.length + groupSize - 1) ~/ groupSize;
+    if (isLab && groupCount > 1) {
+      final start = _labGroup.clamp(0, groupCount - 1) * groupSize;
+      filters = filters.sublist(start, (start + groupSize).clamp(0, filters.length));
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -57,18 +77,42 @@ class _FilterStripState extends State<FilterStrip> {
                 onTap: () => widget.onSelect(MirrorFilter.none),
               ),
               const SizedBox(width: 8),
-              for (final c in FilterCollection.values) ...[
+              for (final c in FilterCollection.visible) ...[
                 _CollectionTab(
                   collection: c,
                   isActive: c == _activeCollection,
                   isLocked: widget._isLocked(c),
                   onTap: () => setState(() => _activeCollection = c),
                 ),
-                if (c != FilterCollection.values.last) const SizedBox(width: 8),
+                if (c != FilterCollection.visible.last) const SizedBox(width: 8),
               ],
             ],
           ),
         ),
+        if (isLab && groupCount > 1) ...[
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 28,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              itemCount: groupCount,
+              separatorBuilder: (context, index) => const SizedBox(width: 6),
+              itemBuilder: (_, g) {
+                final total =
+                    MirrorFilter.inCollection(FilterCollection.experimental)
+                        .length;
+                final from = g * groupSize + 1;
+                final to = ((g + 1) * groupSize).clamp(0, total);
+                return _LabGroupChip(
+                  label: '$from–$to',
+                  isActive: g == _labGroup,
+                  onTap: () => setState(() => _labGroup = g),
+                );
+              },
+            ),
+          ),
+        ],
         const SizedBox(height: 8),
         SizedBox(
           height: 48,
@@ -229,6 +273,43 @@ class _CollectionTab extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LabGroupChip extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _LabGroupChip({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isActive ? Colors.white24 : Colors.black45,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isActive ? Colors.white : Colors.white24,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : Colors.white60,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
