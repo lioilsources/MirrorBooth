@@ -28,13 +28,12 @@ class _FilterStripState extends State<FilterStrip> {
   late FilterCollection _activeCollection =
       widget.selected.collection ?? FilterCollection.pretty;
 
-  /// Page index inside the Lab collection (groups of labGroupSize).
+  /// Index into [MirrorFilter.labGroups] shown inside the Lab collection.
   late int _labGroup = _groupOf(widget.selected);
 
   static int _groupOf(MirrorFilter f) {
-    if (f.collection != FilterCollection.experimental) return 0;
-    final i = MirrorFilter.inCollection(FilterCollection.experimental).indexOf(f);
-    return i ~/ FilterCollection.labGroupSize;
+    final i = MirrorFilter.labGroups.indexWhere((g) => g.filters.contains(f));
+    return i < 0 ? 0 : i;
   }
 
   @override
@@ -56,11 +55,10 @@ class _FilterStripState extends State<FilterStrip> {
   Widget build(BuildContext context) {
     var filters = MirrorFilter.inCollection(_activeCollection);
     final isLab = _activeCollection == FilterCollection.experimental;
-    const groupSize = FilterCollection.labGroupSize;
-    final groupCount = (filters.length + groupSize - 1) ~/ groupSize;
+    final groups = MirrorFilter.labGroups;
+    final groupCount = groups.length;
     if (isLab && groupCount > 1) {
-      final start = _labGroup.clamp(0, groupCount - 1) * groupSize;
-      filters = filters.sublist(start, (start + groupSize).clamp(0, filters.length));
+      filters = groups[_labGroup.clamp(0, groupCount - 1)].filters;
     }
 
     return Column(
@@ -99,13 +97,8 @@ class _FilterStripState extends State<FilterStrip> {
               itemCount: groupCount,
               separatorBuilder: (context, index) => const SizedBox(width: 6),
               itemBuilder: (_, g) {
-                final total =
-                    MirrorFilter.inCollection(FilterCollection.experimental)
-                        .length;
-                final from = g * groupSize + 1;
-                final to = ((g + 1) * groupSize).clamp(0, total);
                 return _LabGroupChip(
-                  label: '$from–$to',
+                  label: groups[g].label,
                   isActive: g == _labGroup,
                   onTap: () => setState(() => _labGroup = g),
                 );

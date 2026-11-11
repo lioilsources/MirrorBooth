@@ -231,6 +231,101 @@ enum MirrorFilter {
   labMatrix,
   labTunnel,
   labNight,
+  // Lab 83+: round 2, 13 technique families (chips by family)
+  r2MosaicC0025,
+  r2MosaicC0041,
+  r2MosaicC0042,
+  r2MosaicC0133,
+  r2MosaicC0289,
+  r2MosaicC0331,
+  r2MosaicC0366,
+  r2MosaicC0460,
+  r2HalftoneC0029,
+  r2HalftoneC0031,
+  r2HalftoneC0136,
+  r2HalftoneC0182,
+  r2HalftoneC0284,
+  r2HalftoneC0368,
+  r2HalftoneC0370,
+  r2HalftoneC0376,
+  r2SketchC0021,
+  r2SketchC0104,
+  r2SketchC0155,
+  r2SketchC0310,
+  r2SketchC0311,
+  r2SketchC0360,
+  r2SketchC0382,
+  r2SketchC0388,
+  r2OpticsC0056,
+  r2OpticsC0060,
+  r2OpticsC0068,
+  r2OpticsC0262,
+  r2OpticsC0376,
+  r2OpticsC0411,
+  r2OpticsC0415,
+  r2OpticsC0437,
+  r2KaleidoC0027,
+  r2KaleidoC0051,
+  r2KaleidoC0097,
+  r2KaleidoC0242,
+  r2KaleidoC0276,
+  r2KaleidoC0281,
+  r2KaleidoC0438,
+  r2KaleidoC0486,
+  r2TilesC0020,
+  r2TilesC0180,
+  r2TilesC0198,
+  r2TilesC0218,
+  r2TilesC0273,
+  r2TilesC0298,
+  r2TilesC0401,
+  r2TilesC0498,
+  r2GlitchC0036,
+  r2GlitchC0098,
+  r2GlitchC0394,
+  r2VhsC0291,
+  r2VhsC0336,
+  r2VhsC0497,
+  r2FaceC0165,
+  r2FaceC0184,
+  r2FaceC0227,
+  r2FaceC0232,
+  r2FaceC0240,
+  r2FaceC0258,
+  r2FaceC0327,
+  r2FaceC0417,
+  r2LayersC0006,
+  r2LayersC0009,
+  r2LayersC0033,
+  r2LayersC0110,
+  r2LayersC0144,
+  r2LayersC0304,
+  r2LayersC0441,
+  r2LayersC0473,
+  r2PaintC0048,
+  r2PaintC0052,
+  r2PaintC0101,
+  r2PaintC0126,
+  r2PaintC0170,
+  r2PaintC0173,
+  r2PaintC0189,
+  r2PaintC0194,
+  r2ColorC0008,
+  r2ColorC0015,
+  r2ColorC0039,
+  r2ColorC0065,
+  r2ColorC0069,
+  r2ColorC0073,
+  r2ColorC0097,
+  r2ColorC0181,
+  r2LightC0003,
+  r2LightC0011,
+  r2LightC0012,
+  r2LightC0044,
+  r2LightC0050,
+  r2LightC0156,
+  r2LightC0163,
+  r2LightC0176,
   // @shadergen:enum:experimental
   ;
 
@@ -342,6 +437,100 @@ enum MirrorFilter {
         MirrorFilter.labMatrix => '80 Matrix',
         MirrorFilter.labTunnel => '81 Tunnel',
         MirrorFilter.labNight => '82 Night',
+        MirrorFilter.r2MosaicC0025 => '83 Mos',
+        MirrorFilter.r2MosaicC0041 => '84 Mos',
+        MirrorFilter.r2MosaicC0042 => '85 Mos',
+        MirrorFilter.r2MosaicC0133 => '86 Mos',
+        MirrorFilter.r2MosaicC0289 => '87 Mos',
+        MirrorFilter.r2MosaicC0331 => '88 Mos',
+        MirrorFilter.r2MosaicC0366 => '89 Mos',
+        MirrorFilter.r2MosaicC0460 => '90 Mos',
+        MirrorFilter.r2HalftoneC0029 => '91 Half',
+        MirrorFilter.r2HalftoneC0031 => '92 Half',
+        MirrorFilter.r2HalftoneC0136 => '93 Half',
+        MirrorFilter.r2HalftoneC0182 => '94 Half',
+        MirrorFilter.r2HalftoneC0284 => '95 Half',
+        MirrorFilter.r2HalftoneC0368 => '96 Half',
+        MirrorFilter.r2HalftoneC0370 => '97 Half',
+        MirrorFilter.r2HalftoneC0376 => '98 Half',
+        MirrorFilter.r2SketchC0021 => '99 Skt',
+        MirrorFilter.r2SketchC0104 => '100 Skt',
+        MirrorFilter.r2SketchC0155 => '101 Skt',
+        MirrorFilter.r2SketchC0310 => '102 Skt',
+        MirrorFilter.r2SketchC0311 => '103 Skt',
+        MirrorFilter.r2SketchC0360 => '104 Skt',
+        MirrorFilter.r2SketchC0382 => '105 Skt',
+        MirrorFilter.r2SketchC0388 => '106 Skt',
+        MirrorFilter.r2OpticsC0056 => '107 Opt',
+        MirrorFilter.r2OpticsC0060 => '108 Opt',
+        MirrorFilter.r2OpticsC0068 => '109 Opt',
+        MirrorFilter.r2OpticsC0262 => '110 Opt',
+        MirrorFilter.r2OpticsC0376 => '111 Opt',
+        MirrorFilter.r2OpticsC0411 => '112 Opt',
+        MirrorFilter.r2OpticsC0415 => '113 Opt',
+        MirrorFilter.r2OpticsC0437 => '114 Opt',
+        MirrorFilter.r2KaleidoC0027 => '115 Kal',
+        MirrorFilter.r2KaleidoC0051 => '116 Kal',
+        MirrorFilter.r2KaleidoC0097 => '117 Kal',
+        MirrorFilter.r2KaleidoC0242 => '118 Kal',
+        MirrorFilter.r2KaleidoC0276 => '119 Kal',
+        MirrorFilter.r2KaleidoC0281 => '120 Kal',
+        MirrorFilter.r2KaleidoC0438 => '121 Kal',
+        MirrorFilter.r2KaleidoC0486 => '122 Kal',
+        MirrorFilter.r2TilesC0020 => '123 Tile',
+        MirrorFilter.r2TilesC0180 => '124 Tile',
+        MirrorFilter.r2TilesC0198 => '125 Tile',
+        MirrorFilter.r2TilesC0218 => '126 Tile',
+        MirrorFilter.r2TilesC0273 => '127 Tile',
+        MirrorFilter.r2TilesC0298 => '128 Tile',
+        MirrorFilter.r2TilesC0401 => '129 Tile',
+        MirrorFilter.r2TilesC0498 => '130 Tile',
+        MirrorFilter.r2GlitchC0036 => '131 Gli',
+        MirrorFilter.r2GlitchC0098 => '132 Gli',
+        MirrorFilter.r2GlitchC0394 => '133 Gli',
+        MirrorFilter.r2VhsC0291 => '134 VHS',
+        MirrorFilter.r2VhsC0336 => '135 VHS',
+        MirrorFilter.r2VhsC0497 => '136 VHS',
+        MirrorFilter.r2FaceC0165 => '137 Face',
+        MirrorFilter.r2FaceC0184 => '138 Face',
+        MirrorFilter.r2FaceC0227 => '139 Face',
+        MirrorFilter.r2FaceC0232 => '140 Face',
+        MirrorFilter.r2FaceC0240 => '141 Face',
+        MirrorFilter.r2FaceC0258 => '142 Face',
+        MirrorFilter.r2FaceC0327 => '143 Face',
+        MirrorFilter.r2FaceC0417 => '144 Face',
+        MirrorFilter.r2LayersC0006 => '145 Lay',
+        MirrorFilter.r2LayersC0009 => '146 Lay',
+        MirrorFilter.r2LayersC0033 => '147 Lay',
+        MirrorFilter.r2LayersC0110 => '148 Lay',
+        MirrorFilter.r2LayersC0144 => '149 Lay',
+        MirrorFilter.r2LayersC0304 => '150 Lay',
+        MirrorFilter.r2LayersC0441 => '151 Lay',
+        MirrorFilter.r2LayersC0473 => '152 Lay',
+        MirrorFilter.r2PaintC0048 => '153 Pnt',
+        MirrorFilter.r2PaintC0052 => '154 Pnt',
+        MirrorFilter.r2PaintC0101 => '155 Pnt',
+        MirrorFilter.r2PaintC0126 => '156 Pnt',
+        MirrorFilter.r2PaintC0170 => '157 Pnt',
+        MirrorFilter.r2PaintC0173 => '158 Pnt',
+        MirrorFilter.r2PaintC0189 => '159 Pnt',
+        MirrorFilter.r2PaintC0194 => '160 Pnt',
+        MirrorFilter.r2ColorC0008 => '161 Col',
+        MirrorFilter.r2ColorC0015 => '162 Col',
+        MirrorFilter.r2ColorC0039 => '163 Col',
+        MirrorFilter.r2ColorC0065 => '164 Col',
+        MirrorFilter.r2ColorC0069 => '165 Col',
+        MirrorFilter.r2ColorC0073 => '166 Col',
+        MirrorFilter.r2ColorC0097 => '167 Col',
+        MirrorFilter.r2ColorC0181 => '168 Col',
+        MirrorFilter.r2LightC0003 => '169 Lit',
+        MirrorFilter.r2LightC0011 => '170 Lit',
+        MirrorFilter.r2LightC0012 => '171 Lit',
+        MirrorFilter.r2LightC0044 => '172 Lit',
+        MirrorFilter.r2LightC0050 => '173 Lit',
+        MirrorFilter.r2LightC0156 => '174 Lit',
+        MirrorFilter.r2LightC0163 => '175 Lit',
+        MirrorFilter.r2LightC0176 => '176 Lit',
         // @shadergen:label
       };
 
@@ -453,6 +642,100 @@ enum MirrorFilter {
         MirrorFilter.labMatrix => '▣',
         MirrorFilter.labTunnel => '▣',
         MirrorFilter.labNight => '▣',
+        MirrorFilter.r2MosaicC0025 => '◇',
+        MirrorFilter.r2MosaicC0041 => '◇',
+        MirrorFilter.r2MosaicC0042 => '◇',
+        MirrorFilter.r2MosaicC0133 => '◇',
+        MirrorFilter.r2MosaicC0289 => '◇',
+        MirrorFilter.r2MosaicC0331 => '◇',
+        MirrorFilter.r2MosaicC0366 => '◇',
+        MirrorFilter.r2MosaicC0460 => '◇',
+        MirrorFilter.r2HalftoneC0029 => '◇',
+        MirrorFilter.r2HalftoneC0031 => '◇',
+        MirrorFilter.r2HalftoneC0136 => '◇',
+        MirrorFilter.r2HalftoneC0182 => '◇',
+        MirrorFilter.r2HalftoneC0284 => '◇',
+        MirrorFilter.r2HalftoneC0368 => '◇',
+        MirrorFilter.r2HalftoneC0370 => '◇',
+        MirrorFilter.r2HalftoneC0376 => '◇',
+        MirrorFilter.r2SketchC0021 => '◇',
+        MirrorFilter.r2SketchC0104 => '◇',
+        MirrorFilter.r2SketchC0155 => '◇',
+        MirrorFilter.r2SketchC0310 => '◇',
+        MirrorFilter.r2SketchC0311 => '◇',
+        MirrorFilter.r2SketchC0360 => '◇',
+        MirrorFilter.r2SketchC0382 => '◇',
+        MirrorFilter.r2SketchC0388 => '◇',
+        MirrorFilter.r2OpticsC0056 => '◇',
+        MirrorFilter.r2OpticsC0060 => '◇',
+        MirrorFilter.r2OpticsC0068 => '◇',
+        MirrorFilter.r2OpticsC0262 => '◇',
+        MirrorFilter.r2OpticsC0376 => '◇',
+        MirrorFilter.r2OpticsC0411 => '◇',
+        MirrorFilter.r2OpticsC0415 => '◇',
+        MirrorFilter.r2OpticsC0437 => '◇',
+        MirrorFilter.r2KaleidoC0027 => '◇',
+        MirrorFilter.r2KaleidoC0051 => '◇',
+        MirrorFilter.r2KaleidoC0097 => '◇',
+        MirrorFilter.r2KaleidoC0242 => '◇',
+        MirrorFilter.r2KaleidoC0276 => '◇',
+        MirrorFilter.r2KaleidoC0281 => '◇',
+        MirrorFilter.r2KaleidoC0438 => '◇',
+        MirrorFilter.r2KaleidoC0486 => '◇',
+        MirrorFilter.r2TilesC0020 => '◇',
+        MirrorFilter.r2TilesC0180 => '◇',
+        MirrorFilter.r2TilesC0198 => '◇',
+        MirrorFilter.r2TilesC0218 => '◇',
+        MirrorFilter.r2TilesC0273 => '◇',
+        MirrorFilter.r2TilesC0298 => '◇',
+        MirrorFilter.r2TilesC0401 => '◇',
+        MirrorFilter.r2TilesC0498 => '◇',
+        MirrorFilter.r2GlitchC0036 => '◇',
+        MirrorFilter.r2GlitchC0098 => '◇',
+        MirrorFilter.r2GlitchC0394 => '◇',
+        MirrorFilter.r2VhsC0291 => '◇',
+        MirrorFilter.r2VhsC0336 => '◇',
+        MirrorFilter.r2VhsC0497 => '◇',
+        MirrorFilter.r2FaceC0165 => '◇',
+        MirrorFilter.r2FaceC0184 => '◇',
+        MirrorFilter.r2FaceC0227 => '◇',
+        MirrorFilter.r2FaceC0232 => '◇',
+        MirrorFilter.r2FaceC0240 => '◇',
+        MirrorFilter.r2FaceC0258 => '◇',
+        MirrorFilter.r2FaceC0327 => '◇',
+        MirrorFilter.r2FaceC0417 => '◇',
+        MirrorFilter.r2LayersC0006 => '◇',
+        MirrorFilter.r2LayersC0009 => '◇',
+        MirrorFilter.r2LayersC0033 => '◇',
+        MirrorFilter.r2LayersC0110 => '◇',
+        MirrorFilter.r2LayersC0144 => '◇',
+        MirrorFilter.r2LayersC0304 => '◇',
+        MirrorFilter.r2LayersC0441 => '◇',
+        MirrorFilter.r2LayersC0473 => '◇',
+        MirrorFilter.r2PaintC0048 => '◇',
+        MirrorFilter.r2PaintC0052 => '◇',
+        MirrorFilter.r2PaintC0101 => '◇',
+        MirrorFilter.r2PaintC0126 => '◇',
+        MirrorFilter.r2PaintC0170 => '◇',
+        MirrorFilter.r2PaintC0173 => '◇',
+        MirrorFilter.r2PaintC0189 => '◇',
+        MirrorFilter.r2PaintC0194 => '◇',
+        MirrorFilter.r2ColorC0008 => '◇',
+        MirrorFilter.r2ColorC0015 => '◇',
+        MirrorFilter.r2ColorC0039 => '◇',
+        MirrorFilter.r2ColorC0065 => '◇',
+        MirrorFilter.r2ColorC0069 => '◇',
+        MirrorFilter.r2ColorC0073 => '◇',
+        MirrorFilter.r2ColorC0097 => '◇',
+        MirrorFilter.r2ColorC0181 => '◇',
+        MirrorFilter.r2LightC0003 => '◇',
+        MirrorFilter.r2LightC0011 => '◇',
+        MirrorFilter.r2LightC0012 => '◇',
+        MirrorFilter.r2LightC0044 => '◇',
+        MirrorFilter.r2LightC0050 => '◇',
+        MirrorFilter.r2LightC0156 => '◇',
+        MirrorFilter.r2LightC0163 => '◇',
+        MirrorFilter.r2LightC0176 => '◇',
         // @shadergen:icon
       };
 
@@ -527,6 +810,81 @@ enum MirrorFilter {
         MirrorFilter.labMatrix => true,
         MirrorFilter.labTunnel => true,
         MirrorFilter.labNight => true,
+        MirrorFilter.r2MosaicC0025 => true,
+        MirrorFilter.r2MosaicC0041 => true,
+        MirrorFilter.r2MosaicC0042 => true,
+        MirrorFilter.r2MosaicC0133 => true,
+        MirrorFilter.r2MosaicC0289 => true,
+        MirrorFilter.r2MosaicC0331 => true,
+        MirrorFilter.r2MosaicC0366 => true,
+        MirrorFilter.r2MosaicC0460 => true,
+        MirrorFilter.r2HalftoneC0029 => true,
+        MirrorFilter.r2HalftoneC0136 => true,
+        MirrorFilter.r2HalftoneC0182 => true,
+        MirrorFilter.r2HalftoneC0284 => true,
+        MirrorFilter.r2HalftoneC0368 => true,
+        MirrorFilter.r2HalftoneC0370 => true,
+        MirrorFilter.r2HalftoneC0376 => true,
+        MirrorFilter.r2SketchC0104 => true,
+        MirrorFilter.r2SketchC0155 => true,
+        MirrorFilter.r2SketchC0311 => true,
+        MirrorFilter.r2SketchC0360 => true,
+        MirrorFilter.r2SketchC0382 => true,
+        MirrorFilter.r2SketchC0388 => true,
+        MirrorFilter.r2OpticsC0068 => true,
+        MirrorFilter.r2OpticsC0262 => true,
+        MirrorFilter.r2OpticsC0376 => true,
+        MirrorFilter.r2OpticsC0411 => true,
+        MirrorFilter.r2OpticsC0415 => true,
+        MirrorFilter.r2OpticsC0437 => true,
+        MirrorFilter.r2KaleidoC0027 => true,
+        MirrorFilter.r2KaleidoC0051 => true,
+        MirrorFilter.r2KaleidoC0097 => true,
+        MirrorFilter.r2KaleidoC0242 => true,
+        MirrorFilter.r2KaleidoC0276 => true,
+        MirrorFilter.r2KaleidoC0281 => true,
+        MirrorFilter.r2KaleidoC0438 => true,
+        MirrorFilter.r2KaleidoC0486 => true,
+        MirrorFilter.r2TilesC0020 => true,
+        MirrorFilter.r2TilesC0180 => true,
+        MirrorFilter.r2TilesC0198 => true,
+        MirrorFilter.r2TilesC0218 => true,
+        MirrorFilter.r2TilesC0273 => true,
+        MirrorFilter.r2TilesC0298 => true,
+        MirrorFilter.r2TilesC0401 => true,
+        MirrorFilter.r2TilesC0498 => true,
+        MirrorFilter.r2GlitchC0036 => true,
+        MirrorFilter.r2GlitchC0098 => true,
+        MirrorFilter.r2GlitchC0394 => true,
+        MirrorFilter.r2VhsC0291 => true,
+        MirrorFilter.r2VhsC0336 => true,
+        MirrorFilter.r2VhsC0497 => true,
+        MirrorFilter.r2LayersC0006 => true,
+        MirrorFilter.r2LayersC0009 => true,
+        MirrorFilter.r2LayersC0033 => true,
+        MirrorFilter.r2LayersC0110 => true,
+        MirrorFilter.r2LayersC0144 => true,
+        MirrorFilter.r2LayersC0304 => true,
+        MirrorFilter.r2LayersC0441 => true,
+        MirrorFilter.r2LayersC0473 => true,
+        MirrorFilter.r2PaintC0052 => true,
+        MirrorFilter.r2PaintC0101 => true,
+        MirrorFilter.r2PaintC0170 => true,
+        MirrorFilter.r2PaintC0173 => true,
+        MirrorFilter.r2PaintC0189 => true,
+        MirrorFilter.r2PaintC0194 => true,
+        MirrorFilter.r2ColorC0008 => true,
+        MirrorFilter.r2ColorC0039 => true,
+        MirrorFilter.r2ColorC0065 => true,
+        MirrorFilter.r2ColorC0069 => true,
+        MirrorFilter.r2ColorC0073 => true,
+        MirrorFilter.r2ColorC0097 => true,
+        MirrorFilter.r2ColorC0181 => true,
+        MirrorFilter.r2LightC0044 => true,
+        MirrorFilter.r2LightC0050 => true,
+        MirrorFilter.r2LightC0156 => true,
+        MirrorFilter.r2LightC0163 => true,
+        MirrorFilter.r2LightC0176 => true,
         // @shadergen:needsTime
         _ => false,
       };
@@ -595,6 +953,79 @@ enum MirrorFilter {
         MirrorFilter.labBlackHole => true,
         MirrorFilter.labRays => true,
         MirrorFilter.labTilt => true,
+        MirrorFilter.r2MosaicC0041 => true,
+        MirrorFilter.r2MosaicC0042 => true,
+        MirrorFilter.r2MosaicC0133 => true,
+        MirrorFilter.r2MosaicC0289 => true,
+        MirrorFilter.r2MosaicC0331 => true,
+        MirrorFilter.r2MosaicC0366 => true,
+        MirrorFilter.r2MosaicC0460 => true,
+        MirrorFilter.r2HalftoneC0029 => true,
+        MirrorFilter.r2HalftoneC0182 => true,
+        MirrorFilter.r2HalftoneC0284 => true,
+        MirrorFilter.r2HalftoneC0368 => true,
+        MirrorFilter.r2HalftoneC0370 => true,
+        MirrorFilter.r2HalftoneC0376 => true,
+        MirrorFilter.r2SketchC0104 => true,
+        MirrorFilter.r2SketchC0155 => true,
+        MirrorFilter.r2SketchC0310 => true,
+        MirrorFilter.r2SketchC0311 => true,
+        MirrorFilter.r2SketchC0360 => true,
+        MirrorFilter.r2SketchC0382 => true,
+        MirrorFilter.r2SketchC0388 => true,
+        MirrorFilter.r2OpticsC0056 => true,
+        MirrorFilter.r2OpticsC0060 => true,
+        MirrorFilter.r2OpticsC0068 => true,
+        MirrorFilter.r2OpticsC0262 => true,
+        MirrorFilter.r2OpticsC0376 => true,
+        MirrorFilter.r2OpticsC0411 => true,
+        MirrorFilter.r2OpticsC0415 => true,
+        MirrorFilter.r2OpticsC0437 => true,
+        MirrorFilter.r2KaleidoC0027 => true,
+        MirrorFilter.r2KaleidoC0097 => true,
+        MirrorFilter.r2KaleidoC0242 => true,
+        MirrorFilter.r2KaleidoC0276 => true,
+        MirrorFilter.r2KaleidoC0281 => true,
+        MirrorFilter.r2KaleidoC0438 => true,
+        MirrorFilter.r2KaleidoC0486 => true,
+        MirrorFilter.r2TilesC0020 => true,
+        MirrorFilter.r2TilesC0180 => true,
+        MirrorFilter.r2TilesC0198 => true,
+        MirrorFilter.r2TilesC0218 => true,
+        MirrorFilter.r2TilesC0273 => true,
+        MirrorFilter.r2TilesC0298 => true,
+        MirrorFilter.r2TilesC0401 => true,
+        MirrorFilter.r2TilesC0498 => true,
+        MirrorFilter.r2GlitchC0036 => true,
+        MirrorFilter.r2GlitchC0098 => true,
+        MirrorFilter.r2GlitchC0394 => true,
+        MirrorFilter.r2VhsC0291 => true,
+        MirrorFilter.r2VhsC0336 => true,
+        MirrorFilter.r2VhsC0497 => true,
+        MirrorFilter.r2FaceC0165 => true,
+        MirrorFilter.r2FaceC0184 => true,
+        MirrorFilter.r2FaceC0227 => true,
+        MirrorFilter.r2FaceC0232 => true,
+        MirrorFilter.r2FaceC0240 => true,
+        MirrorFilter.r2FaceC0258 => true,
+        MirrorFilter.r2FaceC0327 => true,
+        MirrorFilter.r2FaceC0417 => true,
+        MirrorFilter.r2LayersC0304 => true,
+        MirrorFilter.r2LayersC0441 => true,
+        MirrorFilter.r2LayersC0473 => true,
+        MirrorFilter.r2PaintC0101 => true,
+        MirrorFilter.r2PaintC0170 => true,
+        MirrorFilter.r2PaintC0173 => true,
+        MirrorFilter.r2PaintC0189 => true,
+        MirrorFilter.r2PaintC0194 => true,
+        MirrorFilter.r2ColorC0069 => true,
+        MirrorFilter.r2ColorC0097 => true,
+        MirrorFilter.r2ColorC0181 => true,
+        MirrorFilter.r2LightC0003 => true,
+        MirrorFilter.r2LightC0011 => true,
+        MirrorFilter.r2LightC0012 => true,
+        MirrorFilter.r2LightC0156 => true,
+        MirrorFilter.r2LightC0176 => true,
         // @shadergen:needsFace
         _ => false,
       };
@@ -637,6 +1068,100 @@ enum MirrorFilter {
         MirrorFilter.frozen =>
           FilterCollection.fantasy,
         // @shadergen:collection:experimental
+        MirrorFilter.r2LightC0176 ||
+        MirrorFilter.r2LightC0163 ||
+        MirrorFilter.r2LightC0156 ||
+        MirrorFilter.r2LightC0050 ||
+        MirrorFilter.r2LightC0044 ||
+        MirrorFilter.r2LightC0012 ||
+        MirrorFilter.r2LightC0011 ||
+        MirrorFilter.r2LightC0003 ||
+        MirrorFilter.r2ColorC0181 ||
+        MirrorFilter.r2ColorC0097 ||
+        MirrorFilter.r2ColorC0073 ||
+        MirrorFilter.r2ColorC0069 ||
+        MirrorFilter.r2ColorC0065 ||
+        MirrorFilter.r2ColorC0039 ||
+        MirrorFilter.r2ColorC0015 ||
+        MirrorFilter.r2ColorC0008 ||
+        MirrorFilter.r2PaintC0194 ||
+        MirrorFilter.r2PaintC0189 ||
+        MirrorFilter.r2PaintC0173 ||
+        MirrorFilter.r2PaintC0170 ||
+        MirrorFilter.r2PaintC0126 ||
+        MirrorFilter.r2PaintC0101 ||
+        MirrorFilter.r2PaintC0052 ||
+        MirrorFilter.r2PaintC0048 ||
+        MirrorFilter.r2LayersC0473 ||
+        MirrorFilter.r2LayersC0441 ||
+        MirrorFilter.r2LayersC0304 ||
+        MirrorFilter.r2LayersC0144 ||
+        MirrorFilter.r2LayersC0110 ||
+        MirrorFilter.r2LayersC0033 ||
+        MirrorFilter.r2LayersC0009 ||
+        MirrorFilter.r2LayersC0006 ||
+        MirrorFilter.r2FaceC0417 ||
+        MirrorFilter.r2FaceC0327 ||
+        MirrorFilter.r2FaceC0258 ||
+        MirrorFilter.r2FaceC0240 ||
+        MirrorFilter.r2FaceC0232 ||
+        MirrorFilter.r2FaceC0227 ||
+        MirrorFilter.r2FaceC0184 ||
+        MirrorFilter.r2FaceC0165 ||
+        MirrorFilter.r2VhsC0497 ||
+        MirrorFilter.r2VhsC0336 ||
+        MirrorFilter.r2VhsC0291 ||
+        MirrorFilter.r2GlitchC0394 ||
+        MirrorFilter.r2GlitchC0098 ||
+        MirrorFilter.r2GlitchC0036 ||
+        MirrorFilter.r2TilesC0498 ||
+        MirrorFilter.r2TilesC0401 ||
+        MirrorFilter.r2TilesC0298 ||
+        MirrorFilter.r2TilesC0273 ||
+        MirrorFilter.r2TilesC0218 ||
+        MirrorFilter.r2TilesC0198 ||
+        MirrorFilter.r2TilesC0180 ||
+        MirrorFilter.r2TilesC0020 ||
+        MirrorFilter.r2KaleidoC0486 ||
+        MirrorFilter.r2KaleidoC0438 ||
+        MirrorFilter.r2KaleidoC0281 ||
+        MirrorFilter.r2KaleidoC0276 ||
+        MirrorFilter.r2KaleidoC0242 ||
+        MirrorFilter.r2KaleidoC0097 ||
+        MirrorFilter.r2KaleidoC0051 ||
+        MirrorFilter.r2KaleidoC0027 ||
+        MirrorFilter.r2OpticsC0437 ||
+        MirrorFilter.r2OpticsC0415 ||
+        MirrorFilter.r2OpticsC0411 ||
+        MirrorFilter.r2OpticsC0376 ||
+        MirrorFilter.r2OpticsC0262 ||
+        MirrorFilter.r2OpticsC0068 ||
+        MirrorFilter.r2OpticsC0060 ||
+        MirrorFilter.r2OpticsC0056 ||
+        MirrorFilter.r2SketchC0388 ||
+        MirrorFilter.r2SketchC0382 ||
+        MirrorFilter.r2SketchC0360 ||
+        MirrorFilter.r2SketchC0311 ||
+        MirrorFilter.r2SketchC0310 ||
+        MirrorFilter.r2SketchC0155 ||
+        MirrorFilter.r2SketchC0104 ||
+        MirrorFilter.r2SketchC0021 ||
+        MirrorFilter.r2HalftoneC0376 ||
+        MirrorFilter.r2HalftoneC0370 ||
+        MirrorFilter.r2HalftoneC0368 ||
+        MirrorFilter.r2HalftoneC0284 ||
+        MirrorFilter.r2HalftoneC0182 ||
+        MirrorFilter.r2HalftoneC0136 ||
+        MirrorFilter.r2HalftoneC0031 ||
+        MirrorFilter.r2HalftoneC0029 ||
+        MirrorFilter.r2MosaicC0460 ||
+        MirrorFilter.r2MosaicC0366 ||
+        MirrorFilter.r2MosaicC0331 ||
+        MirrorFilter.r2MosaicC0289 ||
+        MirrorFilter.r2MosaicC0133 ||
+        MirrorFilter.r2MosaicC0042 ||
+        MirrorFilter.r2MosaicC0041 ||
+        MirrorFilter.r2MosaicC0025 ||
         MirrorFilter.labNight ||
         MirrorFilter.labTunnel ||
         MirrorFilter.labMatrix ||
@@ -724,6 +1249,44 @@ enum MirrorFilter {
 
   static List<MirrorFilter> inCollection(FilterCollection c) =>
       values.where((f) => f.collection == c).toList();
+
+  /// Round 2 technique families, in chip order. Members are named
+  /// `r2<Family><id>`, e.g. `r2KaleidoC0027`.
+  static const labFamilies = [
+    'Mosaic',
+    'Halftone',
+    'Sketch',
+    'Optics',
+    'Kaleido',
+    'Tiles',
+    'Glitch',
+    'Vhs',
+    'Face',
+    'Layers',
+    'Paint',
+    'Color',
+    'Light',
+  ];
+
+  /// Lab sub-chips: earlier rounds paged by [FilterCollection.labGroupSize],
+  /// then one chip per round 2 family.
+  static final List<({String label, List<MirrorFilter> filters})> labGroups =
+      () {
+    final lab = inCollection(FilterCollection.experimental);
+    final older = lab.where((f) => !f.name.startsWith('r2')).toList();
+    const size = FilterCollection.labGroupSize;
+    return [
+      for (var s = 0; s < older.length; s += size)
+        (
+          label: '${s + 1}–${(s + size).clamp(0, older.length)}',
+          filters: older.sublist(s, (s + size).clamp(0, older.length)),
+        ),
+      for (final fam in labFamilies)
+        if (lab.where((f) => f.name.startsWith('r2$fam')).toList()
+            case final fs when fs.isNotEmpty)
+          (label: fam == 'Vhs' ? 'VHS' : fam, filters: fs),
+    ];
+  }();
 
   String? get shaderAsset => switch (this) {
         MirrorFilter.none => null,
@@ -833,6 +1396,100 @@ enum MirrorFilter {
         MirrorFilter.labMatrix => 'shaders/filter_lab_matrix.frag',
         MirrorFilter.labTunnel => 'shaders/filter_lab_tunnel.frag',
         MirrorFilter.labNight => 'shaders/filter_lab_night.frag',
+        MirrorFilter.r2MosaicC0025 => 'shaders/filter_r2_mosaic_c0025.frag',
+        MirrorFilter.r2MosaicC0041 => 'shaders/filter_r2_mosaic_c0041.frag',
+        MirrorFilter.r2MosaicC0042 => 'shaders/filter_r2_mosaic_c0042.frag',
+        MirrorFilter.r2MosaicC0133 => 'shaders/filter_r2_mosaic_c0133.frag',
+        MirrorFilter.r2MosaicC0289 => 'shaders/filter_r2_mosaic_c0289.frag',
+        MirrorFilter.r2MosaicC0331 => 'shaders/filter_r2_mosaic_c0331.frag',
+        MirrorFilter.r2MosaicC0366 => 'shaders/filter_r2_mosaic_c0366.frag',
+        MirrorFilter.r2MosaicC0460 => 'shaders/filter_r2_mosaic_c0460.frag',
+        MirrorFilter.r2HalftoneC0029 => 'shaders/filter_r2_halftone_c0029.frag',
+        MirrorFilter.r2HalftoneC0031 => 'shaders/filter_r2_halftone_c0031.frag',
+        MirrorFilter.r2HalftoneC0136 => 'shaders/filter_r2_halftone_c0136.frag',
+        MirrorFilter.r2HalftoneC0182 => 'shaders/filter_r2_halftone_c0182.frag',
+        MirrorFilter.r2HalftoneC0284 => 'shaders/filter_r2_halftone_c0284.frag',
+        MirrorFilter.r2HalftoneC0368 => 'shaders/filter_r2_halftone_c0368.frag',
+        MirrorFilter.r2HalftoneC0370 => 'shaders/filter_r2_halftone_c0370.frag',
+        MirrorFilter.r2HalftoneC0376 => 'shaders/filter_r2_halftone_c0376.frag',
+        MirrorFilter.r2SketchC0021 => 'shaders/filter_r2_sketch_c0021.frag',
+        MirrorFilter.r2SketchC0104 => 'shaders/filter_r2_sketch_c0104.frag',
+        MirrorFilter.r2SketchC0155 => 'shaders/filter_r2_sketch_c0155.frag',
+        MirrorFilter.r2SketchC0310 => 'shaders/filter_r2_sketch_c0310.frag',
+        MirrorFilter.r2SketchC0311 => 'shaders/filter_r2_sketch_c0311.frag',
+        MirrorFilter.r2SketchC0360 => 'shaders/filter_r2_sketch_c0360.frag',
+        MirrorFilter.r2SketchC0382 => 'shaders/filter_r2_sketch_c0382.frag',
+        MirrorFilter.r2SketchC0388 => 'shaders/filter_r2_sketch_c0388.frag',
+        MirrorFilter.r2OpticsC0056 => 'shaders/filter_r2_optics_c0056.frag',
+        MirrorFilter.r2OpticsC0060 => 'shaders/filter_r2_optics_c0060.frag',
+        MirrorFilter.r2OpticsC0068 => 'shaders/filter_r2_optics_c0068.frag',
+        MirrorFilter.r2OpticsC0262 => 'shaders/filter_r2_optics_c0262.frag',
+        MirrorFilter.r2OpticsC0376 => 'shaders/filter_r2_optics_c0376.frag',
+        MirrorFilter.r2OpticsC0411 => 'shaders/filter_r2_optics_c0411.frag',
+        MirrorFilter.r2OpticsC0415 => 'shaders/filter_r2_optics_c0415.frag',
+        MirrorFilter.r2OpticsC0437 => 'shaders/filter_r2_optics_c0437.frag',
+        MirrorFilter.r2KaleidoC0027 => 'shaders/filter_r2_kaleido_c0027.frag',
+        MirrorFilter.r2KaleidoC0051 => 'shaders/filter_r2_kaleido_c0051.frag',
+        MirrorFilter.r2KaleidoC0097 => 'shaders/filter_r2_kaleido_c0097.frag',
+        MirrorFilter.r2KaleidoC0242 => 'shaders/filter_r2_kaleido_c0242.frag',
+        MirrorFilter.r2KaleidoC0276 => 'shaders/filter_r2_kaleido_c0276.frag',
+        MirrorFilter.r2KaleidoC0281 => 'shaders/filter_r2_kaleido_c0281.frag',
+        MirrorFilter.r2KaleidoC0438 => 'shaders/filter_r2_kaleido_c0438.frag',
+        MirrorFilter.r2KaleidoC0486 => 'shaders/filter_r2_kaleido_c0486.frag',
+        MirrorFilter.r2TilesC0020 => 'shaders/filter_r2_tiles_c0020.frag',
+        MirrorFilter.r2TilesC0180 => 'shaders/filter_r2_tiles_c0180.frag',
+        MirrorFilter.r2TilesC0198 => 'shaders/filter_r2_tiles_c0198.frag',
+        MirrorFilter.r2TilesC0218 => 'shaders/filter_r2_tiles_c0218.frag',
+        MirrorFilter.r2TilesC0273 => 'shaders/filter_r2_tiles_c0273.frag',
+        MirrorFilter.r2TilesC0298 => 'shaders/filter_r2_tiles_c0298.frag',
+        MirrorFilter.r2TilesC0401 => 'shaders/filter_r2_tiles_c0401.frag',
+        MirrorFilter.r2TilesC0498 => 'shaders/filter_r2_tiles_c0498.frag',
+        MirrorFilter.r2GlitchC0036 => 'shaders/filter_r2_glitch_c0036.frag',
+        MirrorFilter.r2GlitchC0098 => 'shaders/filter_r2_glitch_c0098.frag',
+        MirrorFilter.r2GlitchC0394 => 'shaders/filter_r2_glitch_c0394.frag',
+        MirrorFilter.r2VhsC0291 => 'shaders/filter_r2_vhs_c0291.frag',
+        MirrorFilter.r2VhsC0336 => 'shaders/filter_r2_vhs_c0336.frag',
+        MirrorFilter.r2VhsC0497 => 'shaders/filter_r2_vhs_c0497.frag',
+        MirrorFilter.r2FaceC0165 => 'shaders/filter_r2_face_c0165.frag',
+        MirrorFilter.r2FaceC0184 => 'shaders/filter_r2_face_c0184.frag',
+        MirrorFilter.r2FaceC0227 => 'shaders/filter_r2_face_c0227.frag',
+        MirrorFilter.r2FaceC0232 => 'shaders/filter_r2_face_c0232.frag',
+        MirrorFilter.r2FaceC0240 => 'shaders/filter_r2_face_c0240.frag',
+        MirrorFilter.r2FaceC0258 => 'shaders/filter_r2_face_c0258.frag',
+        MirrorFilter.r2FaceC0327 => 'shaders/filter_r2_face_c0327.frag',
+        MirrorFilter.r2FaceC0417 => 'shaders/filter_r2_face_c0417.frag',
+        MirrorFilter.r2LayersC0006 => 'shaders/filter_r2_layers_c0006.frag',
+        MirrorFilter.r2LayersC0009 => 'shaders/filter_r2_layers_c0009.frag',
+        MirrorFilter.r2LayersC0033 => 'shaders/filter_r2_layers_c0033.frag',
+        MirrorFilter.r2LayersC0110 => 'shaders/filter_r2_layers_c0110.frag',
+        MirrorFilter.r2LayersC0144 => 'shaders/filter_r2_layers_c0144.frag',
+        MirrorFilter.r2LayersC0304 => 'shaders/filter_r2_layers_c0304.frag',
+        MirrorFilter.r2LayersC0441 => 'shaders/filter_r2_layers_c0441.frag',
+        MirrorFilter.r2LayersC0473 => 'shaders/filter_r2_layers_c0473.frag',
+        MirrorFilter.r2PaintC0048 => 'shaders/filter_r2_paint_c0048.frag',
+        MirrorFilter.r2PaintC0052 => 'shaders/filter_r2_paint_c0052.frag',
+        MirrorFilter.r2PaintC0101 => 'shaders/filter_r2_paint_c0101.frag',
+        MirrorFilter.r2PaintC0126 => 'shaders/filter_r2_paint_c0126.frag',
+        MirrorFilter.r2PaintC0170 => 'shaders/filter_r2_paint_c0170.frag',
+        MirrorFilter.r2PaintC0173 => 'shaders/filter_r2_paint_c0173.frag',
+        MirrorFilter.r2PaintC0189 => 'shaders/filter_r2_paint_c0189.frag',
+        MirrorFilter.r2PaintC0194 => 'shaders/filter_r2_paint_c0194.frag',
+        MirrorFilter.r2ColorC0008 => 'shaders/filter_r2_color_c0008.frag',
+        MirrorFilter.r2ColorC0015 => 'shaders/filter_r2_color_c0015.frag',
+        MirrorFilter.r2ColorC0039 => 'shaders/filter_r2_color_c0039.frag',
+        MirrorFilter.r2ColorC0065 => 'shaders/filter_r2_color_c0065.frag',
+        MirrorFilter.r2ColorC0069 => 'shaders/filter_r2_color_c0069.frag',
+        MirrorFilter.r2ColorC0073 => 'shaders/filter_r2_color_c0073.frag',
+        MirrorFilter.r2ColorC0097 => 'shaders/filter_r2_color_c0097.frag',
+        MirrorFilter.r2ColorC0181 => 'shaders/filter_r2_color_c0181.frag',
+        MirrorFilter.r2LightC0003 => 'shaders/filter_r2_light_c0003.frag',
+        MirrorFilter.r2LightC0011 => 'shaders/filter_r2_light_c0011.frag',
+        MirrorFilter.r2LightC0012 => 'shaders/filter_r2_light_c0012.frag',
+        MirrorFilter.r2LightC0044 => 'shaders/filter_r2_light_c0044.frag',
+        MirrorFilter.r2LightC0050 => 'shaders/filter_r2_light_c0050.frag',
+        MirrorFilter.r2LightC0156 => 'shaders/filter_r2_light_c0156.frag',
+        MirrorFilter.r2LightC0163 => 'shaders/filter_r2_light_c0163.frag',
+        MirrorFilter.r2LightC0176 => 'shaders/filter_r2_light_c0176.frag',
         // @shadergen:shaderAsset
       };
 }
