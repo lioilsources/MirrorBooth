@@ -293,7 +293,90 @@ enum MirrorFilter {
   r2VhsC0446,
   r2VhsC0483,
   r2VhsC0496,
-  r2VhsNight
+  r2VhsNight,
+  // Lab: round 3, Pretty and Ugly face features (11 families)
+  r3EyesC0230,
+  r3EyesC0016,
+  r3EyesC0010,
+  r3EyesC0294,
+  r3EyesC0254,
+  r3LipsC0276,
+  r3LipsC0110,
+  r3LipsC0261,
+  r3LipsC0024,
+  r3LipsC0080,
+  r3LipsC0165,
+  r3LipsC0290,
+  r3LipsC0142,
+  r3GlowC0015,
+  r3GlowC0080,
+  r3GlowC0230,
+  r3GlowC0165,
+  r3GlowC0016,
+  r3GlowC0264,
+  r3HairC0200,
+  r3HairC0273,
+  r3HairC0089,
+  r3HairC0122,
+  r3HairC0287,
+  r3HairC0173,
+  r3HairC0192,
+  r3HairC0030,
+  r3SculptC0232,
+  r3SculptC0048,
+  r3SculptC0126,
+  r3SculptC0040,
+  r3SculptC0246,
+  r3SculptC0282,
+  r3SculptC0004,
+  r3SculptC0111,
+  r3ScarsC0034,
+  r3ScarsC0239,
+  r3ScarsC0212,
+  r3ScarsC0166,
+  r3ScarsC0228,
+  r3ScarsC0113,
+  r3ScarsC0019,
+  r3ScarsC0081,
+  r3FacepaintC0113,
+  r3FacepaintC0025,
+  r3FacepaintC0149,
+  r3FacepaintC0268,
+  r3FacepaintC0245,
+  r3FacepaintC0247,
+  r3FacepaintC0288,
+  r3FacepaintC0272,
+  r3AlienC0003,
+  r3AlienC0030,
+  r3AlienC0112,
+  r3AlienC0020,
+  r3AlienC0012,
+  r3AlienC0027,
+  r3AlienC0015,
+  r3AnimalC0234,
+  r3AnimalC0202,
+  r3AnimalC0239,
+  r3AnimalC0258,
+  r3AnimalC0282,
+  r3AnimalC0216,
+  r3AnimalC0169,
+  r3AnimalC0186,
+  r3FeaturesC0267,
+  r3FeaturesC0287,
+  r3FeaturesC0174,
+  r3FeaturesC0233,
+  r3FeaturesC0001,
+  r3FeaturesC0072,
+  r3FeaturesC0154,
+  r3FeaturesC0232,
+  r3MoviefxC0288,
+  r3MoviefxC0254,
+  r3MoviefxC0145,
+  r3MoviefxC0280,
+  r3MoviefxC0070,
+  r3MoviefxC0222,
+  r3MoviefxC0240,
+  r3MoviefxC0117,
   // @shadergen:enum:experimental
   ;
 
@@ -430,6 +513,88 @@ enum MirrorFilter {
         MirrorFilter.r2VhsC0446 => 'VHS 9',
         MirrorFilter.r2VhsC0483 => 'VHS 10',
         MirrorFilter.r2VhsC0496 => 'VHS 11',
+        MirrorFilter.r3EyesC0230 => 'Eyes 1',
+        MirrorFilter.r3EyesC0016 => 'Eyes 2',
+        MirrorFilter.r3EyesC0010 => 'Eyes 3',
+        MirrorFilter.r3EyesC0294 => 'Eyes 4',
+        MirrorFilter.r3EyesC0254 => 'Eyes 5',
+        MirrorFilter.r3LipsC0276 => 'Lips 1',
+        MirrorFilter.r3LipsC0110 => 'Lips 2',
+        MirrorFilter.r3LipsC0261 => 'Lips 3',
+        MirrorFilter.r3LipsC0024 => 'Lips 4',
+        MirrorFilter.r3LipsC0080 => 'Lips 5',
+        MirrorFilter.r3LipsC0165 => 'Lips 6',
+        MirrorFilter.r3LipsC0290 => 'Lips 7',
+        MirrorFilter.r3LipsC0142 => 'Lips 8',
+        MirrorFilter.r3GlowC0015 => 'Glow 1',
+        MirrorFilter.r3GlowC0080 => 'Glow 2',
+        MirrorFilter.r3GlowC0230 => 'Glow 3',
+        MirrorFilter.r3GlowC0165 => 'Glow 4',
+        MirrorFilter.r3GlowC0016 => 'Glow 5',
+        MirrorFilter.r3GlowC0264 => 'Glow 6',
+        MirrorFilter.r3HairC0200 => 'Hair 1',
+        MirrorFilter.r3HairC0273 => 'Hair 2',
+        MirrorFilter.r3HairC0089 => 'Hair 3',
+        MirrorFilter.r3HairC0122 => 'Hair 4',
+        MirrorFilter.r3HairC0287 => 'Hair 5',
+        MirrorFilter.r3HairC0173 => 'Hair 6',
+        MirrorFilter.r3HairC0192 => 'Hair 7',
+        MirrorFilter.r3HairC0030 => 'Hair 8',
+        MirrorFilter.r3SculptC0232 => 'Sculpt 1',
+        MirrorFilter.r3SculptC0048 => 'Sculpt 2',
+        MirrorFilter.r3SculptC0126 => 'Sculpt 3',
+        MirrorFilter.r3SculptC0040 => 'Sculpt 4',
+        MirrorFilter.r3SculptC0246 => 'Sculpt 5',
+        MirrorFilter.r3SculptC0282 => 'Sculpt 6',
+        MirrorFilter.r3SculptC0004 => 'Sculpt 7',
+        MirrorFilter.r3SculptC0111 => 'Sculpt 8',
+        MirrorFilter.r3ScarsC0034 => 'Scars 1',
+        MirrorFilter.r3ScarsC0239 => 'Scars 2',
+        MirrorFilter.r3ScarsC0212 => 'Scars 3',
+        MirrorFilter.r3ScarsC0166 => 'Scars 4',
+        MirrorFilter.r3ScarsC0228 => 'Scars 5',
+        MirrorFilter.r3ScarsC0113 => 'Scars 6',
+        MirrorFilter.r3ScarsC0019 => 'Scars 7',
+        MirrorFilter.r3ScarsC0081 => 'Scars 8',
+        MirrorFilter.r3FacepaintC0113 => 'Face paint 1',
+        MirrorFilter.r3FacepaintC0025 => 'Face paint 2',
+        MirrorFilter.r3FacepaintC0149 => 'Face paint 3',
+        MirrorFilter.r3FacepaintC0268 => 'Face paint 4',
+        MirrorFilter.r3FacepaintC0245 => 'Face paint 5',
+        MirrorFilter.r3FacepaintC0247 => 'Face paint 6',
+        MirrorFilter.r3FacepaintC0288 => 'Face paint 7',
+        MirrorFilter.r3FacepaintC0272 => 'Face paint 8',
+        MirrorFilter.r3AlienC0003 => 'Alien 1',
+        MirrorFilter.r3AlienC0030 => 'Alien 2',
+        MirrorFilter.r3AlienC0112 => 'Alien 3',
+        MirrorFilter.r3AlienC0020 => 'Alien 4',
+        MirrorFilter.r3AlienC0012 => 'Alien 5',
+        MirrorFilter.r3AlienC0027 => 'Alien 6',
+        MirrorFilter.r3AlienC0015 => 'Alien 7',
+        MirrorFilter.r3AnimalC0234 => 'Animal 1',
+        MirrorFilter.r3AnimalC0202 => 'Animal 2',
+        MirrorFilter.r3AnimalC0239 => 'Animal 3',
+        MirrorFilter.r3AnimalC0258 => 'Animal 4',
+        MirrorFilter.r3AnimalC0282 => 'Animal 5',
+        MirrorFilter.r3AnimalC0216 => 'Animal 6',
+        MirrorFilter.r3AnimalC0169 => 'Animal 7',
+        MirrorFilter.r3AnimalC0186 => 'Animal 8',
+        MirrorFilter.r3FeaturesC0267 => 'Features 1',
+        MirrorFilter.r3FeaturesC0287 => 'Features 2',
+        MirrorFilter.r3FeaturesC0174 => 'Features 3',
+        MirrorFilter.r3FeaturesC0233 => 'Features 4',
+        MirrorFilter.r3FeaturesC0001 => 'Features 5',
+        MirrorFilter.r3FeaturesC0072 => 'Features 6',
+        MirrorFilter.r3FeaturesC0154 => 'Features 7',
+        MirrorFilter.r3FeaturesC0232 => 'Features 8',
+        MirrorFilter.r3MoviefxC0288 => 'Movie FX 1',
+        MirrorFilter.r3MoviefxC0254 => 'Movie FX 2',
+        MirrorFilter.r3MoviefxC0145 => 'Movie FX 3',
+        MirrorFilter.r3MoviefxC0280 => 'Movie FX 4',
+        MirrorFilter.r3MoviefxC0070 => 'Movie FX 5',
+        MirrorFilter.r3MoviefxC0222 => 'Movie FX 6',
+        MirrorFilter.r3MoviefxC0240 => 'Movie FX 7',
+        MirrorFilter.r3MoviefxC0117 => 'Movie FX 8',
         // @shadergen:label
       };
 
@@ -566,6 +731,88 @@ enum MirrorFilter {
         MirrorFilter.r2VhsC0446 => '◇',
         MirrorFilter.r2VhsC0483 => '◇',
         MirrorFilter.r2VhsC0496 => '◇',
+        MirrorFilter.r3EyesC0230 => '◉',
+        MirrorFilter.r3EyesC0016 => '◉',
+        MirrorFilter.r3EyesC0010 => '◉',
+        MirrorFilter.r3EyesC0294 => '◉',
+        MirrorFilter.r3EyesC0254 => '◉',
+        MirrorFilter.r3LipsC0276 => 'ω',
+        MirrorFilter.r3LipsC0110 => 'ω',
+        MirrorFilter.r3LipsC0261 => 'ω',
+        MirrorFilter.r3LipsC0024 => 'ω',
+        MirrorFilter.r3LipsC0080 => 'ω',
+        MirrorFilter.r3LipsC0165 => 'ω',
+        MirrorFilter.r3LipsC0290 => 'ω',
+        MirrorFilter.r3LipsC0142 => 'ω',
+        MirrorFilter.r3GlowC0015 => '✧',
+        MirrorFilter.r3GlowC0080 => '✧',
+        MirrorFilter.r3GlowC0230 => '✧',
+        MirrorFilter.r3GlowC0165 => '✧',
+        MirrorFilter.r3GlowC0016 => '✧',
+        MirrorFilter.r3GlowC0264 => '✧',
+        MirrorFilter.r3HairC0200 => '≋',
+        MirrorFilter.r3HairC0273 => '≋',
+        MirrorFilter.r3HairC0089 => '≋',
+        MirrorFilter.r3HairC0122 => '≋',
+        MirrorFilter.r3HairC0287 => '≋',
+        MirrorFilter.r3HairC0173 => '≋',
+        MirrorFilter.r3HairC0192 => '≋',
+        MirrorFilter.r3HairC0030 => '≋',
+        MirrorFilter.r3SculptC0232 => '◐',
+        MirrorFilter.r3SculptC0048 => '◐',
+        MirrorFilter.r3SculptC0126 => '◐',
+        MirrorFilter.r3SculptC0040 => '◐',
+        MirrorFilter.r3SculptC0246 => '◐',
+        MirrorFilter.r3SculptC0282 => '◐',
+        MirrorFilter.r3SculptC0004 => '◐',
+        MirrorFilter.r3SculptC0111 => '◐',
+        MirrorFilter.r3ScarsC0034 => '⚡',
+        MirrorFilter.r3ScarsC0239 => '⚡',
+        MirrorFilter.r3ScarsC0212 => '⚡',
+        MirrorFilter.r3ScarsC0166 => '⚡',
+        MirrorFilter.r3ScarsC0228 => '⚡',
+        MirrorFilter.r3ScarsC0113 => '⚡',
+        MirrorFilter.r3ScarsC0019 => '⚡',
+        MirrorFilter.r3ScarsC0081 => '⚡',
+        MirrorFilter.r3FacepaintC0113 => '✎',
+        MirrorFilter.r3FacepaintC0025 => '✎',
+        MirrorFilter.r3FacepaintC0149 => '✎',
+        MirrorFilter.r3FacepaintC0268 => '✎',
+        MirrorFilter.r3FacepaintC0245 => '✎',
+        MirrorFilter.r3FacepaintC0247 => '✎',
+        MirrorFilter.r3FacepaintC0288 => '✎',
+        MirrorFilter.r3FacepaintC0272 => '✎',
+        MirrorFilter.r3AlienC0003 => 'Λ',
+        MirrorFilter.r3AlienC0030 => 'Λ',
+        MirrorFilter.r3AlienC0112 => 'Λ',
+        MirrorFilter.r3AlienC0020 => 'Λ',
+        MirrorFilter.r3AlienC0012 => 'Λ',
+        MirrorFilter.r3AlienC0027 => 'Λ',
+        MirrorFilter.r3AlienC0015 => 'Λ',
+        MirrorFilter.r3AnimalC0234 => 'ᴥ',
+        MirrorFilter.r3AnimalC0202 => 'ᴥ',
+        MirrorFilter.r3AnimalC0239 => 'ᴥ',
+        MirrorFilter.r3AnimalC0258 => 'ᴥ',
+        MirrorFilter.r3AnimalC0282 => 'ᴥ',
+        MirrorFilter.r3AnimalC0216 => 'ᴥ',
+        MirrorFilter.r3AnimalC0169 => 'ᴥ',
+        MirrorFilter.r3AnimalC0186 => 'ᴥ',
+        MirrorFilter.r3FeaturesC0267 => '△',
+        MirrorFilter.r3FeaturesC0287 => '△',
+        MirrorFilter.r3FeaturesC0174 => '△',
+        MirrorFilter.r3FeaturesC0233 => '△',
+        MirrorFilter.r3FeaturesC0001 => '△',
+        MirrorFilter.r3FeaturesC0072 => '△',
+        MirrorFilter.r3FeaturesC0154 => '△',
+        MirrorFilter.r3FeaturesC0232 => '△',
+        MirrorFilter.r3MoviefxC0288 => '▣',
+        MirrorFilter.r3MoviefxC0254 => '▣',
+        MirrorFilter.r3MoviefxC0145 => '▣',
+        MirrorFilter.r3MoviefxC0280 => '▣',
+        MirrorFilter.r3MoviefxC0070 => '▣',
+        MirrorFilter.r3MoviefxC0222 => '▣',
+        MirrorFilter.r3MoviefxC0240 => '▣',
+        MirrorFilter.r3MoviefxC0117 => '▣',
         // @shadergen:icon
       };
 
@@ -665,6 +912,21 @@ enum MirrorFilter {
         MirrorFilter.r2VhsC0446 => true,
         MirrorFilter.r2VhsC0483 => true,
         MirrorFilter.r2VhsC0496 => true,
+        MirrorFilter.r3HairC0200 => true,
+        MirrorFilter.r3HairC0273 => true,
+        MirrorFilter.r3HairC0089 => true,
+        MirrorFilter.r3HairC0122 => true,
+        MirrorFilter.r3HairC0287 => true,
+        MirrorFilter.r3HairC0173 => true,
+        MirrorFilter.r3HairC0192 => true,
+        MirrorFilter.r3HairC0030 => true,
+        MirrorFilter.r3AlienC0030 => true,
+        MirrorFilter.r3AlienC0112 => true,
+        MirrorFilter.r3AlienC0020 => true,
+        MirrorFilter.r3AlienC0015 => true,
+        MirrorFilter.r3MoviefxC0145 => true,
+        MirrorFilter.r3MoviefxC0222 => true,
+        MirrorFilter.r3MoviefxC0240 => true,
         // @shadergen:needsTime
         _ => false,
       };
@@ -768,6 +1030,88 @@ enum MirrorFilter {
         MirrorFilter.r2VhsC0446 => true,
         MirrorFilter.r2VhsC0483 => true,
         MirrorFilter.r2VhsC0496 => true,
+        MirrorFilter.r3EyesC0230 => true,
+        MirrorFilter.r3EyesC0016 => true,
+        MirrorFilter.r3EyesC0010 => true,
+        MirrorFilter.r3EyesC0294 => true,
+        MirrorFilter.r3EyesC0254 => true,
+        MirrorFilter.r3LipsC0276 => true,
+        MirrorFilter.r3LipsC0110 => true,
+        MirrorFilter.r3LipsC0261 => true,
+        MirrorFilter.r3LipsC0024 => true,
+        MirrorFilter.r3LipsC0080 => true,
+        MirrorFilter.r3LipsC0165 => true,
+        MirrorFilter.r3LipsC0290 => true,
+        MirrorFilter.r3LipsC0142 => true,
+        MirrorFilter.r3GlowC0015 => true,
+        MirrorFilter.r3GlowC0080 => true,
+        MirrorFilter.r3GlowC0230 => true,
+        MirrorFilter.r3GlowC0165 => true,
+        MirrorFilter.r3GlowC0016 => true,
+        MirrorFilter.r3GlowC0264 => true,
+        MirrorFilter.r3HairC0200 => true,
+        MirrorFilter.r3HairC0273 => true,
+        MirrorFilter.r3HairC0089 => true,
+        MirrorFilter.r3HairC0122 => true,
+        MirrorFilter.r3HairC0287 => true,
+        MirrorFilter.r3HairC0173 => true,
+        MirrorFilter.r3HairC0192 => true,
+        MirrorFilter.r3HairC0030 => true,
+        MirrorFilter.r3SculptC0232 => true,
+        MirrorFilter.r3SculptC0048 => true,
+        MirrorFilter.r3SculptC0126 => true,
+        MirrorFilter.r3SculptC0040 => true,
+        MirrorFilter.r3SculptC0246 => true,
+        MirrorFilter.r3SculptC0282 => true,
+        MirrorFilter.r3SculptC0004 => true,
+        MirrorFilter.r3SculptC0111 => true,
+        MirrorFilter.r3ScarsC0034 => true,
+        MirrorFilter.r3ScarsC0239 => true,
+        MirrorFilter.r3ScarsC0212 => true,
+        MirrorFilter.r3ScarsC0166 => true,
+        MirrorFilter.r3ScarsC0228 => true,
+        MirrorFilter.r3ScarsC0113 => true,
+        MirrorFilter.r3ScarsC0019 => true,
+        MirrorFilter.r3ScarsC0081 => true,
+        MirrorFilter.r3FacepaintC0113 => true,
+        MirrorFilter.r3FacepaintC0025 => true,
+        MirrorFilter.r3FacepaintC0149 => true,
+        MirrorFilter.r3FacepaintC0268 => true,
+        MirrorFilter.r3FacepaintC0245 => true,
+        MirrorFilter.r3FacepaintC0247 => true,
+        MirrorFilter.r3FacepaintC0288 => true,
+        MirrorFilter.r3FacepaintC0272 => true,
+        MirrorFilter.r3AlienC0003 => true,
+        MirrorFilter.r3AlienC0030 => true,
+        MirrorFilter.r3AlienC0112 => true,
+        MirrorFilter.r3AlienC0020 => true,
+        MirrorFilter.r3AlienC0012 => true,
+        MirrorFilter.r3AlienC0027 => true,
+        MirrorFilter.r3AlienC0015 => true,
+        MirrorFilter.r3AnimalC0234 => true,
+        MirrorFilter.r3AnimalC0202 => true,
+        MirrorFilter.r3AnimalC0239 => true,
+        MirrorFilter.r3AnimalC0258 => true,
+        MirrorFilter.r3AnimalC0282 => true,
+        MirrorFilter.r3AnimalC0216 => true,
+        MirrorFilter.r3AnimalC0169 => true,
+        MirrorFilter.r3AnimalC0186 => true,
+        MirrorFilter.r3FeaturesC0267 => true,
+        MirrorFilter.r3FeaturesC0287 => true,
+        MirrorFilter.r3FeaturesC0174 => true,
+        MirrorFilter.r3FeaturesC0233 => true,
+        MirrorFilter.r3FeaturesC0001 => true,
+        MirrorFilter.r3FeaturesC0072 => true,
+        MirrorFilter.r3FeaturesC0154 => true,
+        MirrorFilter.r3FeaturesC0232 => true,
+        MirrorFilter.r3MoviefxC0288 => true,
+        MirrorFilter.r3MoviefxC0254 => true,
+        MirrorFilter.r3MoviefxC0145 => true,
+        MirrorFilter.r3MoviefxC0280 => true,
+        MirrorFilter.r3MoviefxC0070 => true,
+        MirrorFilter.r3MoviefxC0222 => true,
+        MirrorFilter.r3MoviefxC0240 => true,
+        MirrorFilter.r3MoviefxC0117 => true,
         // @shadergen:needsFace
         _ => false,
       };
@@ -806,6 +1150,89 @@ enum MirrorFilter {
         MirrorFilter.cyborg ||
         MirrorFilter.frozen => FilterCollection.fantasy,
         // @shadergen:collection:experimental
+        MirrorFilter.r3EyesC0230 ||
+        MirrorFilter.r3EyesC0016 ||
+        MirrorFilter.r3EyesC0010 ||
+        MirrorFilter.r3EyesC0294 ||
+        MirrorFilter.r3EyesC0254 ||
+        MirrorFilter.r3LipsC0276 ||
+        MirrorFilter.r3LipsC0110 ||
+        MirrorFilter.r3LipsC0261 ||
+        MirrorFilter.r3LipsC0024 ||
+        MirrorFilter.r3LipsC0080 ||
+        MirrorFilter.r3LipsC0165 ||
+        MirrorFilter.r3LipsC0290 ||
+        MirrorFilter.r3LipsC0142 ||
+        MirrorFilter.r3GlowC0015 ||
+        MirrorFilter.r3GlowC0080 ||
+        MirrorFilter.r3GlowC0230 ||
+        MirrorFilter.r3GlowC0165 ||
+        MirrorFilter.r3GlowC0016 ||
+        MirrorFilter.r3GlowC0264 ||
+        MirrorFilter.r3HairC0200 ||
+        MirrorFilter.r3HairC0273 ||
+        MirrorFilter.r3HairC0089 ||
+        MirrorFilter.r3HairC0122 ||
+        MirrorFilter.r3HairC0287 ||
+        MirrorFilter.r3HairC0173 ||
+        MirrorFilter.r3HairC0192 ||
+        MirrorFilter.r3HairC0030 ||
+        MirrorFilter.r3SculptC0232 ||
+        MirrorFilter.r3SculptC0048 ||
+        MirrorFilter.r3SculptC0126 ||
+        MirrorFilter.r3SculptC0040 ||
+        MirrorFilter.r3SculptC0246 ||
+        MirrorFilter.r3SculptC0282 ||
+        MirrorFilter.r3SculptC0004 ||
+        MirrorFilter.r3SculptC0111 ||
+        MirrorFilter.r3ScarsC0034 ||
+        MirrorFilter.r3ScarsC0239 ||
+        MirrorFilter.r3ScarsC0212 ||
+        MirrorFilter.r3ScarsC0166 ||
+        MirrorFilter.r3ScarsC0228 ||
+        MirrorFilter.r3ScarsC0113 ||
+        MirrorFilter.r3ScarsC0019 ||
+        MirrorFilter.r3ScarsC0081 ||
+        MirrorFilter.r3FacepaintC0113 ||
+        MirrorFilter.r3FacepaintC0025 ||
+        MirrorFilter.r3FacepaintC0149 ||
+        MirrorFilter.r3FacepaintC0268 ||
+        MirrorFilter.r3FacepaintC0245 ||
+        MirrorFilter.r3FacepaintC0247 ||
+        MirrorFilter.r3FacepaintC0288 ||
+        MirrorFilter.r3FacepaintC0272 ||
+        MirrorFilter.r3AlienC0003 ||
+        MirrorFilter.r3AlienC0030 ||
+        MirrorFilter.r3AlienC0112 ||
+        MirrorFilter.r3AlienC0020 ||
+        MirrorFilter.r3AlienC0012 ||
+        MirrorFilter.r3AlienC0027 ||
+        MirrorFilter.r3AlienC0015 ||
+        MirrorFilter.r3AnimalC0234 ||
+        MirrorFilter.r3AnimalC0202 ||
+        MirrorFilter.r3AnimalC0239 ||
+        MirrorFilter.r3AnimalC0258 ||
+        MirrorFilter.r3AnimalC0282 ||
+        MirrorFilter.r3AnimalC0216 ||
+        MirrorFilter.r3AnimalC0169 ||
+        MirrorFilter.r3AnimalC0186 ||
+        MirrorFilter.r3FeaturesC0267 ||
+        MirrorFilter.r3FeaturesC0287 ||
+        MirrorFilter.r3FeaturesC0174 ||
+        MirrorFilter.r3FeaturesC0233 ||
+        MirrorFilter.r3FeaturesC0001 ||
+        MirrorFilter.r3FeaturesC0072 ||
+        MirrorFilter.r3FeaturesC0154 ||
+        MirrorFilter.r3FeaturesC0232 ||
+        MirrorFilter.r3MoviefxC0288 ||
+        MirrorFilter.r3MoviefxC0254 ||
+        MirrorFilter.r3MoviefxC0145 ||
+        MirrorFilter.r3MoviefxC0280 ||
+        MirrorFilter.r3MoviefxC0070 ||
+        MirrorFilter.r3MoviefxC0222 ||
+        MirrorFilter.r3MoviefxC0240 ||
+        MirrorFilter.r3MoviefxC0117 =>
+          FilterCollection.experimental,
         MirrorFilter.r2MosaicC0025 ||
         MirrorFilter.r2MosaicC0041 ||
         MirrorFilter.r2MosaicC0042 ||
@@ -1051,6 +1478,88 @@ enum MirrorFilter {
         MirrorFilter.r2VhsC0446 => 'shaders/filter_r2_vhs_c0446.frag',
         MirrorFilter.r2VhsC0483 => 'shaders/filter_r2_vhs_c0483.frag',
         MirrorFilter.r2VhsC0496 => 'shaders/filter_r2_vhs_c0496.frag',
+        MirrorFilter.r3EyesC0230 => 'shaders/filter_r3_eyes_c0230.frag',
+        MirrorFilter.r3EyesC0016 => 'shaders/filter_r3_eyes_c0016.frag',
+        MirrorFilter.r3EyesC0010 => 'shaders/filter_r3_eyes_c0010.frag',
+        MirrorFilter.r3EyesC0294 => 'shaders/filter_r3_eyes_c0294.frag',
+        MirrorFilter.r3EyesC0254 => 'shaders/filter_r3_eyes_c0254.frag',
+        MirrorFilter.r3LipsC0276 => 'shaders/filter_r3_lips_makeup_c0276.frag',
+        MirrorFilter.r3LipsC0110 => 'shaders/filter_r3_lips_makeup_c0110.frag',
+        MirrorFilter.r3LipsC0261 => 'shaders/filter_r3_lips_makeup_c0261.frag',
+        MirrorFilter.r3LipsC0024 => 'shaders/filter_r3_lips_makeup_c0024.frag',
+        MirrorFilter.r3LipsC0080 => 'shaders/filter_r3_lips_makeup_c0080.frag',
+        MirrorFilter.r3LipsC0165 => 'shaders/filter_r3_lips_makeup_c0165.frag',
+        MirrorFilter.r3LipsC0290 => 'shaders/filter_r3_lips_makeup_c0290.frag',
+        MirrorFilter.r3LipsC0142 => 'shaders/filter_r3_lips_makeup_c0142.frag',
+        MirrorFilter.r3GlowC0015 => 'shaders/filter_r3_skin_glow_c0015.frag',
+        MirrorFilter.r3GlowC0080 => 'shaders/filter_r3_skin_glow_c0080.frag',
+        MirrorFilter.r3GlowC0230 => 'shaders/filter_r3_skin_glow_c0230.frag',
+        MirrorFilter.r3GlowC0165 => 'shaders/filter_r3_skin_glow_c0165.frag',
+        MirrorFilter.r3GlowC0016 => 'shaders/filter_r3_skin_glow_c0016.frag',
+        MirrorFilter.r3GlowC0264 => 'shaders/filter_r3_skin_glow_c0264.frag',
+        MirrorFilter.r3HairC0200 => 'shaders/filter_r3_hair_halo_c0200.frag',
+        MirrorFilter.r3HairC0273 => 'shaders/filter_r3_hair_halo_c0273.frag',
+        MirrorFilter.r3HairC0089 => 'shaders/filter_r3_hair_halo_c0089.frag',
+        MirrorFilter.r3HairC0122 => 'shaders/filter_r3_hair_halo_c0122.frag',
+        MirrorFilter.r3HairC0287 => 'shaders/filter_r3_hair_halo_c0287.frag',
+        MirrorFilter.r3HairC0173 => 'shaders/filter_r3_hair_halo_c0173.frag',
+        MirrorFilter.r3HairC0192 => 'shaders/filter_r3_hair_halo_c0192.frag',
+        MirrorFilter.r3HairC0030 => 'shaders/filter_r3_hair_halo_c0030.frag',
+        MirrorFilter.r3SculptC0232 => 'shaders/filter_r3_sculpt_c0232.frag',
+        MirrorFilter.r3SculptC0048 => 'shaders/filter_r3_sculpt_c0048.frag',
+        MirrorFilter.r3SculptC0126 => 'shaders/filter_r3_sculpt_c0126.frag',
+        MirrorFilter.r3SculptC0040 => 'shaders/filter_r3_sculpt_c0040.frag',
+        MirrorFilter.r3SculptC0246 => 'shaders/filter_r3_sculpt_c0246.frag',
+        MirrorFilter.r3SculptC0282 => 'shaders/filter_r3_sculpt_c0282.frag',
+        MirrorFilter.r3SculptC0004 => 'shaders/filter_r3_sculpt_c0004.frag',
+        MirrorFilter.r3SculptC0111 => 'shaders/filter_r3_sculpt_c0111.frag',
+        MirrorFilter.r3ScarsC0034 => 'shaders/filter_r3_scars_c0034.frag',
+        MirrorFilter.r3ScarsC0239 => 'shaders/filter_r3_scars_c0239.frag',
+        MirrorFilter.r3ScarsC0212 => 'shaders/filter_r3_scars_c0212.frag',
+        MirrorFilter.r3ScarsC0166 => 'shaders/filter_r3_scars_c0166.frag',
+        MirrorFilter.r3ScarsC0228 => 'shaders/filter_r3_scars_c0228.frag',
+        MirrorFilter.r3ScarsC0113 => 'shaders/filter_r3_scars_c0113.frag',
+        MirrorFilter.r3ScarsC0019 => 'shaders/filter_r3_scars_c0019.frag',
+        MirrorFilter.r3ScarsC0081 => 'shaders/filter_r3_scars_c0081.frag',
+        MirrorFilter.r3FacepaintC0113 => 'shaders/filter_r3_face_paint_c0113.frag',
+        MirrorFilter.r3FacepaintC0025 => 'shaders/filter_r3_face_paint_c0025.frag',
+        MirrorFilter.r3FacepaintC0149 => 'shaders/filter_r3_face_paint_c0149.frag',
+        MirrorFilter.r3FacepaintC0268 => 'shaders/filter_r3_face_paint_c0268.frag',
+        MirrorFilter.r3FacepaintC0245 => 'shaders/filter_r3_face_paint_c0245.frag',
+        MirrorFilter.r3FacepaintC0247 => 'shaders/filter_r3_face_paint_c0247.frag',
+        MirrorFilter.r3FacepaintC0288 => 'shaders/filter_r3_face_paint_c0288.frag',
+        MirrorFilter.r3FacepaintC0272 => 'shaders/filter_r3_face_paint_c0272.frag',
+        MirrorFilter.r3AlienC0003 => 'shaders/filter_r3_alien_c0003.frag',
+        MirrorFilter.r3AlienC0030 => 'shaders/filter_r3_alien_c0030.frag',
+        MirrorFilter.r3AlienC0112 => 'shaders/filter_r3_alien_c0112.frag',
+        MirrorFilter.r3AlienC0020 => 'shaders/filter_r3_alien_c0020.frag',
+        MirrorFilter.r3AlienC0012 => 'shaders/filter_r3_alien_c0012.frag',
+        MirrorFilter.r3AlienC0027 => 'shaders/filter_r3_alien_c0027.frag',
+        MirrorFilter.r3AlienC0015 => 'shaders/filter_r3_alien_c0015.frag',
+        MirrorFilter.r3AnimalC0234 => 'shaders/filter_r3_animal_c0234.frag',
+        MirrorFilter.r3AnimalC0202 => 'shaders/filter_r3_animal_c0202.frag',
+        MirrorFilter.r3AnimalC0239 => 'shaders/filter_r3_animal_c0239.frag',
+        MirrorFilter.r3AnimalC0258 => 'shaders/filter_r3_animal_c0258.frag',
+        MirrorFilter.r3AnimalC0282 => 'shaders/filter_r3_animal_c0282.frag',
+        MirrorFilter.r3AnimalC0216 => 'shaders/filter_r3_animal_c0216.frag',
+        MirrorFilter.r3AnimalC0169 => 'shaders/filter_r3_animal_c0169.frag',
+        MirrorFilter.r3AnimalC0186 => 'shaders/filter_r3_animal_c0186.frag',
+        MirrorFilter.r3FeaturesC0267 => 'shaders/filter_r3_features_c0267.frag',
+        MirrorFilter.r3FeaturesC0287 => 'shaders/filter_r3_features_c0287.frag',
+        MirrorFilter.r3FeaturesC0174 => 'shaders/filter_r3_features_c0174.frag',
+        MirrorFilter.r3FeaturesC0233 => 'shaders/filter_r3_features_c0233.frag',
+        MirrorFilter.r3FeaturesC0001 => 'shaders/filter_r3_features_c0001.frag',
+        MirrorFilter.r3FeaturesC0072 => 'shaders/filter_r3_features_c0072.frag',
+        MirrorFilter.r3FeaturesC0154 => 'shaders/filter_r3_features_c0154.frag',
+        MirrorFilter.r3FeaturesC0232 => 'shaders/filter_r3_features_c0232.frag',
+        MirrorFilter.r3MoviefxC0288 => 'shaders/filter_r3_movie_fx_c0288.frag',
+        MirrorFilter.r3MoviefxC0254 => 'shaders/filter_r3_movie_fx_c0254.frag',
+        MirrorFilter.r3MoviefxC0145 => 'shaders/filter_r3_movie_fx_c0145.frag',
+        MirrorFilter.r3MoviefxC0280 => 'shaders/filter_r3_movie_fx_c0280.frag',
+        MirrorFilter.r3MoviefxC0070 => 'shaders/filter_r3_movie_fx_c0070.frag',
+        MirrorFilter.r3MoviefxC0222 => 'shaders/filter_r3_movie_fx_c0222.frag',
+        MirrorFilter.r3MoviefxC0240 => 'shaders/filter_r3_movie_fx_c0240.frag',
+        MirrorFilter.r3MoviefxC0117 => 'shaders/filter_r3_movie_fx_c0117.frag',
         // @shadergen:shaderAsset
       };
 }
