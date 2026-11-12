@@ -1,0 +1,40 @@
+{
+ "rodina": "face-paint",
+ "export": 8,
+ "export_linie": {
+  "paint_joker": 3,
+  "paint_hero": 2,
+  "paint_skull": 3
+ },
+ "sekund": 423,
+ "deti": 300,
+ "kontrakt": 1,
+ "karta": 6,
+ "kompilace": 50,
+ "impellerc": 1,
+ "render": 5,
+ "face": 0,
+ "sila": 21,
+ "lokalita": 40,
+ "sonda": 0,
+ "dup": 104,
+ "platne": 72,
+ "operatory_platne": {
+  "variace": 25,
+  "kříž": 13,
+  "import": 13,
+  "zjednodušení": 21
+ },
+ "bunek": 4,
+ "linie_max_pct": 41.7,
+ "linie_podily": {
+  "paint_joker": 0.417,
+  "paint_skull": 0.306,
+  "paint_hero": 0.278
+ },
+ "ruznych_technik": 17,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 7847,
+ "rss_max_evaluator_mb": 138
+}

@@ -1,0 +1,40 @@
+{
+ "rodina": "alien",
+ "export": 7,
+ "export_linie": {
+  "alien_antenna": 3,
+  "alien_eyes": 3,
+  "filter_alien": 1
+ },
+ "sekund": 416,
+ "deti": 300,
+ "kontrakt": 15,
+ "karta": 0,
+ "kompilace": 32,
+ "impellerc": 0,
+ "render": 14,
+ "face": 0,
+ "sila": 3,
+ "lokalita": 190,
+ "sonda": 0,
+ "dup": 34,
+ "platne": 12,
+ "operatory_platne": {
+  "variace": 5,
+  "kříž": 4,
+  "import": 3,
+  "zjednodušení": 0
+ },
+ "bunek": 3,
+ "linie_max_pct": 58.3,
+ "linie_podily": {
+  "alien_antenna": 0.583,
+  "alien_eyes": 0.333,
+  "filter_alien": 0.083
+ },
+ "ruznych_technik": 12,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 8672,
+ "rss_max_evaluator_mb": 139
+}

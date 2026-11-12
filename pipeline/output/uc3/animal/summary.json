@@ -1,0 +1,40 @@
+{
+ "rodina": "animal",
+ "export": 8,
+ "export_linie": {
+  "animal_snout": 3,
+  "filter_big_ears": 3,
+  "animal_cat": 2
+ },
+ "sekund": 441,
+ "deti": 300,
+ "kontrakt": 6,
+ "karta": 0,
+ "kompilace": 60,
+ "impellerc": 0,
+ "render": 4,
+ "face": 0,
+ "sila": 22,
+ "lokalita": 50,
+ "sonda": 0,
+ "dup": 86,
+ "platne": 72,
+ "operatory_platne": {
+  "variace": 12,
+  "kříž": 27,
+  "import": 11,
+  "zjednodušení": 22
+ },
+ "bunek": 4,
+ "linie_max_pct": 40.3,
+ "linie_podily": {
+  "animal_snout": 0.403,
+  "filter_big_ears": 0.375,
+  "animal_cat": 0.222
+ },
+ "ruznych_technik": 15,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 9120,
+ "rss_max_evaluator_mb": 137
+}

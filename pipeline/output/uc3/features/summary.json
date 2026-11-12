@@ -1,0 +1,47 @@
+{
+ "rodina": "features",
+ "export": 8,
+ "export_linie": {
+  "r2face_c0165": 1,
+  "r2face_c0184": 1,
+  "r2face_c0258": 1,
+  "features_mouth": 2,
+  "r2face_c0227": 1,
+  "filter_big_nose": 1,
+  "filter_long_neck": 1
+ },
+ "sekund": 440,
+ "deti": 300,
+ "kontrakt": 7,
+ "karta": 0,
+ "kompilace": 9,
+ "impellerc": 0,
+ "render": 0,
+ "face": 0,
+ "sila": 18,
+ "lokalita": 129,
+ "sonda": 0,
+ "dup": 63,
+ "platne": 74,
+ "operatory_platne": {
+  "variace": 23,
+  "kříž": 26,
+  "import": 16,
+  "zjednodušení": 9
+ },
+ "bunek": 5,
+ "linie_max_pct": 16.2,
+ "linie_podily": {
+  "r2face_c0165": 0.162,
+  "r2face_c0258": 0.135,
+  "filter_long_neck": 0.122,
+  "r2face_c0227": 0.122,
+  "r2face_c0327": 0.108,
+  "r2face_c0184": 0.108
+ },
+ "ruznych_technik": 41,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 9750,
+ "rss_max_evaluator_mb": 155
+}

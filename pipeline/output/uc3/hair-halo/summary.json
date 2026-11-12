@@ -1,0 +1,40 @@
+{
+ "rodina": "hair-halo",
+ "export": 8,
+ "export_linie": {
+  "halo_ring": 3,
+  "halo_crown": 3,
+  "hair_tint": 2
+ },
+ "sekund": 461,
+ "deti": 300,
+ "kontrakt": 2,
+ "karta": 1,
+ "kompilace": 52,
+ "impellerc": 0,
+ "render": 7,
+ "face": 0,
+ "sila": 12,
+ "lokalita": 0,
+ "sonda": 0,
+ "dup": 98,
+ "platne": 128,
+ "operatory_platne": {
+  "variace": 47,
+  "kříž": 35,
+  "import": 38,
+  "zjednodušení": 8
+ },
+ "bunek": 19,
+ "linie_max_pct": 43.0,
+ "linie_podily": {
+  "halo_crown": 0.43,
+  "halo_ring": 0.312,
+  "hair_tint": 0.258
+ },
+ "ruznych_technik": 30,
+ "lokalita_export_pct": 0,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 5449,
+ "rss_max_evaluator_mb": 139
+}

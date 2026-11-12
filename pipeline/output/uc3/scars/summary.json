@@ -1,0 +1,40 @@
+{
+ "rodina": "scars",
+ "export": 8,
+ "export_linie": {
+  "scar_stitch": 3,
+  "scar_burn": 3,
+  "scar_bruise": 2
+ },
+ "sekund": 445,
+ "deti": 300,
+ "kontrakt": 4,
+ "karta": 2,
+ "kompilace": 82,
+ "impellerc": 0,
+ "render": 5,
+ "face": 0,
+ "sila": 65,
+ "lokalita": 61,
+ "sonda": 0,
+ "dup": 59,
+ "platne": 22,
+ "operatory_platne": {
+  "variace": 2,
+  "kříž": 5,
+  "import": 15,
+  "zjednodušení": 0
+ },
+ "bunek": 2,
+ "linie_max_pct": 40.9,
+ "linie_podily": {
+  "scar_burn": 0.409,
+  "scar_stitch": 0.409,
+  "scar_bruise": 0.182
+ },
+ "ruznych_technik": 18,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 7098,
+ "rss_max_evaluator_mb": 138
+}

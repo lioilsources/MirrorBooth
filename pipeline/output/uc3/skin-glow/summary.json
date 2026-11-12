@@ -1,0 +1,38 @@
+{
+ "rodina": "skin-glow",
+ "export": 6,
+ "export_linie": {
+  "skin_smooth": 3,
+  "skin_glow": 3
+ },
+ "sekund": 324,
+ "deti": 300,
+ "kontrakt": 4,
+ "karta": 0,
+ "kompilace": 45,
+ "impellerc": 5,
+ "render": 3,
+ "face": 0,
+ "sila": 54,
+ "lokalita": 25,
+ "sonda": 0,
+ "dup": 88,
+ "platne": 76,
+ "operatory_platne": {
+  "variace": 24,
+  "kříž": 12,
+  "import": 25,
+  "zjednodušení": 15
+ },
+ "bunek": 3,
+ "linie_max_pct": 56.6,
+ "linie_podily": {
+  "skin_glow": 0.566,
+  "skin_smooth": 0.434
+ },
+ "ruznych_technik": 16,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 4623,
+ "rss_max_evaluator_mb": 138
+}

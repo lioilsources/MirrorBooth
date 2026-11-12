@@ -1,0 +1,40 @@
+{
+ "rodina": "lips-makeup",
+ "export": 8,
+ "export_linie": {
+  "mk_eyeshadow": 3,
+  "filter_lips": 2,
+  "mk_lipstick": 3
+ },
+ "sekund": 286,
+ "deti": 300,
+ "kontrakt": 2,
+ "karta": 0,
+ "kompilace": 53,
+ "impellerc": 0,
+ "render": 14,
+ "face": 0,
+ "sila": 30,
+ "lokalita": 35,
+ "sonda": 0,
+ "dup": 114,
+ "platne": 52,
+ "operatory_platne": {
+  "variace": 16,
+  "kříž": 15,
+  "import": 15,
+  "zjednodušení": 6
+ },
+ "bunek": 3,
+ "linie_max_pct": 42.3,
+ "linie_podily": {
+  "filter_lips": 0.423,
+  "mk_eyeshadow": 0.346,
+  "mk_lipstick": 0.231
+ },
+ "ruznych_technik": 23,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 3824,
+ "rss_max_evaluator_mb": 144
+}

@@ -1,0 +1,38 @@
+{
+ "rodina": "eyes",
+ "export": 5,
+ "export_linie": {
+  "eyes_sparkle": 3,
+  "filter_doll": 2
+ },
+ "sekund": 310,
+ "deti": 300,
+ "kontrakt": 6,
+ "karta": 0,
+ "kompilace": 62,
+ "impellerc": 0,
+ "render": 4,
+ "face": 0,
+ "sila": 26,
+ "lokalita": 166,
+ "sonda": 0,
+ "dup": 24,
+ "platne": 12,
+ "operatory_platne": {
+  "variace": 1,
+  "kříž": 4,
+  "import": 7,
+  "zjednodušení": 0
+ },
+ "bunek": 3,
+ "linie_max_pct": 83.3,
+ "linie_podily": {
+  "eyes_sparkle": 0.833,
+  "filter_doll": 0.167
+ },
+ "ruznych_technik": 9,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 3311,
+ "rss_max_evaluator_mb": 158
+}

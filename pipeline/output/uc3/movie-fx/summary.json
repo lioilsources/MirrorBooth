@@ -1,0 +1,40 @@
+{
+ "rodina": "movie-fx",
+ "export": 8,
+ "export_linie": {
+  "filter_vampire": 3,
+  "filter_demon": 3,
+  "filter_zombie": 2
+ },
+ "sekund": 643,
+ "deti": 300,
+ "kontrakt": 10,
+ "karta": 5,
+ "kompilace": 41,
+ "impellerc": 0,
+ "render": 14,
+ "face": 9,
+ "sila": 0,
+ "lokalita": 0,
+ "sonda": 0,
+ "dup": 98,
+ "platne": 123,
+ "operatory_platne": {
+  "variace": 43,
+  "kříž": 26,
+  "import": 35,
+  "zjednodušení": 19
+ },
+ "bunek": 13,
+ "linie_max_pct": 38.2,
+ "linie_podily": {
+  "filter_vampire": 0.382,
+  "filter_demon": 0.35,
+  "filter_zombie": 0.268
+ },
+ "ruznych_technik": 41,
+ "lokalita_export_pct": 0,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 10563,
+ "rss_max_evaluator_mb": 158
+}

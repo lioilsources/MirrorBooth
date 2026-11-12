@@ -1,0 +1,40 @@
+{
+ "rodina": "sculpt",
+ "export": 8,
+ "export_linie": {
+  "filter_slim": 2,
+  "filter_chibi": 3,
+  "sculpt_nose": 3
+ },
+ "sekund": 362,
+ "deti": 300,
+ "kontrakt": 3,
+ "karta": 0,
+ "kompilace": 11,
+ "impellerc": 1,
+ "render": 2,
+ "face": 0,
+ "sila": 31,
+ "lokalita": 179,
+ "sonda": 0,
+ "dup": 43,
+ "platne": 30,
+ "operatory_platne": {
+  "variace": 7,
+  "kříž": 7,
+  "import": 15,
+  "zjednodušení": 1
+ },
+ "bunek": 3,
+ "linie_max_pct": 53.3,
+ "linie_podily": {
+  "filter_chibi": 0.533,
+  "filter_slim": 0.267,
+  "sculpt_nose": 0.2
+ },
+ "ruznych_technik": 20,
+ "lokalita_export_pct": 100,
+ "polarni_warp": 0,
+ "rss_max_self_mb": 6402,
+ "rss_max_evaluator_mb": 138
+}
