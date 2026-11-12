@@ -10,6 +10,8 @@ PODS:
     - WebRTC-SDK (= 125.6422.07)
   - gal (1.0.0):
     - Flutter
+  - permission_handler_apple (9.3.0):
+    - Flutter
   - WebRTC-SDK (125.6422.07)
 
 DEPENDENCIES:
@@ -17,6 +19,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - gal (from `.symlinks/plugins/gal/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 SPEC REPOS:
   trunk:
@@ -31,12 +34,15 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_webrtc/ios"
   gal:
     :path: ".symlinks/plugins/gal/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
   ffmpeg_kit_flutter_new: d6c4cd5009f6eb818e5899261dbae06f6e9c6c1b
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_webrtc: fd0d3bdef8766a0736dbbe2e5b7e85f1f3c52117
   gal: 29e711cd17bccb47f839d9b30afe9bc9750950b2
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   WebRTC-SDK: dff00a3892bc570b6014e046297782084071657e
 
 PODFILE CHECKSUM: 16f7d7c66642ec19269f493c5db40e5c9f954e81
