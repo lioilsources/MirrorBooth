@@ -11,6 +11,7 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         flutterEngine.plugins.add(MirrorPlugin())
         flutterEngine.plugins.add(shutterPlugin)
+        flutterEngine.plugins.add(FacePlugin())
     }
 
     // Volume keys reach the activity before the system volume handler, so the

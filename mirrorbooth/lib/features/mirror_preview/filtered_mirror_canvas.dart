@@ -10,6 +10,7 @@ import '../../core/face_anchor.dart';
 import '../../core/mirror_filter.dart';
 import '../../core/mirror_side.dart';
 import '../../core/shader_provider.dart';
+import '../../services/face_tracker.dart';
 import 'mirror_canvas.dart';
 
 class FilteredMirrorCanvas extends StatefulWidget {
@@ -20,6 +21,10 @@ class FilteredMirrorCanvas extends StatefulWidget {
   final double mirrorAxisDeg;
   final FaceAnchor faceAnchor;
 
+  /// Follows the real face for face-anchored filters; when null the shader
+  /// gets [faceAnchor].
+  final FaceTracker? faceTracker;
+
   const FilteredMirrorCanvas({
     super.key,
     required this.controller,
@@ -28,6 +33,7 @@ class FilteredMirrorCanvas extends StatefulWidget {
     required this.shaderCache,
     this.mirrorAxisDeg = 90.0,
     this.faceAnchor = FaceAnchor.defaults,
+    this.faceTracker,
   });
 
   @override
@@ -142,6 +148,7 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
         // shader for frame N must not be disposed before frame N+2 is built.
         if (_frame != null) _retiredFrames.add(_frame!);
         _frame = image;
+        if (widget.filter.needsFace) widget.faceTracker?.offer(image);
         while (_retiredFrames.length > 2) {
           _retiredFrames.removeAt(0).dispose();
         }
@@ -184,7 +191,7 @@ class _FilteredMirrorCanvasState extends State<FilteredMirrorCanvas>
               needsTime: widget.filter.needsTime,
               time: (_stopwatch.elapsedMilliseconds / 1000.0) % 100.0,
               needsFace: widget.filter.needsFace,
-              faceAnchor: widget.faceAnchor,
+              faceAnchor: widget.faceTracker?.value ?? widget.faceAnchor,
             ),
           ),
       ],

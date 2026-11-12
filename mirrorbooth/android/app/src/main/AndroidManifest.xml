@@ -8,6 +8,10 @@
         android:label="mirrorbooth"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Download the ML Kit face model at install time, not on first use. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="face" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
