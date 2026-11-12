@@ -258,4 +258,15 @@ flutter:
     - shaders/filter_r2_light_c0156.frag
     - shaders/filter_r2_light_c0163.frag
     - shaders/filter_r2_light_c0176.frag
+    - shaders/filter_r2_glitch_c0190.frag
+    - shaders/filter_r2_glitch_c0412.frag
+    - shaders/filter_r2_glitch_c0430.frag
+    - shaders/filter_r2_vhs_c0004.frag
+    - shaders/filter_r2_vhs_c0057.frag
+    - shaders/filter_r2_vhs_c0206.frag
+    - shaders/filter_r2_vhs_c0413.frag
+    - shaders/filter_r2_vhs_c0437.frag
+    - shaders/filter_r2_vhs_c0446.frag
+    - shaders/filter_r2_vhs_c0483.frag
+    - shaders/filter_r2_vhs_c0496.frag
     # @shadergen:shaders (pipeline/integrate.py inserts new shaders above this line)
