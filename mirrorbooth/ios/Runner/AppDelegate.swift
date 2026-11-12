@@ -15,6 +15,7 @@ import UIKit
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     MirrorPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "MirrorPlugin")!)
     ShutterPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "ShutterPlugin")!)
+    FacePlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "FacePlugin")!)
     PromotedPurchasePlugin.register(
       with: engineBridge.pluginRegistry.registrar(forPlugin: "PromotedPurchasePlugin")!)
   }

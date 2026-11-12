@@ -19,6 +19,7 @@ import '../../core/shader_provider.dart';
 import '../../core/mirror_filter.dart';
 import '../../l10n/l10n.dart';
 import '../../services/deep_link.dart';
+import '../../services/face_tracker.dart';
 import '../../services/review_prompter.dart';
 import '../../services/shutter_button_channel.dart';
 import '../paywall/entitlement_controller.dart';
@@ -54,6 +55,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   bool _showDebug = true;
   final List<String> _debugLog = <String>[];
   final _canvasKey = GlobalKey();
+  final _faceTracker = FaceTracker();
 
   // Recording
   Ticker? _recordingTicker;
@@ -108,6 +110,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     _sharePhoto?.delete().ignore();
     _flashController.dispose();
     _recordingTicker?.dispose();
+    _faceTracker.dispose();
     super.dispose();
   }
 
@@ -298,6 +301,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         shaderNeedsTime: filter.needsTime,
         time: (DateTime.now().millisecondsSinceEpoch / 1000.0) % 100.0,
         shaderNeedsFace: filter.needsFace,
+        faceAnchor: _faceTracker.value,
       ));
     } finally {
       still.dispose();
@@ -547,6 +551,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                       filter: state.selectedFilter,
                       shaderCache: shaderCache,
                       mirrorAxisDeg: state.mirrorAxisDeg,
+                      faceTracker: _faceTracker,
                     ),
                   ),
                 ),

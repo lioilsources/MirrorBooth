@@ -61,3 +61,9 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Face detection for face-anchored filters; the model is delivered by
+    // Google Play services (see the DEPENDENCIES meta-data in the manifest).
+    implementation("com.google.android.gms:play-services-mlkit-face-detection:17.1.0")
+}
