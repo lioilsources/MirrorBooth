@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -94,6 +95,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collectionFantasy => 'Fantasy';
+
+  @override
+  String get collectionPacks => 'Packs';
+
+  @override
+  String get packMosaic => 'Mosaic';
+
+  @override
+  String get packHalftone => 'Halftone';
+
+  @override
+  String get packSketch => 'Sketch';
+
+  @override
+  String get packOptics => 'Optics';
+
+  @override
+  String get packKaleido => 'Kaleido';
+
+  @override
+  String get packTiles => 'Tiles';
+
+  @override
+  String get packGlitch => 'Glitch';
+
+  @override
+  String get packVhs => 'VHS';
+
+  @override
+  String get packFace => 'Face';
+
+  @override
+  String get packLayers => 'Layers';
+
+  @override
+  String get packPaint => 'Paint';
+
+  @override
+  String get packColor => 'Color';
+
+  @override
+  String get packLight => 'Light';
 
   @override
   String get audioEffectNone => 'Normal';

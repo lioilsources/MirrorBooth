@@ -38,6 +38,62 @@
   "collectionUgly": "Ugly",
   "collectionArt": "Art",
   "collectionFantasy": "Fantasy",
+  "collectionPacks": "Packs",
+  "@collectionPacks": {
+    "description": "Tab holding the paid filter packs (shown uppercased)"
+  },
+  "packMosaic": "Mosaic",
+  "@packMosaic": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packHalftone": "Halftone",
+  "@packHalftone": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packSketch": "Sketch",
+  "@packSketch": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packOptics": "Optics",
+  "@packOptics": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packKaleido": "Kaleido",
+  "@packKaleido": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packTiles": "Tiles",
+  "@packTiles": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packGlitch": "Glitch",
+  "@packGlitch": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packVhs": "VHS",
+  "@packVhs": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packFace": "Face",
+  "@packFace": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packLayers": "Layers",
+  "@packLayers": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packPaint": "Paint",
+  "@packPaint": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packColor": "Color",
+  "@packColor": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
+  "packLight": "Light",
+  "@packLight": {
+    "description": "Filter pack name (chip under the Packs tab)"
+  },
   "audioEffectNone": "Normal",
   "@audioEffectNone": {
     "description": "Audio effect chip: original sound"

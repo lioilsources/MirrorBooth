@@ -53,6 +53,21 @@ extension FilterCollectionL10n on FilterCollection {
         FilterCollection.ugly => l.collectionUgly,
         FilterCollection.art => l.collectionArt,
         FilterCollection.fantasy => l.collectionFantasy,
+        FilterCollection.mosaic => l.packMosaic,
+        FilterCollection.halftone => l.packHalftone,
+        FilterCollection.sketch => l.packSketch,
+        FilterCollection.optics => l.packOptics,
+        FilterCollection.kaleido => l.packKaleido,
+        FilterCollection.tiles => l.packTiles,
+        FilterCollection.glitch => l.packGlitch,
+        FilterCollection.vhs => l.packVhs,
+        FilterCollection.face => l.packFace,
+        FilterCollection.layers => l.packLayers,
+        FilterCollection.paint => l.packPaint,
+        FilterCollection.color => l.packColor,
+        FilterCollection.light => l.packLight,
+        // Dev-only tab, not localized on purpose.
+        FilterCollection.experimental => label,
       };
 }
 

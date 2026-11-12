@@ -283,7 +283,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     final filter = state.selectedFilter;
     final shader =
-        ref.read(shaderCacheProvider).valueOrNull?[filter]?.fragmentShader();
+        ref.read(shaderCacheProvider)[filter]?.fragmentShader();
     try {
       return await composeMirrorPhoto(PhotoComposeJob(
         still: still,
@@ -477,24 +477,18 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
     final previewState = ref.watch(mirrorPreviewProvider);
     final previewNotifier = ref.read(mirrorPreviewProvider.notifier);
-    final shaderCacheAsync = ref.watch(shaderCacheProvider);
+    final shaderCache = ref.watch(shaderCacheProvider);
+    // Shaders load lazily; until the selected one arrives the preview shows
+    // the unfiltered mirror (ensure() is idempotent).
+    final selected = previewState.selectedFilter;
+    if (!shaderCache.containsKey(selected) && selected.shaderAsset != null) {
+      Future.microtask(
+          () => ref.read(shaderCacheProvider.notifier).ensure(selected));
+    }
 
-    return shaderCacheAsync.when(
-      loading: () => const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
-      ),
-      error: (e, _) => Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: Text(context.l10n.shaderLoadError('$e'),
-              style: const TextStyle(color: Colors.white70)),
-        ),
-      ),
-      data: (shaderCache) => Scaffold(
-        backgroundColor: Colors.black,
-        body: _body(context, previewState, previewNotifier, shaderCache, recordingState),
-      ),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: _body(context, previewState, previewNotifier, shaderCache, recordingState),
     );
   }
 

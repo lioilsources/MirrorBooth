@@ -294,6 +294,90 @@ abstract class AppLocalizations {
   /// **'Fantasy'**
   String get collectionFantasy;
 
+  /// Tab holding the paid filter packs (shown uppercased)
+  ///
+  /// In en, this message translates to:
+  /// **'Packs'**
+  String get collectionPacks;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Mosaic'**
+  String get packMosaic;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Halftone'**
+  String get packHalftone;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Sketch'**
+  String get packSketch;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Optics'**
+  String get packOptics;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Kaleido'**
+  String get packKaleido;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Tiles'**
+  String get packTiles;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Glitch'**
+  String get packGlitch;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'VHS'**
+  String get packVhs;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Face'**
+  String get packFace;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Layers'**
+  String get packLayers;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Paint'**
+  String get packPaint;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get packColor;
+
+  /// Filter pack name (chip under the Packs tab)
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get packLight;
+
   /// Audio effect chip: original sound
   ///
   /// In en, this message translates to:

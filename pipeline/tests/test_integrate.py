@@ -90,7 +90,7 @@ def test_fantasy_member_after_dart_format_removed_comma(app, tmp_path):
     )
     assert _run(app, make_run(tmp_path, needs_face=True), collection="fantasy", enum_name="specter") == 0
     dart = dart_path.read_text()
-    assert "  frozen,\n  specter,\n  // @shadergen:enum:fantasy\n  ;" in dart
+    assert "  frozen,\n  specter,\n  // @shadergen:enum:fantasy\n" in dart
     assert "MirrorFilter.specter => true,\n        // @shadergen:needsFace" in dart
     assert "// @shadergen:collection:fantasy\n        MirrorFilter.specter ||" in dart
     assert "MirrorFilter.specter => 'shaders/filter_specter.frag'" in dart

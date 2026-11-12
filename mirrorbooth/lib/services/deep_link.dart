@@ -54,7 +54,7 @@ class DeepLink {
   }
 
   static DeepLink _collection(String name) {
-    for (final c in FilterCollection.values) {
+    for (final c in FilterCollection.visible) {
       if (c.name == name) {
         final filters = MirrorFilter.inCollection(c);
         return DeepLink(filter: filters.isEmpty ? null : filters.first);
@@ -68,7 +68,11 @@ class DeepLink {
   static MirrorFilter? _filter(String name) {
     final key = name.replaceAll(RegExp('[-_]'), '');
     for (final f in MirrorFilter.values) {
-      if (f != MirrorFilter.none && f.name.toLowerCase() == key) return f;
+      if (f != MirrorFilter.none &&
+          f.collection?.isVisible != false &&
+          f.name.toLowerCase() == key) {
+        return f;
+      }
     }
     return null;
   }

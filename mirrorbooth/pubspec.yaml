@@ -1,7 +1,7 @@
 name: mirrorbooth
 description: "Real-time symmetric face mirror using selfie camera."
 publish_to: 'none'
-version: 2.4.1
+version: 2.5.0
 
 environment:
   sdk: ^3.11.4
@@ -82,4 +82,111 @@ flutter:
     - shaders/filter_demon.frag
     - shaders/filter_cyborg.frag
     - shaders/filter_frozen.frag
+    - shaders/filter_r2_optics_tunnel.frag
+    - shaders/filter_r2_vhs_night.frag
+    - shaders/filter_r2_mosaic_c0025.frag
+    - shaders/filter_r2_mosaic_c0041.frag
+    - shaders/filter_r2_mosaic_c0042.frag
+    - shaders/filter_r2_mosaic_c0133.frag
+    - shaders/filter_r2_mosaic_c0289.frag
+    - shaders/filter_r2_mosaic_c0331.frag
+    - shaders/filter_r2_mosaic_c0366.frag
+    - shaders/filter_r2_mosaic_c0460.frag
+    - shaders/filter_r2_halftone_c0029.frag
+    - shaders/filter_r2_halftone_c0031.frag
+    - shaders/filter_r2_halftone_c0136.frag
+    - shaders/filter_r2_halftone_c0182.frag
+    - shaders/filter_r2_halftone_c0284.frag
+    - shaders/filter_r2_halftone_c0368.frag
+    - shaders/filter_r2_halftone_c0370.frag
+    - shaders/filter_r2_halftone_c0376.frag
+    - shaders/filter_r2_sketch_c0021.frag
+    - shaders/filter_r2_sketch_c0104.frag
+    - shaders/filter_r2_sketch_c0155.frag
+    - shaders/filter_r2_sketch_c0310.frag
+    - shaders/filter_r2_sketch_c0311.frag
+    - shaders/filter_r2_sketch_c0360.frag
+    - shaders/filter_r2_sketch_c0382.frag
+    - shaders/filter_r2_sketch_c0388.frag
+    - shaders/filter_r2_optics_c0056.frag
+    - shaders/filter_r2_optics_c0060.frag
+    - shaders/filter_r2_optics_c0068.frag
+    - shaders/filter_r2_optics_c0262.frag
+    - shaders/filter_r2_optics_c0376.frag
+    - shaders/filter_r2_optics_c0411.frag
+    - shaders/filter_r2_optics_c0415.frag
+    - shaders/filter_r2_optics_c0437.frag
+    - shaders/filter_r2_kaleido_c0027.frag
+    - shaders/filter_r2_kaleido_c0051.frag
+    - shaders/filter_r2_kaleido_c0097.frag
+    - shaders/filter_r2_kaleido_c0242.frag
+    - shaders/filter_r2_kaleido_c0276.frag
+    - shaders/filter_r2_kaleido_c0281.frag
+    - shaders/filter_r2_kaleido_c0438.frag
+    - shaders/filter_r2_kaleido_c0486.frag
+    - shaders/filter_r2_tiles_c0020.frag
+    - shaders/filter_r2_tiles_c0180.frag
+    - shaders/filter_r2_tiles_c0198.frag
+    - shaders/filter_r2_tiles_c0218.frag
+    - shaders/filter_r2_tiles_c0273.frag
+    - shaders/filter_r2_tiles_c0298.frag
+    - shaders/filter_r2_tiles_c0401.frag
+    - shaders/filter_r2_tiles_c0498.frag
+    - shaders/filter_r2_glitch_c0036.frag
+    - shaders/filter_r2_glitch_c0098.frag
+    - shaders/filter_r2_glitch_c0394.frag
+    - shaders/filter_r2_vhs_c0291.frag
+    - shaders/filter_r2_vhs_c0336.frag
+    - shaders/filter_r2_vhs_c0497.frag
+    - shaders/filter_r2_face_c0165.frag
+    - shaders/filter_r2_face_c0184.frag
+    - shaders/filter_r2_face_c0227.frag
+    - shaders/filter_r2_face_c0232.frag
+    - shaders/filter_r2_face_c0240.frag
+    - shaders/filter_r2_face_c0258.frag
+    - shaders/filter_r2_face_c0327.frag
+    - shaders/filter_r2_face_c0417.frag
+    - shaders/filter_r2_layers_c0006.frag
+    - shaders/filter_r2_layers_c0009.frag
+    - shaders/filter_r2_layers_c0033.frag
+    - shaders/filter_r2_layers_c0110.frag
+    - shaders/filter_r2_layers_c0144.frag
+    - shaders/filter_r2_layers_c0304.frag
+    - shaders/filter_r2_layers_c0441.frag
+    - shaders/filter_r2_layers_c0473.frag
+    - shaders/filter_r2_paint_c0048.frag
+    - shaders/filter_r2_paint_c0052.frag
+    - shaders/filter_r2_paint_c0101.frag
+    - shaders/filter_r2_paint_c0126.frag
+    - shaders/filter_r2_paint_c0170.frag
+    - shaders/filter_r2_paint_c0173.frag
+    - shaders/filter_r2_paint_c0189.frag
+    - shaders/filter_r2_paint_c0194.frag
+    - shaders/filter_r2_color_c0008.frag
+    - shaders/filter_r2_color_c0015.frag
+    - shaders/filter_r2_color_c0039.frag
+    - shaders/filter_r2_color_c0065.frag
+    - shaders/filter_r2_color_c0069.frag
+    - shaders/filter_r2_color_c0073.frag
+    - shaders/filter_r2_color_c0097.frag
+    - shaders/filter_r2_color_c0181.frag
+    - shaders/filter_r2_light_c0003.frag
+    - shaders/filter_r2_light_c0011.frag
+    - shaders/filter_r2_light_c0012.frag
+    - shaders/filter_r2_light_c0044.frag
+    - shaders/filter_r2_light_c0050.frag
+    - shaders/filter_r2_light_c0156.frag
+    - shaders/filter_r2_light_c0163.frag
+    - shaders/filter_r2_light_c0176.frag
+    - shaders/filter_r2_glitch_c0190.frag
+    - shaders/filter_r2_glitch_c0412.frag
+    - shaders/filter_r2_glitch_c0430.frag
+    - shaders/filter_r2_vhs_c0004.frag
+    - shaders/filter_r2_vhs_c0057.frag
+    - shaders/filter_r2_vhs_c0206.frag
+    - shaders/filter_r2_vhs_c0413.frag
+    - shaders/filter_r2_vhs_c0437.frag
+    - shaders/filter_r2_vhs_c0446.frag
+    - shaders/filter_r2_vhs_c0483.frag
+    - shaders/filter_r2_vhs_c0496.frag
     # @shadergen:shaders (pipeline/integrate.py inserts new shaders above this line)

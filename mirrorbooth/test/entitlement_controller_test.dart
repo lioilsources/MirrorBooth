@@ -204,8 +204,7 @@ void main() {
       expect(service.restoreCalls, 1);
     });
 
-    test('Play sells *_unlock when it exists, else the original ID',
-        () async {
+    test('Play sells *_unlock when it exists, else the original ID', () async {
       final (c, _, _) = await _makeController(products: [
         _product(_legacyArtId),
         _product(_artId),
@@ -216,8 +215,7 @@ void main() {
     });
 
     test('transaction history unlocks old purchases at launch', () async {
-      final (c, _, prefs) =
-          await _makeController(history: {_legacyFantasyId});
+      final (c, _, prefs) = await _makeController(history: {_legacyFantasyId});
       expect(c.state.owns(FilterCollection.fantasy), isTrue);
       expect(c.state.owns(FilterCollection.art), isFalse);
       expect(prefs.getStringList('owned_collections'), ['fantasy']);
@@ -246,7 +244,9 @@ void main() {
 
     test('store-page purchase of an owned collection buys nothing', () async {
       final (_, service, _) = await _makeController(
-        prefsValues: {'owned_collections': ['art']},
+        prefsValues: {
+          'owned_collections': ['art']
+        },
         products: [_product(_artId)],
       );
       service.promoted.add(_artId);
@@ -268,13 +268,14 @@ void main() {
         'com.ol1n.mirrorbooth.collection.art_unlock',
         'com.ol1n.mirrorbooth.collection.fantasy_unlock',
         'com.ol1n.mirrorbooth.collection.all_unlock',
+        for (final p in FilterCollection.packs)
+          'com.ol1n.mirrorbooth.collection.${p.name}',
       });
     });
 
     test('never sells the old consumables', () {
-      for (final id in FilterCollection.storeProductIds) {
-        expect(id, endsWith('_unlock'));
-      }
+      expect(FilterCollection.storeProductIds,
+          isNot(contains(anyOf(_legacyArtId, _legacyFantasyId))));
     });
 
     test('old consumables still grant their collection', () {
@@ -284,7 +285,7 @@ void main() {
       expect(
           FilterCollection.grantedBy(
               'com.ol1n.mirrorbooth.collection.all_unlock'),
-          {FilterCollection.art, FilterCollection.fantasy});
+          FilterCollection.values.where((c) => c.isPaid).toSet());
     });
   });
 
@@ -302,12 +303,30 @@ void main() {
     test('shipped filters stay in their collections', () {
       const shipped = {
         FilterCollection.pretty: ['glow', 'slim', 'doll', 'chibi', 'lips'],
-        FilterCollection.ugly: ['bigNose', 'alien', 'melt', 'bigEars', 'longNeck'],
+        FilterCollection.ugly: [
+          'bigNose',
+          'alien',
+          'melt',
+          'bigEars',
+          'longNeck'
+        ],
         FilterCollection.art: [
-          'pencil', 'comic', 'glitch', 'neon', 'thermal', 'oil', 'crt', 'popArt'
+          'pencil',
+          'comic',
+          'glitch',
+          'neon',
+          'thermal',
+          'oil',
+          'crt',
+          'popArt'
         ],
         FilterCollection.fantasy: [
-          'vampire', 'zombie', 'ghost', 'demon', 'cyborg', 'frozen'
+          'vampire',
+          'zombie',
+          'ghost',
+          'demon',
+          'cyborg',
+          'frozen'
         ],
       };
       for (final MapEntry(key: c, value: names) in shipped.entries) {
@@ -342,13 +361,13 @@ void main() {
 
     testWidgets('unowned paid collections show locks', (tester) async {
       await tester.pumpWidget(strip(const {}));
-      // Art + Fantasy tabs are locked (active tab is Pretty → free chips).
-      expect(find.byIcon(Icons.lock), findsNWidgets(2));
+      // Art, Fantasy and Packs tabs are locked (active tab is Pretty).
+      expect(find.byIcon(Icons.lock), findsNWidgets(3));
     });
 
     testWidgets('owned collections show no locks', (tester) async {
       await tester.pumpWidget(
-          strip(const {FilterCollection.art, FilterCollection.fantasy}));
+          strip(FilterCollection.values.where((c) => c.isPaid).toSet()));
       expect(find.byIcon(Icons.lock), findsNothing);
     });
   });
