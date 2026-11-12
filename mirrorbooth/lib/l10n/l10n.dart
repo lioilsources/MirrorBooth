@@ -17,71 +17,71 @@ extension MirrorFilterL10n on MirrorFilter {
   /// Localized chip label. Falls back to the English [label] for filters the
   /// ShaderGen pipeline adds before they get an ARB entry.
   String localizedLabel(AppLocalizations l) => switch (this) {
-    MirrorFilter.none => l.filterNone,
-    MirrorFilter.glow => l.filterGlow,
-    MirrorFilter.slim => l.filterSlim,
-    MirrorFilter.doll => l.filterDoll,
-    MirrorFilter.chibi => l.filterChibi,
-    MirrorFilter.lips => l.filterLips,
-    MirrorFilter.bigNose => l.filterBigNose,
-    MirrorFilter.alien => l.filterAlien,
-    MirrorFilter.melt => l.filterMelt,
-    MirrorFilter.bigEars => l.filterBigEars,
-    MirrorFilter.longNeck => l.filterLongNeck,
-    MirrorFilter.pencil => l.filterPencil,
-    MirrorFilter.comic => l.filterComic,
-    MirrorFilter.glitch => l.filterGlitch,
-    MirrorFilter.neon => l.filterNeon,
-    MirrorFilter.thermal => l.filterThermal,
-    MirrorFilter.oil => l.filterOil,
-    MirrorFilter.crt => l.filterCrt,
-    MirrorFilter.popArt => l.filterPopArt,
-    MirrorFilter.vampire => l.filterVampire,
-    MirrorFilter.zombie => l.filterZombie,
-    MirrorFilter.ghost => l.filterGhost,
-    MirrorFilter.demon => l.filterDemon,
-    MirrorFilter.cyborg => l.filterCyborg,
-    MirrorFilter.frozen => l.filterFrozen,
-    // ignore: unreachable_switch_case
-    _ => label,
-  };
+        MirrorFilter.none => l.filterNone,
+        MirrorFilter.glow => l.filterGlow,
+        MirrorFilter.slim => l.filterSlim,
+        MirrorFilter.doll => l.filterDoll,
+        MirrorFilter.chibi => l.filterChibi,
+        MirrorFilter.lips => l.filterLips,
+        MirrorFilter.bigNose => l.filterBigNose,
+        MirrorFilter.alien => l.filterAlien,
+        MirrorFilter.melt => l.filterMelt,
+        MirrorFilter.bigEars => l.filterBigEars,
+        MirrorFilter.longNeck => l.filterLongNeck,
+        MirrorFilter.pencil => l.filterPencil,
+        MirrorFilter.comic => l.filterComic,
+        MirrorFilter.glitch => l.filterGlitch,
+        MirrorFilter.neon => l.filterNeon,
+        MirrorFilter.thermal => l.filterThermal,
+        MirrorFilter.oil => l.filterOil,
+        MirrorFilter.crt => l.filterCrt,
+        MirrorFilter.popArt => l.filterPopArt,
+        MirrorFilter.vampire => l.filterVampire,
+        MirrorFilter.zombie => l.filterZombie,
+        MirrorFilter.ghost => l.filterGhost,
+        MirrorFilter.demon => l.filterDemon,
+        MirrorFilter.cyborg => l.filterCyborg,
+        MirrorFilter.frozen => l.filterFrozen,
+        // ignore: unreachable_switch_case
+        _ => label,
+      };
 }
 
 extension FilterCollectionL10n on FilterCollection {
   String localizedLabel(AppLocalizations l) => switch (this) {
-    FilterCollection.pretty => l.collectionPretty,
-    FilterCollection.ugly => l.collectionUgly,
-    FilterCollection.art => l.collectionArt,
-    FilterCollection.fantasy => l.collectionFantasy,
-    FilterCollection.mosaic => l.packMosaic,
-    FilterCollection.halftone => l.packHalftone,
-    FilterCollection.sketch => l.packSketch,
-    FilterCollection.optics => l.packOptics,
-    FilterCollection.kaleido => l.packKaleido,
-    FilterCollection.tiles => l.packTiles,
-    FilterCollection.glitch => l.packGlitch,
-    FilterCollection.vhs => l.packVhs,
-    FilterCollection.face => l.packFace,
-    FilterCollection.layers => l.packLayers,
-    FilterCollection.paint => l.packPaint,
-    FilterCollection.color => l.packColor,
-    FilterCollection.light => l.packLight,
-    // Dev-only tab, not localized on purpose.
-    FilterCollection.experimental => label,
-  };
+        FilterCollection.pretty => l.collectionPretty,
+        FilterCollection.ugly => l.collectionUgly,
+        FilterCollection.art => l.collectionArt,
+        FilterCollection.fantasy => l.collectionFantasy,
+        FilterCollection.mosaic => l.packMosaic,
+        FilterCollection.halftone => l.packHalftone,
+        FilterCollection.sketch => l.packSketch,
+        FilterCollection.optics => l.packOptics,
+        FilterCollection.kaleido => l.packKaleido,
+        FilterCollection.tiles => l.packTiles,
+        FilterCollection.glitch => l.packGlitch,
+        FilterCollection.vhs => l.packVhs,
+        FilterCollection.face => l.packFace,
+        FilterCollection.layers => l.packLayers,
+        FilterCollection.paint => l.packPaint,
+        FilterCollection.color => l.packColor,
+        FilterCollection.light => l.packLight,
+        // Dev-only tab, not localized on purpose.
+        FilterCollection.experimental => label,
+      };
 }
 
 extension AudioEffectL10n on AudioEffect {
   String localizedLabel(AppLocalizations l) => switch (this) {
-    AudioEffect.none => l.audioEffectNone,
-    AudioEffect.chiptune => l.audioEffectChiptune,
-    AudioEffect.slowMo => l.audioEffectSlowMo,
-    AudioEffect.chipmunk => l.audioEffectChipmunk,
-    AudioEffect.echo => l.audioEffectEcho,
-    AudioEffect.underwater => l.audioEffectUnderwater,
-    AudioEffect.robot => l.audioEffectRobot,
-    AudioEffect.reverse => l.audioEffectReverse,
-  };
+        AudioEffect.none => l.audioEffectNone,
+        AudioEffect.chiptune => l.audioEffectChiptune,
+        AudioEffect.slowMo => l.audioEffectSlowMo,
+        AudioEffect.chipmunk => l.audioEffectChipmunk,
+        AudioEffect.echo => l.audioEffectEcho,
+        AudioEffect.underwater => l.audioEffectUnderwater,
+        AudioEffect.robot => l.audioEffectRobot,
+        AudioEffect.reverse => l.audioEffectReverse,
+      };
 }
 
 extension MirrorSideL10n on MirrorSide {
@@ -91,23 +91,23 @@ extension MirrorSideL10n on MirrorSide {
 
 extension PreviewErrorL10n on PreviewError {
   String message(AppLocalizations l) => switch (this) {
-    PreviewError.cameraPermissionDenied => l.cameraPermissionDenied,
-    PreviewError.noCameras => l.noCamerasAvailable,
-    PreviewError.cameraStartFailed => l.cameraStartFailed,
-  };
+        PreviewError.cameraPermissionDenied => l.cameraPermissionDenied,
+        PreviewError.noCameras => l.noCamerasAvailable,
+        PreviewError.cameraStartFailed => l.cameraStartFailed,
+      };
 }
 
 extension RecordingErrorL10n on RecordingError {
   String message(AppLocalizations l) => switch (this) {
-    RecordingError.micPermission => l.micPermissionRequired,
-    RecordingError.tooShort => l.recordingTooShort,
-    RecordingError.assemblyFailed => l.videoAssemblyFailed,
-    RecordingError.audioEffectFailed => l.audioEffectFailed,
-    RecordingError.galleryAccessDenied => l.galleryAccessDenied,
-    RecordingError.galleryNotEnoughSpace => l.galleryNotEnoughSpace,
-    RecordingError.galleryUnsupportedFormat => l.galleryUnsupportedFormat,
-    RecordingError.unexpected => l.genericError,
-  };
+        RecordingError.micPermission => l.micPermissionRequired,
+        RecordingError.tooShort => l.recordingTooShort,
+        RecordingError.assemblyFailed => l.videoAssemblyFailed,
+        RecordingError.audioEffectFailed => l.audioEffectFailed,
+        RecordingError.galleryAccessDenied => l.galleryAccessDenied,
+        RecordingError.galleryNotEnoughSpace => l.galleryNotEnoughSpace,
+        RecordingError.galleryUnsupportedFormat => l.galleryUnsupportedFormat,
+        RecordingError.unexpected => l.genericError,
+      };
 }
 
 String galErrorMessage(AppLocalizations l, GalExceptionType type) =>

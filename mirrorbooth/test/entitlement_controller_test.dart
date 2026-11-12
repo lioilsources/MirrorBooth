@@ -204,8 +204,7 @@ void main() {
       expect(service.restoreCalls, 1);
     });
 
-    test('Play sells *_unlock when it exists, else the original ID',
-        () async {
+    test('Play sells *_unlock when it exists, else the original ID', () async {
       final (c, _, _) = await _makeController(products: [
         _product(_legacyArtId),
         _product(_artId),
@@ -216,8 +215,7 @@ void main() {
     });
 
     test('transaction history unlocks old purchases at launch', () async {
-      final (c, _, prefs) =
-          await _makeController(history: {_legacyFantasyId});
+      final (c, _, prefs) = await _makeController(history: {_legacyFantasyId});
       expect(c.state.owns(FilterCollection.fantasy), isTrue);
       expect(c.state.owns(FilterCollection.art), isFalse);
       expect(prefs.getStringList('owned_collections'), ['fantasy']);
@@ -246,7 +244,9 @@ void main() {
 
     test('store-page purchase of an owned collection buys nothing', () async {
       final (_, service, _) = await _makeController(
-        prefsValues: {'owned_collections': ['art']},
+        prefsValues: {
+          'owned_collections': ['art']
+        },
         products: [_product(_artId)],
       );
       service.promoted.add(_artId);
@@ -303,12 +303,30 @@ void main() {
     test('shipped filters stay in their collections', () {
       const shipped = {
         FilterCollection.pretty: ['glow', 'slim', 'doll', 'chibi', 'lips'],
-        FilterCollection.ugly: ['bigNose', 'alien', 'melt', 'bigEars', 'longNeck'],
+        FilterCollection.ugly: [
+          'bigNose',
+          'alien',
+          'melt',
+          'bigEars',
+          'longNeck'
+        ],
         FilterCollection.art: [
-          'pencil', 'comic', 'glitch', 'neon', 'thermal', 'oil', 'crt', 'popArt'
+          'pencil',
+          'comic',
+          'glitch',
+          'neon',
+          'thermal',
+          'oil',
+          'crt',
+          'popArt'
         ],
         FilterCollection.fantasy: [
-          'vampire', 'zombie', 'ghost', 'demon', 'cyborg', 'frozen'
+          'vampire',
+          'zombie',
+          'ghost',
+          'demon',
+          'cyborg',
+          'frozen'
         ],
       };
       for (final MapEntry(key: c, value: names) in shipped.entries) {
