@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -94,6 +95,48 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get collectionFantasy => 'फ़ैंटेसी';
+
+  @override
+  String get collectionPacks => 'पैक';
+
+  @override
+  String get packMosaic => 'मोज़ेक';
+
+  @override
+  String get packHalftone => 'हाफ़टोन';
+
+  @override
+  String get packSketch => 'स्केच';
+
+  @override
+  String get packOptics => 'ऑप्टिक्स';
+
+  @override
+  String get packKaleido => 'कैलिडो';
+
+  @override
+  String get packTiles => 'टाइल्स';
+
+  @override
+  String get packGlitch => 'ग्लिच';
+
+  @override
+  String get packVhs => 'VHS';
+
+  @override
+  String get packFace => 'चेहरा';
+
+  @override
+  String get packLayers => 'परतें';
+
+  @override
+  String get packPaint => 'पेंट';
+
+  @override
+  String get packColor => 'रंग';
+
+  @override
+  String get packLight => 'रोशनी';
 
   @override
   String get audioEffectNone => 'सामान्य';

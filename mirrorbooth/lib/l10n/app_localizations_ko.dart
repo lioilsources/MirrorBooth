@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -94,6 +95,48 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get collectionFantasy => '판타지';
+
+  @override
+  String get collectionPacks => '팩';
+
+  @override
+  String get packMosaic => '모자이크';
+
+  @override
+  String get packHalftone => '하프톤';
+
+  @override
+  String get packSketch => '스케치';
+
+  @override
+  String get packOptics => '광학';
+
+  @override
+  String get packKaleido => '만화경';
+
+  @override
+  String get packTiles => '타일';
+
+  @override
+  String get packGlitch => '글리치';
+
+  @override
+  String get packVhs => 'VHS';
+
+  @override
+  String get packFace => '얼굴';
+
+  @override
+  String get packLayers => '레이어';
+
+  @override
+  String get packPaint => '페인트';
+
+  @override
+  String get packColor => '컬러';
+
+  @override
+  String get packLight => '빛';
 
   @override
   String get audioEffectNone => '기본';

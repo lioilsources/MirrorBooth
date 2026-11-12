@@ -268,13 +268,14 @@ void main() {
         'com.ol1n.mirrorbooth.collection.art_unlock',
         'com.ol1n.mirrorbooth.collection.fantasy_unlock',
         'com.ol1n.mirrorbooth.collection.all_unlock',
+        for (final p in FilterCollection.packs)
+          'com.ol1n.mirrorbooth.collection.${p.name}',
       });
     });
 
     test('never sells the old consumables', () {
-      for (final id in FilterCollection.storeProductIds) {
-        expect(id, endsWith('_unlock'));
-      }
+      expect(FilterCollection.storeProductIds,
+          isNot(contains(anyOf(_legacyArtId, _legacyFantasyId))));
     });
 
     test('old consumables still grant their collection', () {
@@ -284,7 +285,7 @@ void main() {
       expect(
           FilterCollection.grantedBy(
               'com.ol1n.mirrorbooth.collection.all_unlock'),
-          {FilterCollection.art, FilterCollection.fantasy});
+          FilterCollection.values.where((c) => c.isPaid).toSet());
     });
   });
 
@@ -342,13 +343,13 @@ void main() {
 
     testWidgets('unowned paid collections show locks', (tester) async {
       await tester.pumpWidget(strip(const {}));
-      // Art + Fantasy tabs are locked (active tab is Pretty → free chips).
-      expect(find.byIcon(Icons.lock), findsNWidgets(2));
+      // Art, Fantasy and Packs tabs are locked (active tab is Pretty).
+      expect(find.byIcon(Icons.lock), findsNWidgets(3));
     });
 
     testWidgets('owned collections show no locks', (tester) async {
       await tester.pumpWidget(
-          strip(const {FilterCollection.art, FilterCollection.fantasy}));
+          strip(FilterCollection.values.where((c) => c.isPaid).toSet()));
       expect(find.byIcon(Icons.lock), findsNothing);
     });
   });

@@ -1,7 +1,7 @@
 name: mirrorbooth
 description: "Real-time symmetric face mirror using selfie camera."
 publish_to: 'none'
-version: 2.4.1
+version: 2.5.0
 
 environment:
   sdk: ^3.11.4
@@ -82,88 +82,8 @@ flutter:
     - shaders/filter_demon.frag
     - shaders/filter_cyborg.frag
     - shaders/filter_frozen.frag
-    - shaders/filter_c1918.frag
-    - shaders/filter_c0874.frag
-    - shaders/filter_c0626.frag
-    - shaders/filter_c0842.frag
-    - shaders/filter_c1035.frag
-    - shaders/filter_c1856.frag
-    - shaders/filter_c1182.frag
-    - shaders/filter_c1400.frag
-    - shaders/filter_c1642.frag
-    - shaders/filter_c1938.frag
-    - shaders/filter_c1931.frag
-    - shaders/filter_c0735.frag
-    - shaders/filter_c1367.frag
-    - shaders/filter_c1422.frag
-    - shaders/filter_c0988.frag
-    - shaders/filter_c1011.frag
-    - shaders/filter_c1703.frag
-    - shaders/filter_c0012.frag
-    - shaders/filter_c1304.frag
-    - shaders/filter_c1787.frag
-    - shaders/filter_c1348.frag
-    - shaders/filter_c1062.frag
-    - shaders/filter_c1206.frag
-    - shaders/filter_c1632.frag
-    - shaders/filter_c1504.frag
-    - shaders/filter_c0044.frag
-    - shaders/filter_c1131.frag
-    - shaders/filter_c0108.frag
-    - shaders/filter_c0253.frag
-    - shaders/filter_c1058.frag
-    - shaders/filter_c1091.frag
-    - shaders/filter_c1861.frag
-    - shaders/filter_c0191.frag
-    - shaders/filter_c0242.frag
-    - shaders/filter_c1601.frag
-    - shaders/filter_c1086.frag
-    - shaders/filter_c1247.frag
-    - shaders/filter_c0094.frag
-    - shaders/filter_c1485.frag
-    - shaders/filter_c0008.frag
-    - shaders/filter_c0297.frag
-    - shaders/filter_c0098.frag
-    - shaders/filter_c1409.frag
-    - shaders/filter_c0026.frag
-    - shaders/filter_c1357.frag
-    - shaders/filter_c0324.frag
-    - shaders/filter_c0118.frag
-    - shaders/filter_c1470.frag
-    - shaders/filter_c1192.frag
-    - shaders/filter_c0825.frag
-    - shaders/filter_c0841.frag
-    - shaders/filter_c0035.frag
-    - shaders/filter_lab_mosaic.frag
-    - shaders/filter_lab_hex.frag
-    - shaders/filter_lab_glass.frag
-    - shaders/filter_lab_halftone.frag
-    - shaders/filter_lab_dither.frag
-    - shaders/filter_lab_ascii.frag
-    - shaders/filter_lab_sketch.frag
-    - shaders/filter_lab_emboss.frag
-    - shaders/filter_lab_engrave.frag
-    - shaders/filter_lab_fisheye.frag
-    - shaders/filter_lab_twirl.frag
-    - shaders/filter_lab_black_hole.frag
-    - shaders/filter_lab_tiles.frag
-    - shaders/filter_lab_quad.frag
-    - shaders/filter_lab_blinds.frag
-    - shaders/filter_lab_blocks.frag
-    - shaders/filter_lab_vhs.frag
-    - shaders/filter_lab_gameboy.frag
-    - shaders/filter_lab_led.frag
-    - shaders/filter_lab_kuwahara.frag
-    - shaders/filter_lab_aquarelle.frag
-    - shaders/filter_lab_duotone.frag
-    - shaders/filter_lab_cutout.frag
-    - shaders/filter_lab_rays.frag
-    - shaders/filter_lab_tilt.frag
-    - shaders/filter_lab_rain.frag
-    - shaders/filter_lab_snow.frag
-    - shaders/filter_lab_matrix.frag
-    - shaders/filter_lab_tunnel.frag
-    - shaders/filter_lab_night.frag
+    - shaders/filter_r2_optics_tunnel.frag
+    - shaders/filter_r2_vhs_night.frag
     - shaders/filter_r2_mosaic_c0025.frag
     - shaders/filter_r2_mosaic_c0041.frag
     - shaders/filter_r2_mosaic_c0042.frag
