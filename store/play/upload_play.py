@@ -28,14 +28,14 @@ CANDIDATES = HERE.parent / "appstore/screenshots/candidates/play"
 SHOTS = ["cat_01_lr", "comic_01_lr", "alien_01_lr", "alien_02_filters"]
 MAX_SHOTS = 8
 RELEASE_NOTES = {
-    "en-US": "• New app icon\n"
-             "• Art and Fantasy purchases restore on a new phone\n"
-             "• Better TalkBack support and larger text\n"
-             "• Shared photos and videos link back to Mirror Booth",
-    "cs-CZ": "• Nová ikona aplikace\n"
-             "• Nákupy Art a Fantasy se obnoví i na novém telefonu\n"
-             "• Lepší podpora TalkBacku a většího písma\n"
-             "• Sdílené fotky a videa odkazují zpět na Mirror Booth",
+    "en-US": "• 13 new filter packs: Mosaic, Sketch, Optics, Kaleido, VHS, Paint, Light and more\n"
+             "• Tap a pack to jump to a random filter from it\n"
+             "• All filters bundle now includes every pack\n"
+             "• New app icon",
+    "cs-CZ": "• 13 nových balíčků filtrů: Mozaika, Skica, Optika, Kaleido, VHS, Malba, Světlo a další\n"
+             "• Klepnutím na balíček zapnete náhodný filtr z něj\n"
+             "• Balíček Všechny filtry teď obsahuje i všechny nové balíčky\n"
+             "• Nová ikona aplikace",
 }
 
 
