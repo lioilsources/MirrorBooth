@@ -50,7 +50,7 @@ def call(method, path, body=None, base=API, raw=None, content_type=None):
         headers["Content-Type"] = content_type or "application/json"
     req = urllib.request.Request(base + path, data=data, method=method, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=300) as res:
+        with urllib.request.urlopen(req, timeout=1200) as res:
             text = res.read()
             return json.loads(text) if text else {}
     except urllib.error.HTTPError as e:
