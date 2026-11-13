@@ -34,6 +34,10 @@ dependencies:
   in_app_review: ^2.0.12
   package_info_plus: ^10.2.2
   in_app_purchase_storekit: ^0.4.17
+  android_play_install_referrer: ^0.4.0
+  # Shared store helpers; path dep until the package gets its own repo (like cute_kid_fonts).
+  ol1n_store_kit:
+    path: ../../Store/ol1n_store_kit
 
 dev_dependencies:
   flutter_test:
