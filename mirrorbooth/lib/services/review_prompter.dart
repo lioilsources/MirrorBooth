@@ -9,15 +9,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../features/paywall/entitlement_controller.dart';
 
 /// Asks for a store rating at a happy moment: the 3rd saved or shared photo,
-/// or the first saved or shared video. At most once per app version, never
-/// during the first launch and never right after an error. The system decides whether
+/// or the first saved or shared video. At most once per app version, only
+/// once the app has been opened on [minLaunches] starts over at least
+/// [minAge] since the first one (App Review 5.6.3: never on first launch or
+/// during onboarding, so a fresh install never sees it), and never right
+/// after an error. The system decides whether
 /// the dialog really shows (Apple: 3 times a year; Play: its own quota), so
 /// there is no "Rate us?" question first and no button that calls this.
 class ReviewPrompter {
   static const photosForPrompt = 3;
   static const errorCooldown = Duration(seconds: 30);
+  static const minLaunches = 3;
+  static const minAge = Duration(days: 3);
 
   static const _kLaunches = 'review_launches';
+  static const _kFirstLaunch = 'review_first_launch_ms';
   static const _kPhotos = 'review_photo_events';
   static const _kVideos = 'review_video_saves';
   static const _kPromptedVersion = 'review_prompted_version';
@@ -38,8 +44,12 @@ class ReviewPrompter {
         _now = now ?? DateTime.now;
 
   /// Call once per app start.
-  void recordLaunch() =>
-      _prefs.setInt(_kLaunches, (_prefs.getInt(_kLaunches) ?? 0) + 1);
+  void recordLaunch() {
+    _prefs.setInt(_kLaunches, (_prefs.getInt(_kLaunches) ?? 0) + 1);
+    if (_prefs.getInt(_kFirstLaunch) == null) {
+      _prefs.setInt(_kFirstLaunch, _now().millisecondsSinceEpoch);
+    }
+  }
 
   /// A photo was saved to the gallery or shared.
   Future<bool> photoDone() {
@@ -58,7 +68,11 @@ class ReviewPrompter {
 
   /// Returns true when the system was asked to show the dialog.
   Future<bool> _maybePrompt() async {
-    if ((_prefs.getInt(_kLaunches) ?? 0) < 2) return false;
+    if ((_prefs.getInt(_kLaunches) ?? 0) < minLaunches) return false;
+    final first = _prefs.getInt(_kFirstLaunch);
+    if (first == null) return false;
+    final since = _now().difference(DateTime.fromMillisecondsSinceEpoch(first));
+    if (since < minAge) return false;
     final error = _lastError;
     if (error != null && _now().difference(error) < errorCooldown) return false;
     final happy = (_prefs.getInt(_kPhotos) ?? 0) >= photosForPrompt ||
