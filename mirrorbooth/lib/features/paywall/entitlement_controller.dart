@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:ol1n_telemetry/ol1n_telemetry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/mirror_filter.dart';
@@ -75,6 +76,10 @@ class EntitlementController extends StateNotifier<EntitlementState> {
   /// Completes once product metadata has been queried (or the query failed),
   /// so a purchase started from the App Store can wait for it.
   final _productsLoaded = Completer<void>();
+
+  /// The purchase being measured (`purchase_*`) and its product.
+  TelemetryFlow? _purchaseFlow;
+  String? _purchaseProductId;
 
   EntitlementController(
     this._service,
@@ -165,11 +170,12 @@ class EntitlementController extends StateNotifier<EntitlementState> {
     if (FilterCollection.grantedBy(productId).every(state.owned.contains)) {
       return;
     }
-    await _buyProduct(product);
+    await _buyProduct(product, source: 'store_page');
   }
 
   Future<void> _onPurchaseUpdates(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
+      _measure(purchase);
       switch (purchase.status) {
         case PurchaseStatus.pending:
           state = state.copyWith(purchasePending: true, clearError: true);
@@ -203,6 +209,30 @@ class EntitlementController extends StateNotifier<EntitlementState> {
     }
   }
 
+  /// Ends the measured purchase when the store answers for its product.
+  /// `pending` (Ask to Buy, slow payment) keeps it open.
+  void _measure(PurchaseDetails purchase) {
+    if (purchase.productID != _purchaseProductId) return;
+    final result = switch (purchase.status) {
+      PurchaseStatus.pending => null,
+      PurchaseStatus.purchased || PurchaseStatus.restored => 'ok',
+      PurchaseStatus.canceled => 'cancel',
+      PurchaseStatus.error =>
+        (purchase.error?.message ?? '').toLowerCase().contains('cancel')
+            ? 'cancel'
+            : 'error',
+    };
+    if (result == null) return;
+    if (result == 'error') Telemetry.errorShown('purchase_failed');
+    _endPurchaseFlow(result);
+  }
+
+  void _endPurchaseFlow(String result) {
+    _purchaseFlow?.end(result);
+    _purchaseFlow = null;
+    _purchaseProductId = null;
+  }
+
   /// Local-only verification: the app has no backend, so we check the product
   /// is ours and the store attached signed verification data. Accepted risk:
   /// a patched device can forge this; refunds are never revoked.
@@ -231,13 +261,25 @@ class EntitlementController extends StateNotifier<EntitlementState> {
     await _buyProduct(product);
   }
 
-  Future<void> _buyProduct(ProductDetails product) async {
+  Future<void> _buyProduct(ProductDetails product,
+      {String source = 'paywall'}) async {
     if (state.purchasePending) return;
     state = state.copyWith(purchasePending: true, clearError: true);
+    final item = product.id == state.bundle?.id
+        ? 'bundle'
+        : FilterCollection.byProductId(product.id)?.name;
+    if (item != null) {
+      _purchaseFlow?.end('cancel');
+      _purchaseProductId = product.id;
+      _purchaseFlow =
+          Telemetry.flow('purchase', {'item': item, 'source': source});
+    }
     try {
       await _service.buyNonConsumable(product);
     } catch (e) {
       // buyNonConsumable can throw synchronously (e.g. purchase in progress).
+      Telemetry.errorShown('purchase_failed');
+      _endPurchaseFlow('error');
       state = state.copyWith(purchasePending: false, error: e.toString());
     }
   }
@@ -250,6 +292,7 @@ class EntitlementController extends StateNotifier<EntitlementState> {
     try {
       await _service.restorePurchases();
     } catch (e) {
+      Telemetry.errorShown('purchase_failed');
       state = state.copyWith(error: e.toString());
     } finally {
       // Restored items (if any) arrive via the stream; the call returning

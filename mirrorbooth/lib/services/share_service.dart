@@ -127,40 +127,42 @@ class ShareService {
     return '${dir.path}/mb_share_$ts.$extension';
   }
 
-  static Future<void> sharePhoto(
+  /// The share sheet's outcome; Android usually reports `unavailable`.
+  static Future<ShareResultStatus> sharePhoto(
     String path, {
     required String message,
     ui.Rect? origin,
   }) async {
     final stamped = await _stampPhoto(path);
-    await _share(stamped, message, origin);
+    return _share(stamped, message, origin);
   }
 
   /// [size] is the video's pixel size. Falls back to the unmarked file if
   /// burning in the watermark fails: sharing matters more than the mark.
-  static Future<void> shareVideo(
+  static Future<ShareResultStatus> shareVideo(
     String path, {
     required ui.Size size,
     required String message,
     ui.Rect? origin,
   }) async {
     final stamped = await _stampVideo(path, size);
-    await _share(stamped ?? File(path), message, origin,
+    return _share(stamped ?? File(path), message, origin,
         deleteAfter: stamped != null);
   }
 
-  static Future<void> _share(
+  static Future<ShareResultStatus> _share(
     File file,
     String message,
     ui.Rect? origin, {
     bool deleteAfter = true,
   }) async {
     try {
-      await SharePlus.instance.share(ShareParams(
+      final result = await SharePlus.instance.share(ShareParams(
         text: message,
         files: [XFile(file.path)],
         sharePositionOrigin: origin,
       ));
+      return result.status;
     } finally {
       if (deleteAfter) file.delete().ignore();
     }

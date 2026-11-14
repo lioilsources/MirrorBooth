@@ -271,5 +271,17 @@
         "type": "String"
       }
     }
+  },
+  "a11ySettings": "Settings",
+  "@a11ySettings": {
+    "description": "Screen-reader label of the settings button (shown only in builds that collect anonymous statistics)"
+  },
+  "statsToggle": "Anonymous usage statistics",
+  "@statsToggle": {
+    "description": "Settings switch that turns anonymous usage statistics on or off"
+  },
+  "statsToggleHint": "Helps improve the app. Only which features are used and how long, never your photos or anything that identifies you.",
+  "@statsToggleHint": {
+    "description": "Explanation under the anonymous statistics switch"
   }
 }

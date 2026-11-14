@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees} derajat",
   "a11yClose": "Tutup",
   "a11yToggleLog": "Tampilkan atau sembunyikan log",
-  "unlockAllFor": "Semua filter seharga {price}"
+  "unlockAllFor": "Semua filter seharga {price}",
+  "a11ySettings": "Pengaturan",
+  "statsToggle": "Statistik penggunaan anonim",
+  "statsToggleHint": "Membantu meningkatkan aplikasi. Hanya fitur mana yang dipakai dan berapa lama, tidak pernah foto Anda atau apa pun yang mengidentifikasi Anda."
 }

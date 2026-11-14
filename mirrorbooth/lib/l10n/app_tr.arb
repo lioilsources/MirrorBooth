@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees} derece",
   "a11yClose": "Kapat",
   "a11yToggleLog": "Günlüğü göster veya gizle",
-  "unlockAllFor": "Tüm filtreler {price}"
+  "unlockAllFor": "Tüm filtreler {price}",
+  "a11ySettings": "Ayarlar",
+  "statsToggle": "Anonim kullanım istatistikleri",
+  "statsToggleHint": "Uygulamayı geliştirmeye yardımcı olur. Yalnızca hangi özelliklerin ne kadar süre kullanıldığı; fotoğraflarınız veya sizi tanımlayan hiçbir şey asla."
 }

@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ol1n_telemetry/ol1n_telemetry.dart';
 
 import '../../core/mirror_filter.dart';
 import '../../l10n/l10n.dart';
+import '../../telemetry/telemetry_dictionary.dart';
 import 'entitlement_controller.dart';
 
 /// Shows the purchase sheet for a locked [collection]. The barrier stays
 /// light so the live filtered camera preview remains visible behind it —
 /// the preview is the sales pitch.
-Future<void> showPaywallSheet(BuildContext context, FilterCollection collection) {
-  return showModalBottomSheet<void>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    barrierColor: Colors.black26,
-    isScrollControlled: true,
-    builder: (_) => _PaywallSheet(collection: collection),
-  );
+///
+/// A sheet is not a page route, so it reports its screen by hand and hands
+/// the camera back when it closes (it only opens from the camera).
+Future<void> showPaywallSheet(
+    BuildContext context, FilterCollection collection) async {
+  Telemetry.screen(kScreenPaywall);
+  try {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black26,
+      isScrollControlled: true,
+      builder: (_) => _PaywallSheet(collection: collection),
+    );
+  } finally {
+    Telemetry.screen('camera');
+  }
 }
 
 class _PaywallSheet extends ConsumerWidget {

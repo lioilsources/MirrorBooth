@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ol1n_telemetry/ol1n_telemetry.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -79,12 +80,14 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     final status = await Permission.camera.request();
     if (!status.isGranted) {
       state = state.copyWith(error: PreviewError.cameraPermissionDenied);
+      Telemetry.errorShown('camera_denied');
       return;
     }
 
     final cameras = await availableCameras();
     if (cameras.isEmpty) {
       state = state.copyWith(error: PreviewError.noCameras);
+      Telemetry.errorShown('camera_missing');
       return;
     }
 
@@ -129,6 +132,7 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     } catch (e) {
       debugPrint('camera init failed: $e');
       state = state.copyWith(error: PreviewError.cameraStartFailed);
+      Telemetry.errorShown('camera_failed');
     }
   }
 
@@ -138,6 +142,7 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
     final old = state.controller;
     if (old == null || !state.isReady) return;
 
+    Telemetry.feature('lens_toggle');
     _switchingLens = true;
     final next = state.lensDirection == CameraLensDirection.front
         ? CameraLensDirection.back
@@ -153,6 +158,7 @@ class MirrorPreviewController extends StateNotifier<MirrorPreviewState>
   }
 
   void toggleSide() {
+    Telemetry.feature('side_toggle');
     state = state.copyWith(side: state.side.toggled);
   }
 

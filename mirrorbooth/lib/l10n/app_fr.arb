@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees} degrés",
   "a11yClose": "Fermer",
   "a11yToggleLog": "Afficher ou masquer le journal",
-  "unlockAllFor": "Tous les filtres pour {price}"
+  "unlockAllFor": "Tous les filtres pour {price}",
+  "a11ySettings": "Réglages",
+  "statsToggle": "Statistiques d’utilisation anonymes",
+  "statsToggleHint": "Aident à améliorer l’app. Uniquement les fonctions utilisées et leur durée, jamais vos photos ni rien qui vous identifie."
 }

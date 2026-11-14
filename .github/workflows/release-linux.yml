@@ -41,7 +41,7 @@ jobs:
 
       - name: Build Linux (release)
         working-directory: mirrorbooth
-        run: flutter build linux --release
+        run: flutter build linux --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       - name: Package as tar.gz
         run: |

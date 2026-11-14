@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ol1n_telemetry/ol1n_telemetry.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 
 import '../../l10n/l10n.dart';
 import '../../services/review_prompter.dart';
 import '../../services/share_service.dart';
+import '../../telemetry/telemetry_dictionary.dart';
 import 'audio_effect_strip.dart';
 import 'video_recording_notifier.dart';
 import 'video_recording_state.dart';
@@ -47,16 +49,19 @@ class _VideoPlaybackScreenState extends ConsumerState<VideoPlaybackScreen> {
     final notifier = ref.read(videoRecordingProvider.notifier);
     final message = context.l10n.shareMessage(ShareService.storeUrl);
     setState(() => _isSharing = true);
+    final flow = Telemetry.flow('share', {'media': 'video'});
     try {
-      await ShareService.shareVideo(
+      final status = await ShareService.shareVideo(
         path,
         size: controller.value.size,
         message: message,
         origin: origin,
       );
+      flow.end(shareResult(status.name));
       ref.read(reviewPrompterProvider).videoDone().ignore();
     } catch (e) {
       debugPrint('shareVideo failed: $e');
+      flow.end('error');
       notifier.reportError(RecordingError.unexpected);
     } finally {
       if (mounted) setState(() => _isSharing = false);
