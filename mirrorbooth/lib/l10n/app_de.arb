@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees} Grad",
   "a11yClose": "Schließen",
   "a11yToggleLog": "Protokoll ein- oder ausblenden",
-  "unlockAllFor": "Alle Filter für {price}"
+  "unlockAllFor": "Alle Filter für {price}",
+  "a11ySettings": "Einstellungen",
+  "statsToggle": "Anonyme Nutzungsstatistik",
+  "statsToggleHint": "Hilft, die App zu verbessern. Nur welche Funktionen wie lange genutzt werden, nie deine Fotos oder etwas, das dich identifiziert."
 }

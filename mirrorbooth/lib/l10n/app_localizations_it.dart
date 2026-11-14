@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -353,4 +352,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String unlockAllFor(String price) {
     return 'Tutti i filtri a $price';
   }
+
+  @override
+  String get a11ySettings => 'Impostazioni';
+
+  @override
+  String get statsToggle => 'Statistiche d’uso anonime';
+
+  @override
+  String get statsToggleHint =>
+      'Aiutano a migliorare l’app. Solo quali funzioni si usano e per quanto tempo, mai le tue foto né nulla che ti identifichi.';
 }

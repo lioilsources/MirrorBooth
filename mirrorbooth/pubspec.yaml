@@ -34,6 +34,10 @@ dependencies:
   in_app_review: ^2.0.12
   package_info_plus: ^10.2.2
   in_app_purchase_storekit: ^0.4.17
+  ol1n_telemetry:
+    git:
+      url: https://github.com/lioilsources/Ol1nTelemetry.git
+      ref: v0.1.0
 
 dev_dependencies:
   flutter_test:

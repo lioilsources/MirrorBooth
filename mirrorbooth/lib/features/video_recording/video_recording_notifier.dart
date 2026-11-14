@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
+import 'package:ol1n_telemetry/ol1n_telemetry.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -121,6 +122,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
     final raw = state.rawVideoPath;
     if (raw == null || state.phase != RecordingPhase.playback) return;
     if (state.selectedEffect == effect) return;
+    Telemetry.feature('audio_effect');
 
     state = state.copyWith(
       selectedEffect: effect,
@@ -161,11 +163,19 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
   Future<void> saveVideo() async {
     final path = state.playbackPath;
     if (path == null) return;
+    final flow = Telemetry.flow(
+        'video_save', {'effect': state.selectedEffect.name});
     try {
       await Gal.putVideo(path);
+      flow.end('ok');
       state = state.copyWith(isSaved: true);
       ref.read(reviewPrompterProvider).videoDone().ignore();
     } on GalException catch (e) {
+      flow.end(switch (e.type) {
+        GalExceptionType.accessDenied => 'denied',
+        GalExceptionType.notEnoughSpace => 'no_space',
+        _ => 'error',
+      });
       state = state.copyWith(error: switch (e.type) {
         GalExceptionType.accessDenied => RecordingError.galleryAccessDenied,
         GalExceptionType.notEnoughSpace => RecordingError.galleryNotEnoughSpace,
@@ -175,6 +185,7 @@ class VideoRecordingNotifier extends Notifier<VideoRecordingState> {
       });
     } catch (e) {
       debugPrint('saveVideo failed: $e');
+      flow.end('error');
       state = state.copyWith(error: RecordingError.unexpected);
     }
   }

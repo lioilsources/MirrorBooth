@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees}度",
   "a11yClose": "閉じる",
   "a11yToggleLog": "ログの表示/非表示",
-  "unlockAllFor": "全フィルター {price}"
+  "unlockAllFor": "全フィルター {price}",
+  "a11ySettings": "設定",
+  "statsToggle": "匿名の利用統計",
+  "statsToggleHint": "アプリの改善に役立ちます。どの機能をどれくらい使ったかだけで、写真やあなたを特定する情報は一切含みません。"
 }

@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees} stupňů",
   "a11yClose": "Zavřít",
   "a11yToggleLog": "Zobrazit nebo skrýt log",
-  "unlockAllFor": "Všechny filtry za {price}"
+  "unlockAllFor": "Všechny filtry za {price}",
+  "a11ySettings": "Nastavení",
+  "statsToggle": "Anonymní statistiky používání",
+  "statsToggleHint": "Pomáhají zlepšovat aplikaci. Jen které funkce se používají a jak dlouho, nikdy vaše fotky ani nic, co by vás identifikovalo."
 }

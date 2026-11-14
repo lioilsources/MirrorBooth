@@ -106,5 +106,8 @@
   "a11yDegrees": "{degrees} grados",
   "a11yClose": "Cerrar",
   "a11yToggleLog": "Mostrar u ocultar el registro",
-  "unlockAllFor": "Todos los filtros por {price}"
+  "unlockAllFor": "Todos los filtros por {price}",
+  "a11ySettings": "Ajustes",
+  "statsToggle": "Estadísticas de uso anónimas",
+  "statsToggleHint": "Ayudan a mejorar la app. Solo qué funciones se usan y durante cuánto tiempo, nunca tus fotos ni nada que te identifique."
 }
