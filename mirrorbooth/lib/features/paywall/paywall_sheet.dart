@@ -128,28 +128,59 @@ class _PaywallSheet extends ConsumerWidget {
             ),
             // The bundle, when the store sells it: every paid collection in
             // one purchase. Outlined so the single collection stays the
-            // primary action.
+            // primary action. A discounted tier shows the full store price
+            // struck through and says which purchases were credited.
             if (state.bundle case final bundle? when state.storeAvailable) ...[
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: state.purchasePending ? null : notifier.buyBundle,
                 child: Container(
-                  height: 44,
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(color: Colors.white54, width: 1.5),
                   ),
-                  child: Text(
-                    l10n.unlockAllFor(bundle.price),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    children: [
+                      if (state.bundleFullPrice case final full?)
+                        Text(
+                          full,
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 13,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: Colors.white54,
+                          ),
+                        ),
+                      Text(
+                        l10n.unlockAllFor(bundle.price),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+              if (state.bundleThreshold > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    l10n.bundleCredited(state.ownedPaidCount),
+                    textAlign: TextAlign.center,
+                    style:
+                        const TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
+                ),
             ],
             if (state.error != null)
               Padding(

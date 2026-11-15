@@ -72,3 +72,38 @@ waiting for review, ASC refuses a new image ("change pending review").
 
 Both are idempotent. Apple only takes it once another non-consumable is
 approved (FIRST_NON_CONSUMABLE_MUST_BE_SUBMITTED_ON_VERSION until then).
+
+## Bundle tiers: complete-the-set pricing (not created yet)
+
+The app (`FilterCollection.bundleLadder`, `lib/core/set_ladder.dart`) offers
+one "All filters" product chosen by how many paid collections the customer
+owns; every tier unlocks every paid collection, including future ones. The
+app shows only store prices and never computes an amount. A tier the store
+does not return is skipped (the next lower tier is offered), so the app works
+before the new products exist.
+
+| Tier | Product ID | Price (USD price point) | Offered when owning |
+|---|---|---|---|
+| 0 | `com.ol1n.mirrorbooth.collection.all_unlock` | 4.99 | 0 paid collections |
+| 1 | `com.ol1n.mirrorbooth.collection.all_unlock_s1` | 3.99 | 1 |
+| 2 | `com.ol1n.mirrorbooth.collection.all_unlock_s2` | 2.99 | 2 |
+| 3 | `com.ol1n.mirrorbooth.collection.all_unlock_s3` | 1.99 | 3 |
+| 4 | `com.ol1n.mirrorbooth.collection.all_unlock_s4` | 0.99 | 4 or more |
+
+Manual step, not done: create tiers 1–4 as non-consumables in App Store
+Connect and as one-time products in Play Console (same IDs on both), with the
+same name and paywall review screenshot as tier 0, Family Sharing like tier 0,
+other currencies left to the store. Review note for every tier:
+
+> Complete-the-set pricing: these products unlock identical content. The app
+> offers exactly one of them, chosen by how many items the customer already
+> owns, so earlier purchases are credited.
+
+Never turn on Promote for tiers 1–4: a promoted tier could be bought from the
+product page at the discounted price. The legacy Play bundle
+`com.ol1n.mirrorbooth.collection.all` keeps unlocking everything and is sold
+as tier 0 only while `all_unlock` is missing on Play.
+
+Unverified: whether `all_unlock` exists in App Store Connect and at what price
+(check with `passctl asc iaps --app mirrorbooth`). The tiers assume tier 0 is
+4.99 USD; `create_bundle_iap.py` defaults to that price.

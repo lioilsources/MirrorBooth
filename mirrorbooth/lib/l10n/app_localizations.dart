@@ -761,6 +761,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All filters for {price}'**
   String unlockAllFor(String price);
+
+  /// Paywall: under a discounted 'All filters' price, the collections already bought were subtracted from it
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{You already own 1 collection, we\'ve credited it} other{You already own {count} collections, we\'ve credited them}}'**
+  String bundleCredited(int count);
 }
 
 class _AppLocalizationsDelegate

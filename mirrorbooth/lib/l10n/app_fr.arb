@@ -106,5 +106,6 @@
   "a11yDegrees": "{degrees} degrés",
   "a11yClose": "Fermer",
   "a11yToggleLog": "Afficher ou masquer le journal",
-  "unlockAllFor": "Tous les filtres pour {price}"
+  "unlockAllFor": "Tous les filtres pour {price}",
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}"
 }

@@ -7,6 +7,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/mirror_filter.dart';
+import '../../core/set_ladder.dart';
 import '../../services/purchase_service.dart';
 
 // ── State ────────────────────────────────────────────────────────────────────
@@ -19,8 +20,9 @@ class EntitlementState {
   /// Store metadata for paid collections, for price display on the paywall.
   final Map<FilterCollection, ProductDetails> products;
 
-  /// The optional "All filters" bundle; null when the store does not sell it.
-  final ProductDetails? bundle;
+  /// "All filters" tiers the store returned, keyed by threshold (see
+  /// [FilterCollection.bundleLadder]); tier 0 is the full price.
+  final Map<int, ProductDetails> bundleTiers;
 
   /// False on desktop platforms and when the store is unreachable.
   final bool storeAvailable;
@@ -34,7 +36,7 @@ class EntitlementState {
   const EntitlementState({
     this.owned = const {},
     this.products = const {},
-    this.bundle,
+    this.bundleTiers = const {},
     this.storeAvailable = false,
     this.purchasePending = false,
     this.error,
@@ -42,10 +44,45 @@ class EntitlementState {
 
   bool owns(FilterCollection c) => !c.isPaid || owned.contains(c);
 
+  /// Paid collections owned, the count the bundle tier is chosen by.
+  int get ownedPaidCount => owned.where((c) => c.isPaid).length;
+
+  /// The "All filters" tier on offer: the highest one the store returned whose
+  /// threshold [ownedPaidCount] meets. Recomputed from [owned], so it drops
+  /// right after a single-collection purchase. Null when the store sells no
+  /// bundle. A tier the store did not return is skipped, so before the
+  /// discounted products exist the full-price bundle is offered as before.
+  ProductDetails? get bundle {
+    final ladder = [
+      for (final tier in FilterCollection.bundleLadder)
+        if (bundleTiers[tier.threshold] case final p?)
+          (threshold: tier.threshold, productId: p.id),
+    ];
+    final id = offerFromLadder(ownedPaidCount, ladder);
+    return bundleTiers.values.where((p) => p.id == id).firstOrNull;
+  }
+
+  /// Threshold of the offered tier; 0 for the full price or no bundle.
+  int get bundleThreshold {
+    final id = bundle?.id;
+    for (final MapEntry(:key, :value) in bundleTiers.entries) {
+      if (value.id == id) return key;
+    }
+    return 0;
+  }
+
+  /// Full (tier 0) store price to strike through next to a discounted tier;
+  /// null at tier 0 or when the store returned no tier 0 price.
+  String? get bundleFullPrice {
+    if (bundleThreshold == 0) return null;
+    final price = bundleTiers[0]?.price;
+    return price == null || price.isEmpty ? null : price;
+  }
+
   EntitlementState copyWith({
     Set<FilterCollection>? owned,
     Map<FilterCollection, ProductDetails>? products,
-    ProductDetails? bundle,
+    Map<int, ProductDetails>? bundleTiers,
     bool? storeAvailable,
     bool? purchasePending,
     String? error,
@@ -54,7 +91,7 @@ class EntitlementState {
     return EntitlementState(
       owned: owned ?? this.owned,
       products: products ?? this.products,
-      bundle: bundle ?? this.bundle,
+      bundleTiers: bundleTiers ?? this.bundleTiers,
       storeAvailable: storeAvailable ?? this.storeAvailable,
       purchasePending: purchasePending ?? this.purchasePending,
       error: clearError ? null : (error ?? this.error),
@@ -129,8 +166,11 @@ class EntitlementController extends StateNotifier<EntitlementState> {
         for (final c in FilterCollection.values)
           c: ?pick(c.candidateProductIds),
       };
-      final bundle = pick(FilterCollection.bundleProductIds);
-      state = state.copyWith(products: products, bundle: bundle);
+      final bundleTiers = <int, ProductDetails>{
+        for (final tier in FilterCollection.bundleLadder)
+          tier.threshold: ?pick(FilterCollection.bundleCandidates(tier)),
+      };
+      state = state.copyWith(products: products, bundleTiers: bundleTiers);
     } catch (e) {
       debugPrint('IAP init failed: $e');
       state = state.copyWith(storeAvailable: false);
@@ -154,9 +194,14 @@ class EntitlementController extends StateNotifier<EntitlementState> {
 
   Future<void> _onPromoted(String productId) async {
     await _productsLoaded.future;
-    final ProductDetails? product = productId == state.bundle?.id
-        ? state.bundle
-        : state.products[FilterCollection.byProductId(productId)];
+    // Any bundle tier is accepted: the customer chose that product on the
+    // App Store page, so it is sold as chosen.
+    final ProductDetails? product =
+        FilterCollection.bundleGrantingIds.contains(productId)
+            ? state.bundleTiers.values
+                .where((p) => p.id == productId)
+                .firstOrNull
+            : state.products[FilterCollection.byProductId(productId)];
     if (product == null) {
       debugPrint('Promoted purchase for unknown product $productId');
       return;
@@ -224,7 +269,7 @@ class EntitlementController extends StateNotifier<EntitlementState> {
     await _buyProduct(product);
   }
 
-  /// Buys the "All filters" bundle, when the store sells it.
+  /// Buys the offered "All filters" tier, when the store sells one.
   Future<void> buyBundle() async {
     final product = state.bundle;
     if (product == null) return;
