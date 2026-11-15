@@ -71,7 +71,7 @@ Uvidíte svou dokonale souměrnou tvář živě. 24 filtrů, fotky a video s FX.
 
 ### Full description (4000)
 
-English [1579]:
+English [1591]:
 
 ```
 MirrorBooth turns your selfie camera into a live, perfectly symmetric mirror.
@@ -97,12 +97,12 @@ VIDEO WITH VOICE EFFECTS
 Record clips of up to 60 seconds with sound, then give your voice a twist: 8-bit, Slow, Chipmunk, Echo, Underwater, Robot or Reverse. Save the result to your gallery and share it anywhere.
 
 PRIVATE BY DESIGN
-All image processing happens on your phone. No account, no ads, no analytics, no tracking. Photos and videos are saved to your gallery only when you choose to save them, and MirrorBooth never uploads them.
+All image processing happens on your phone. No account, no ads, no third-party analytics, no tracking. Photos and videos are saved to your gallery only when you choose to save them, and MirrorBooth never uploads them.
 
 Camera access is required. The microphone is used only while you record a video with sound.
 ```
 
-Czech [1551]:
+Czech [1565]:
 
 ```
 MirrorBooth promění selfie kameru v živé, dokonale souměrné zrcadlo.
@@ -128,7 +128,7 @@ VIDEO S HLASOVÝMI EFEKTY
 Natočte klip až na 60 sekund se zvukem a pak hlasu přidejte efekt: 8-bit, Slow, Chipmunk, Echo, Underwater, Robot nebo Reverse. Výsledek uložíte do galerie a můžete ho sdílet kamkoli.
 
 SOUKROMÍ NA PRVNÍM MÍSTĚ
-Veškeré zpracování obrazu probíhá v telefonu. Žádný účet, žádné reklamy, žádná analytika, žádné sledování. Fotky a videa se ukládají do galerie jen tehdy, když je uložit chcete, a MirrorBooth je nikdy nikam neodesílá.
+Veškeré zpracování obrazu probíhá v telefonu. Žádný účet, žádné reklamy, žádná analytika třetích stran, žádné sledování. Fotky a videa se ukládají do galerie jen tehdy, když je uložit chcete, a MirrorBooth je nikdy nikam neodesílá.
 
 Aplikace potřebuje přístup ke kameře. Mikrofon se používá jen při natáčení videa se zvukem.
 ```
@@ -233,16 +233,21 @@ adult faces and horror-ish filters, no cartoon characters.
 
 ### Data safety
 
-Declare **no data collected and no data shared** → the questionnaire ends after
-the first page.
+From the first build with anonymous usage statistics (`docs/telemetry.md`)
+the answer is no longer "no data collected". The full answers, for Data
+safety and for App Store App Privacy, are in
+[`../privacy-answers.md`](../privacy-answers.md). Update the form **before**
+that build is submitted, and only after the new `docs/privacy.html` is live.
 
-Why that is true for this build (checked against the code, not the old docs):
+What stays true for the rest of the app (checked against the code):
 
 - Permissions: `CAMERA`, `RECORD_AUDIO`, `INTERNET` only
   (`android/app/src/main/AndroidManifest.xml`). No location, contacts, storage.
 - Camera frames and audio are processed on-device (Flutter shaders, FFmpegKit);
   photos/videos go to the device gallery via `gal`, never uploaded.
-- No analytics, crash reporting, ads or Firebase SDK in `pubspec.yaml`. The
+- No third-party analytics, crash reporting, ads or Firebase SDK in
+  `pubspec.yaml`. The anonymous statistics are the app's own
+  (`ol1n_telemetry`) and go only to the developer's server. The
   `google-services.json` file is a leftover: the `com.google.gms.google-services`
   Gradle plugin is not applied, so it is not compiled in.
 - Purchases go through Google Play Billing; the app stores only "which
@@ -264,7 +269,7 @@ Why that is true for this build (checked against the code, not the old docs):
 | Financial features | My app doesn't provide any financial features |
 | Health | No health features |
 | COVID-19 contact tracing | No |
-| Advertising ID | **No** — no ad or analytics SDK uses it (Android 13+ requires this answer for targetSdk 33+) |
+| Advertising ID | **No** — nothing in the app uses it; the anonymous statistics carry no identifier (Android 13+ requires this answer for targetSdk 33+) |
 | Foreground service / exact alarm / photo & video permissions | Not applicable — the manifest declares none of them |
 
 ## 5. Store settings
