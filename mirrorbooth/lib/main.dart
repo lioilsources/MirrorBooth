@@ -10,6 +10,7 @@ import 'features/mirror_preview/mirror_preview_screen.dart';
 import 'features/paywall/entitlement_controller.dart';
 import 'features/video_call/room_entry_screen.dart';
 import 'l10n/app_localizations.dart';
+import 'services/attribution_service.dart';
 import 'services/deep_link.dart';
 import 'services/review_prompter.dart';
 
@@ -44,6 +45,7 @@ class _MirrorBoothAppState extends ConsumerState<MirrorBoothApp> {
   void initState() {
     super.initState();
     ref.read(reviewPrompterProvider).recordLaunch();
+    AttributionService.captureOnFirstOpen().ignore();
     // Emits the link that launched the app first, then any later ones.
     _links = AppLinks().uriLinkStream.listen(
       _open,
