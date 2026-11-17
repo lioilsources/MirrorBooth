@@ -64,7 +64,7 @@ def main():
                               raw=aab.read_bytes(), content_type="application/octet-stream")
                 code = bundle["versionCode"]
                 call("PUT", base + f"/tracks/{track}", {"track": track, "releases": [{
-                    "name": version, "versionCodes": [str(code)], "status": "completed",
+                    "name": version.split("-")[0], "versionCodes": [str(code)], "status": "completed",
                     "releaseNotes": [{"language": k, "text": v}
                                      for k, v in RELEASE_NOTES.items()],
                 }]})
