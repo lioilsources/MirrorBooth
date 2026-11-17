@@ -45,130 +45,165 @@ class _PaywallSheet extends ConsumerWidget {
     final canBuy =
         state.storeAvailable && product != null && !state.purchasePending;
 
+    // Scrolls when the content outgrows the screen (large Dynamic Type with
+    // a discounted bundle's extra lines); otherwise sized to its content.
     return SafeArea(
-      child: Container(
-        margin: const EdgeInsets.all(12),
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
-        decoration: BoxDecoration(
-          // Nearly opaque: the filter strip sits right behind the sheet and
-          // bleeds through anything lighter, hurting legibility.
-          color: Colors.black.withValues(alpha: 0.93),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white24),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.lock, color: Colors.white70, size: 18),
-                const SizedBox(width: 8),
-                // Flexible so the title wraps at large text sizes.
-                Flexible(
-                  child: Text(
-                    l10n.collectionFilters(collectionName),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+      child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+          decoration: BoxDecoration(
+            // Nearly opaque: the filter strip sits right behind the sheet and
+            // bleeds through anything lighter, hurting legibility.
+            color: Colors.black.withValues(alpha: 0.93),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.lock, color: Colors.white70, size: 18),
+                  const SizedBox(width: 8),
+                  // Flexible so the title wraps at large text sizes.
+                  Flexible(
+                    child: Text(
+                      l10n.collectionFilters(collectionName),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              MirrorFilter.inCollection(collection)
-                  .map((f) => '${f.icon} ${f.localizedLabel(l10n)}')
-                  .join('   '),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70, fontSize: 13),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              l10n.paywallPreviewFree,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
-            ),
-            const SizedBox(height: 16),
-            // CTA styled as a scaled-up active filter chip: white pill,
-            // black text.
-            GestureDetector(
-              onTap: canBuy ? () => notifier.buy(collection) : null,
-              child: Container(
-                height: 48,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: canBuy ? Colors.white : Colors.white24,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: state.purchasePending
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2.5, color: Colors.black54),
-                      )
-                    : Text(
-                        !state.storeAvailable
-                            ? l10n.storeUnavailable
-                            : product == null
-                                ? l10n.loadingPrice
-                                : l10n.unlockFor(product.price),
-                        style: TextStyle(
-                          color: canBuy ? Colors.black : Colors.white54,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                ],
               ),
-            ),
-            // The bundle, when the store sells it: every paid collection in
-            // one purchase. Outlined so the single collection stays the
-            // primary action.
-            if (state.bundle case final bundle? when state.storeAvailable) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
+              Text(
+                MirrorFilter.inCollection(collection)
+                    .map((f) => '${f.icon} ${f.localizedLabel(l10n)}')
+                    .join('   '),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.paywallPreviewFree,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              // CTA styled as a scaled-up active filter chip: white pill,
+              // black text.
               GestureDetector(
-                onTap: state.purchasePending ? null : notifier.buyBundle,
+                onTap: canBuy ? () => notifier.buy(collection) : null,
                 child: Container(
-                  height: 44,
+                  height: 48,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: Colors.white54, width: 1.5),
+                    color: canBuy ? Colors.white : Colors.white24,
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                  child: Text(
-                    l10n.unlockAllFor(bundle.price),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                  child: state.purchasePending
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2.5, color: Colors.black54),
+                        )
+                      : Text(
+                          !state.storeAvailable
+                              ? l10n.storeUnavailable
+                              : product == null
+                                  ? l10n.loadingPrice
+                                  : l10n.unlockFor(product.price),
+                          style: TextStyle(
+                            color: canBuy ? Colors.black : Colors.white54,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+              // The bundle, when the store sells it: every paid collection in
+              // one purchase. Outlined so the single collection stays the
+              // primary action. A discounted tier shows the full store price
+              // struck through and says which purchases were credited.
+              if (state.bundle case final bundle? when state.storeAvailable) ...[
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: state.purchasePending ? null : notifier.buyBundle,
+                  child: Container(
+                    constraints: const BoxConstraints(minHeight: 44),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: Colors.white54, width: 1.5),
+                    ),
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      children: [
+                        if (state.bundleFullPrice case final full?)
+                          Text(
+                            full,
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 13,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.white54,
+                            ),
+                          ),
+                        Text(
+                          l10n.unlockAllFor(bundle.price),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
+                if (state.bundleThreshold > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      l10n.bundleCredited(state.ownedPaidCount),
+                      textAlign: TextAlign.center,
+                      style:
+                          const TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                  ),
+              ],
+              if (state.error != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    state.error!.isEmpty ? l10n.purchaseFailed : state.error!,
+                    textAlign: TextAlign.center,
+                    style:
+                        const TextStyle(color: Colors.redAccent, fontSize: 12),
+                  ),
+                ),
+              TextButton(
+                onPressed: state.purchasePending ? null : notifier.restore,
+                child: Text(
+                  l10n.restorePurchases,
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ),
             ],
-            if (state.error != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  state.error!.isEmpty ? l10n.purchaseFailed : state.error!,
-                  textAlign: TextAlign.center,
-                  style:
-                      const TextStyle(color: Colors.redAccent, fontSize: 12),
-                ),
-              ),
-            TextButton(
-              onPressed: state.purchasePending ? null : notifier.restore,
-              child: Text(
-                l10n.restorePurchases,
-                style: const TextStyle(color: Colors.white70, fontSize: 13),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

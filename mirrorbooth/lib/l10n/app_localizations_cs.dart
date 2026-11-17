@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -350,5 +349,17 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String unlockAllFor(String price) {
     return 'Všechny filtry za $price';
+  }
+
+  @override
+  String bundleCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Už máš $count kolekcí, odečetli jsme je',
+      few: 'Už máš $count kolekce, odečetli jsme je',
+      one: 'Už máš 1 kolekci, odečetli jsme ji',
+    );
+    return '$_temp0';
   }
 }

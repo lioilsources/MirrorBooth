@@ -106,5 +106,6 @@
   "a11yDegrees": "{degrees} Grad",
   "a11yClose": "Schließen",
   "a11yToggleLog": "Protokoll ein- oder ausblenden",
-  "unlockAllFor": "Alle Filter für {price}"
+  "unlockAllFor": "Alle Filter für {price}",
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}"
 }

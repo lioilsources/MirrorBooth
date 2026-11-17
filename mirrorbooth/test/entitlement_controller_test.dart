@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:mirrorbooth/core/mirror_filter.dart';
 import 'package:mirrorbooth/features/mirror_preview/filter_strip.dart';
 import 'package:mirrorbooth/features/paywall/entitlement_controller.dart';
+import 'package:mirrorbooth/features/paywall/paywall_sheet.dart';
 import 'package:mirrorbooth/l10n/app_localizations.dart';
 import 'package:mirrorbooth/services/purchase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,11 +51,12 @@ class FakePurchaseService implements PurchaseService {
   Stream<String> promotedPurchases() => promoted.stream;
 }
 
-ProductDetails _product(String id) => ProductDetails(
+ProductDetails _product(String id, [String price = r'$0.99']) =>
+    ProductDetails(
       id: id,
       title: id,
       description: id,
-      price: r'$0.99',
+      price: price,
       rawPrice: 0.99,
       currencyCode: 'USD',
     );
@@ -113,6 +116,22 @@ const _fantasyId = 'com.ol1n.mirrorbooth.collection.fantasy_unlock';
 const _bundleId = 'com.ol1n.mirrorbooth.collection.all_unlock';
 const _legacyArtId = 'com.ol1n.mirrorbooth.collection.art';
 const _legacyFantasyId = 'com.ol1n.mirrorbooth.collection.fantasy';
+const _legacyBundleId = 'com.ol1n.mirrorbooth.collection.all';
+String _tierId(int k) => k == 0 ? _bundleId : '${_bundleId}_s$k';
+
+/// Every bundle tier at its store price: 4.99, 3.99, 2.99, 1.99, 0.99.
+List<ProductDetails> _tiers({Set<int> only = const {0, 1, 2, 3, 4}}) => [
+      for (final k in only) _product(_tierId(k), '\$${4 - k}.99'),
+    ];
+
+List<String> _ownedNames(int n) => FilterCollection.values
+    .where((c) => c.isPaid)
+    .take(n)
+    .map((c) => c.name)
+    .toList();
+
+Set<FilterCollection> get _allPaid =>
+    FilterCollection.values.where((c) => c.isPaid).toSet();
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -268,6 +287,8 @@ void main() {
         'com.ol1n.mirrorbooth.collection.art_unlock',
         'com.ol1n.mirrorbooth.collection.fantasy_unlock',
         'com.ol1n.mirrorbooth.collection.all_unlock',
+        for (final k in [1, 2, 3, 4])
+          'com.ol1n.mirrorbooth.collection.all_unlock_s$k',
         for (final p in FilterCollection.packs)
           'com.ol1n.mirrorbooth.collection.${p.name}',
       });
@@ -278,6 +299,20 @@ void main() {
           isNot(contains(anyOf(_legacyArtId, _legacyFantasyId))));
     });
 
+    test('never asks for the Play-only legacy bundle, still honours it', () {
+      expect(FilterCollection.storeProductIds,
+          isNot(contains(_legacyBundleId)));
+      expect(FilterCollection.grantedBy(_legacyBundleId), _allPaid);
+    });
+
+    test('store-page purchase accepts any bundle tier', () async {
+      final (_, service, _) = await _makeController(products: _tiers());
+      service.promoted.add(_tierId(4));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(service.bought.single.id, _tierId(4));
+    });
+
     test('old consumables still grant their collection', () {
       expect(FilterCollection.grantedBy(_legacyArtId), {FilterCollection.art});
       expect(FilterCollection.grantedBy(_legacyFantasyId),
@@ -286,6 +321,201 @@ void main() {
           FilterCollection.grantedBy(
               'com.ol1n.mirrorbooth.collection.all_unlock'),
           FilterCollection.values.where((c) => c.isPaid).toSet());
+    });
+  });
+
+  group('Complete-the-set bundle', () {
+    test('there are 15 paid collections', () {
+      expect(_allPaid, hasLength(15));
+    });
+
+    for (final (owned, tier) in [(0, 0), (1, 1), (4, 4), (15, 4)]) {
+      test('owning $owned paid collections offers tier $tier', () async {
+        final (c, _, _) = await _makeController(
+          prefsValues: {'owned_collections': _ownedNames(owned)},
+          products: _tiers(),
+        );
+        expect(c.state.ownedPaidCount, owned);
+        expect(c.state.bundle?.id, _tierId(tier));
+        expect(c.state.bundleThreshold, tier);
+        expect(c.state.bundleFullPrice, tier == 0 ? isNull : r'$4.99');
+      });
+    }
+
+    test('every tier grants every paid collection', () {
+      for (final k in [0, 1, 2, 3, 4]) {
+        expect(FilterCollection.grantedBy(_tierId(k)), _allPaid,
+            reason: 'tier $k');
+      }
+    });
+
+    test('buying a tier unlocks everything', () async {
+      final (c, service, _) = await _makeController(
+        prefsValues: {'owned_collections': _ownedNames(3)},
+        products: _tiers(),
+      );
+      await c.buyBundle();
+      expect(service.bought.single.id, _tierId(3));
+      service.controller
+          .add([_purchase(_tierId(3), PurchaseStatus.purchased)]);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.state.owned, _allPaid);
+    });
+
+    test('restore brings a tier back', () async {
+      final (c, service, prefs) = await _makeController();
+      await c.restore();
+      service.controller.add([_purchase(_tierId(2), PurchaseStatus.restored)]);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.state.owned, _allPaid);
+      expect(prefs.getStringList('owned_collections'), hasLength(15));
+    });
+
+    test('transaction history recognises a tier', () async {
+      final (c, _, _) = await _makeController(history: {_tierId(1)});
+      expect(c.state.owned, _allPaid);
+    });
+
+    test('the offer drops right after a single purchase', () async {
+      final (c, service, _) = await _makeController(
+        prefsValues: {'owned_collections': _ownedNames(1)},
+        products: _tiers(),
+      );
+      expect(c.state.bundle?.id, _tierId(1));
+      final next = FilterCollection.values
+          .firstWhere((x) => x.isPaid && !c.state.owned.contains(x));
+      service.controller
+          .add([_purchase(next.productId!, PurchaseStatus.purchased)]);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.state.bundle?.id, _tierId(2));
+      expect(c.state.bundle?.price, r'$2.99');
+    });
+
+    test('Play legacy bundle is sold as tier 0 and unlocks everything',
+        () async {
+      final (c, service, _) =
+          await _makeController(products: [_product(_legacyBundleId)]);
+      expect(c.state.bundle?.id, _legacyBundleId);
+      service.controller
+          .add([_purchase(_legacyBundleId, PurchaseStatus.purchased)]);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.state.owned, _allPaid);
+    });
+
+    test('Play prefers all_unlock over the legacy bundle', () async {
+      final (c, _, _) = await _makeController(
+          products: [_product(_legacyBundleId), _product(_bundleId)]);
+      expect(c.state.bundle?.id, _bundleId);
+    });
+
+    test('missing full price hides the strike-through only', () async {
+      final (c, _, _) = await _makeController(
+        prefsValues: {'owned_collections': _ownedNames(2)},
+        products: _tiers(only: {1, 2, 3, 4}),
+      );
+      expect(c.state.bundle?.id, _tierId(2));
+      expect(c.state.bundleThreshold, 2);
+      expect(c.state.bundleFullPrice, isNull);
+    });
+
+    test('empty full price hides the strike-through', () async {
+      final (c, _, _) = await _makeController(
+        prefsValues: {'owned_collections': _ownedNames(2)},
+        products: [_product(_bundleId, ''), ..._tiers(only: {1, 2})],
+      );
+      expect(c.state.bundleFullPrice, isNull);
+    });
+
+    test('a tier the store did not return falls back to a lower one',
+        () async {
+      final (c, _, _) = await _makeController(
+        prefsValues: {'owned_collections': _ownedNames(3)},
+        products: _tiers(only: {0}),
+      );
+      expect(c.state.bundle?.id, _bundleId);
+      expect(c.state.bundleThreshold, 0);
+      expect(c.state.bundleFullPrice, isNull);
+    });
+
+    test('no bundle when the store returns no tier', () async {
+      final (c, _, _) = await _makeController(products: [_product(_artId)]);
+      expect(c.state.bundle, isNull);
+    });
+  });
+
+  group('Paywall bundle card', () {
+    // The controller's async init needs real async inside testWidgets.
+    Future<EntitlementController> controllerIn(
+      WidgetTester tester, {
+      Map<String, Object> prefsValues = const {},
+      List<ProductDetails> products = const [],
+    }) async =>
+        (await tester.runAsync(() async => (await _makeController(
+              prefsValues: prefsValues,
+              products: products,
+            ))
+                .$1))!;
+
+    Future<void> openPaywall(
+        WidgetTester tester, EntitlementController controller) async {
+      await tester.pumpWidget(ProviderScope(
+        overrides: [entitlementProvider.overrideWith((ref) => controller)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () =>
+                    showPaywallSheet(context, FilterCollection.mosaic),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      ));
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('after two purchases offers tier 2 with credit',
+        (tester) async {
+      final controller = (await tester.runAsync(() async {
+        final (c, service, _) = await _makeController(products: _tiers());
+        service.controller.add([
+          _purchase(_artId, PurchaseStatus.purchased),
+          _purchase(_fantasyId, PurchaseStatus.purchased),
+        ]);
+        await Future<void>.delayed(Duration.zero);
+        return c;
+      }))!;
+      await openPaywall(tester, controller);
+      expect(find.text(r'All filters for $2.99'), findsOneWidget);
+      final struck = tester.widget<Text>(find.text(r'$4.99'));
+      expect(struck.style?.decoration, TextDecoration.lineThrough);
+      expect(find.text("You already own 2 collections, we've credited them"),
+          findsOneWidget);
+    });
+
+    testWidgets('tier 0 shows no strike-through or credit', (tester) async {
+      final controller = await controllerIn(tester, products: _tiers());
+      await openPaywall(tester, controller);
+      expect(find.text(r'All filters for $4.99'), findsOneWidget);
+      expect(find.textContaining('already own'), findsNothing);
+    });
+
+    testWidgets('missing full price hides the strike-through',
+        (tester) async {
+      final controller = await controllerIn(
+        tester,
+        prefsValues: {'owned_collections': _ownedNames(1)},
+        products: _tiers(only: {1, 2, 3, 4}),
+      );
+      await openPaywall(tester, controller);
+      expect(find.text(r'All filters for $3.99'), findsOneWidget);
+      expect(find.text(r'$4.99'), findsNothing);
+      expect(find.text("You already own 1 collection, we've credited it"),
+          findsOneWidget);
     });
   });
 

@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'set_ladder.dart';
+
 enum FilterCollection {
   pretty('Pretty'),
   ugly('Ugly'),
@@ -110,13 +112,41 @@ enum FilterCollection {
         _ => const {},
       };
 
-  /// The "All filters" bundle: one purchase that unlocks every paid
-  /// collection. Optional: the paywall offers it only when the store returns
-  /// one of these products (same preference as [candidateProductIds]).
-  static List<String> get bundleProductIds => [
-    'com.ol1n.mirrorbooth.collection.all_unlock',
-    if (!_apple) 'com.ol1n.mirrorbooth.collection.all',
+  /// The "All filters" bundle as complete-the-set tiers: five products that
+  /// all unlock every paid collection, including ones added later. Tier k
+  /// costs one dollar less than tier 0 for every paid collection owned, so
+  /// earlier purchases are credited ([offerFromLadder] picks the tier). The
+  /// paywall offers the bundle only when the store returns the tier's product.
+  /// Prices live in the store only; the app never computes an amount.
+  static const bundleLadder = <SetTier>[
+    (threshold: 0, productId: 'com.ol1n.mirrorbooth.collection.all_unlock'),
+    (threshold: 1, productId: 'com.ol1n.mirrorbooth.collection.all_unlock_s1'),
+    (threshold: 2, productId: 'com.ol1n.mirrorbooth.collection.all_unlock_s2'),
+    (threshold: 3, productId: 'com.ol1n.mirrorbooth.collection.all_unlock_s3'),
+    (threshold: 4, productId: 'com.ol1n.mirrorbooth.collection.all_unlock_s4'),
   ];
+
+  /// The original Play bundle ID; still sold there as tier 0 while
+  /// `all_unlock` is missing, and still unlocks everything on any platform.
+  static const legacyBundleProductId = 'com.ol1n.mirrorbooth.collection.all';
+
+  /// Product IDs the store is asked for to sell [tier], in order of
+  /// preference (same rule as [candidateProductIds]).
+  static List<String> bundleCandidates(SetTier tier) => [
+    tier.productId,
+    if (!_apple && tier.threshold == 0) legacyBundleProductId,
+  ];
+
+  /// Every bundle product ID this platform asks the store for.
+  static List<String> get bundleProductIds => [
+    for (final tier in bundleLadder) ...bundleCandidates(tier),
+  ];
+
+  /// Every product ID that has ever granted the whole bundle.
+  static Set<String> get bundleGrantingIds => {
+    for (final tier in bundleLadder) tier.productId,
+    legacyBundleProductId,
+  };
 
   /// Every product ID this platform asks the store for, bundle included.
   static Set<String> get storeProductIds => {
@@ -134,10 +164,7 @@ enum FilterCollection {
 
   /// Collections a purchase of [id] unlocks; empty for unknown products.
   static Set<FilterCollection> grantedBy(String id) {
-    if (const {
-      'com.ol1n.mirrorbooth.collection.all',
-      'com.ol1n.mirrorbooth.collection.all_unlock',
-    }.contains(id)) {
+    if (bundleGrantingIds.contains(id)) {
       return values.where((c) => c.isPaid).toSet();
     }
     final c = byProductId(id);

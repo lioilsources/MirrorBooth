@@ -16,20 +16,27 @@ import 'package:mirrorbooth/l10n/app_localizations.dart';
 import 'package:mirrorbooth/services/purchase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+ProductDetails _product(String id, [String price = r'$0.99']) =>
+    ProductDetails(
+      id: id,
+      title: id,
+      description: id,
+      price: price,
+      rawPrice: 0.99,
+      currencyCode: 'USD',
+    );
+
 class _Entitlement extends EntitlementController {
-  _Entitlement(super.service, super.prefs) : super(storeSupported: false) {
-    ProductDetails product(String id) => ProductDetails(
-          id: id,
-          title: id,
-          description: id,
-          price: r'$0.99',
-          rawPrice: 0.99,
-          currencyCode: 'USD',
-        );
+  _Entitlement(super.service, super.prefs, {Set<FilterCollection>? owned})
+      : super(storeSupported: false) {
     state = EntitlementState(
+      owned: owned ?? const {},
       storeAvailable: true,
-      products: {FilterCollection.art: product('art')},
-      bundle: product('all'),
+      products: {FilterCollection.art: _product('art')},
+      bundleTiers: {
+        0: _product('all'),
+        1: _product('all_s1', r'$3.99'),
+      },
     );
   }
 }
@@ -97,31 +104,44 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('paywall lays out at text scale $scale', (tester) async {
-      _phone(tester);
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      await tester.pumpWidget(_app(
-        Builder(
-          builder: (context) => Center(
-            child: TextButton(
-              onPressed: () =>
-                  showPaywallSheet(context, FilterCollection.art),
-              child: const Text('open'),
+    for (final discounted in [false, true]) {
+      testWidgets(
+          'paywall lays out at text scale $scale'
+          '${discounted ? ' with a discounted bundle' : ''}', (tester) async {
+        _phone(tester);
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        await tester.pumpWidget(_app(
+          Builder(
+            builder: (context) => Center(
+              child: TextButton(
+                onPressed: () =>
+                    showPaywallSheet(context, FilterCollection.art),
+                child: const Text('open'),
+              ),
             ),
           ),
-        ),
-        textScale: scale,
-        overrides: [
-          entitlementProvider.overrideWith(
-            (ref) => _Entitlement(PurchaseService(), prefs),
-          ),
-        ],
-      ));
-      await tester.tap(find.text('open'));
-      await tester.pumpAndSettle();
-      expect(find.text(r'All filters for $0.99'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+          textScale: scale,
+          overrides: [
+            entitlementProvider.overrideWith(
+              (ref) => _Entitlement(
+                PurchaseService(),
+                prefs,
+                owned: discounted ? {FilterCollection.fantasy} : null,
+              ),
+            ),
+          ],
+        ));
+        await tester.tap(find.text('open'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text(discounted
+              ? r'All filters for $3.99'
+              : r'All filters for $0.99'),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
   }
 }
