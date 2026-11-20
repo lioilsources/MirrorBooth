@@ -28,7 +28,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           # Same pin as ci.yml: newer stable needs Gradle 9.3.1 (we are on 8.14).
-          flutter-version: '3.41.x'
+          flutter-version: '3.50.x'
           channel: stable
           cache: true
 
