@@ -29,8 +29,11 @@ import 'package:mirrorbooth/features/mirror_preview/photo_composer.dart';
 import 'package:mirrorbooth/features/mirror_preview/side_toggle_button.dart';
 import 'package:mirrorbooth/l10n/l10n.dart';
 
-// 886x1920 is the 6.9" App Store preview size.
-const _screen = Size(443, 960);
+final _env = Platform.environment;
+
+// 886x1920 is the 6.9" App Store preview size; PREVIEW_WIDTH=540 gives
+// 1080x1920 for Shorts and Reels.
+final _screen = Size(double.tryParse(_env['PREVIEW_WIDTH'] ?? '') ?? 443, 960);
 const _dpr = 2.0;
 const _fps = 30;
 // PREVIEW_SHORT=1 cuts a ~17 s clip for the App Store, where previews
@@ -38,23 +41,46 @@ const _fps = 30;
 // (no plain original first) and skips the image-rotation phase.
 final _short = Platform.environment['PREVIEW_SHORT'] == '1';
 
-final _seconds = _short ? 17.0 : 26.0;
-
 final _locale = Locale(Platform.environment['PREVIEW_LOCALE'] ?? 'en');
 
 // Same fractions as MirrorPreviewScreen.
 const _outerRingDiameterFrac = 0.88;
 const _innerRingDiameterFrac = 0.44;
 
-// Phase boundaries in seconds.
+// Phase boundaries in seconds. PREVIEW_FILTERS_AT starts picking filters
+// earlier (side taps after it are dropped); a long filter list pushes the
+// later phases back.
 final _sidesAt = _short ? 0.0 : 1.8;
-final _filtersAt = _short ? 4.4 : 7.2;
-final _axisAt = _short ? 10.4 : 13.2;
-final _rotateAt = _short ? 15.4 : 18.8;
-final _outroAt = _short ? 15.4 : 24.4;
+final _filtersAt =
+    double.tryParse(_env['PREVIEW_FILTERS_AT'] ?? '') ?? (_short ? 4.4 : 7.2);
+final _axisAt = max(_filtersAt + 6.0, _taps.last.at + 1.0);
+final _rotateAt = _axisAt + (_short ? 5.0 : 5.6);
+final _outroAt = _short ? _rotateAt : _rotateAt + 5.6;
+final _seconds = _outroAt + 1.6;
 
 // Side toggle taps: left from _sidesAt, then right, left, right.
-final _sideTaps = _short ? [1.0, 2.2, 3.4] : [3.3, 4.8, 6.0];
+final _sideTaps = [
+  for (final at in _short ? [1.0, 2.2, 3.4] : [3.3, 4.8, 6.0])
+    if (at < _filtersAt) at,
+];
+
+// Seconds between filter picks (PREVIEW_STEP).
+final _step = double.tryParse(_env['PREVIEW_STEP'] ?? '') ?? 1.3;
+
+// PREVIEW_PACKS=mosaic,sketch,... opens the Packs tab and taps those pack
+// chips in turn; each tap switches to a random filter of the pack, as in
+// the app. It replaces PREVIEW_FILTERS.
+final _packs = [
+  for (final n in (_env['PREVIEW_PACKS'] ?? '').split(','))
+    if (n.isNotEmpty) FilterCollection.values.byName(n),
+];
+
+final _filters = [
+  for (final n in (_env['PREVIEW_FILTERS'] ?? '').split(','))
+    if (n.isNotEmpty) MirrorFilter.values.byName(n),
+];
+
+final _taps = _plan(_filters);
 
 const _captions =
     'Your real face|Left + left|Right + right|Pick a filter|'
@@ -80,19 +106,29 @@ double _keys(double t, List<(double, double)> keys) {
 const _axisKeys = [(0.4, 90.0), (1.8, 20.0), (3.4, 160.0), (5.0, 90.0)];
 const _rotateKeys = [(0.4, 0.0), (1.9, 50.0), (3.5, -35.0), (5.0, 0.0)];
 
-/// One tap: the side toggle, a collection tab or a filter chip.
+/// One tap: the side toggle, a collection tab, a pack chip or a filter chip.
 class _Tap {
   final double at;
   final FilterCollection? tab;
+  final FilterCollection? pack;
   final MirrorFilter? filter;
-  const _Tap(this.at, {this.tab, this.filter});
+  const _Tap(this.at, {this.tab, this.pack, this.filter});
 
-  bool get isSide => tab == null && filter == null;
+  bool get isSide => tab == null && pack == null && filter == null;
 }
 
 List<_Tap> _plan(List<MirrorFilter> filters) {
   final taps = [for (final at in _sideTaps) _Tap(at)];
   var at = _filtersAt + 0.6;
+  if (_packs.isNotEmpty) {
+    // The Packs tab itself opens the first pack.
+    taps.add(_Tap(at, tab: FilterCollection.packs.first));
+    for (final p in _packs.skip(_skipFirst(_packs))) {
+      at += _step;
+      taps.add(_Tap(at, pack: p));
+    }
+    return taps;
+  }
   // The strip opens on the Pretty tab, as in the app.
   var tab = FilterCollection.pretty;
   for (final f in filters) {
@@ -102,10 +138,15 @@ List<_Tap> _plan(List<MirrorFilter> filters) {
       at += 0.75;
     }
     taps.add(_Tap(at, filter: f));
-    at += f == filters.last ? 0 : 1.3;
+    at += f == filters.last ? 0 : _step;
   }
   return taps;
 }
+
+/// The Packs tab opens the first pack, so a list starting with it skips
+/// its chip tap.
+int _skipFirst(List<FilterCollection> packs) =>
+    packs.first == FilterCollection.packs.first ? 1 : 0;
 
 class _Frame {
   /// Shows the plain still without the app UI.
@@ -122,13 +163,15 @@ class _Frame {
 
 void main() {
   testWidgets('render store preview clip', (tester) async {
-    final env = Platform.environment;
-    final filters = env['PREVIEW_FILTERS']!
-        .split(',')
-        .map((n) => MirrorFilter.values.byName(n))
-        .toList();
+    final env = _env;
+    // Pack chips pick a random filter, so every filter of those packs needs
+    // its shader ready.
+    final filters = {
+      ..._filters,
+      for (final p in _packs) ...MirrorFilter.inCollection(p),
+    }.toList();
     final captions = (env['PREVIEW_CAPTIONS'] ?? _captions).split('|');
-    final taps = _plan(filters);
+    final taps = _taps;
 
     tester.view.physicalSize = _screen * _dpr;
     tester.view.devicePixelRatio = _dpr;
@@ -195,7 +238,9 @@ void main() {
         for (final tap in taps) {
           // Chips past the edge of the strip scroll in before the tap.
           final reveal = tap.at - 0.6;
-          if (tap.filter != null && t >= reveal && t < reveal + 1 / _fps) {
+          if ((tap.filter != null || tap.pack != null) &&
+              t >= reveal &&
+              t < reveal + 1 / _fps) {
             _reveal(tester, tap);
           }
           if (t >= tap.at && t < tap.at + 1 / _fps) {
@@ -323,12 +368,13 @@ Offset _onCircle(double radius, double deg) {
 Finder _finderOf(_Tap tap, {bool skipOffstage = true}) {
   if (tap.isSide) return find.byType(SideToggleButton);
   final l10n = lookupAppLocalizations(_locale);
-  return find.text(
-    tap.tab != null
-        ? tap.tab!.localizedLabel(l10n).toUpperCase()
-        : '${tap.filter!.icon} ${tap.filter!.localizedLabel(l10n)}',
-    skipOffstage: skipOffstage,
-  );
+  final tab = tap.tab;
+  return find.text(switch (tap) {
+    _Tap(pack: final p?) => p.localizedLabel(l10n),
+    _ when tab != null && tab.isPack => l10n.collectionPacks.toUpperCase(),
+    _ when tab != null => tab.localizedLabel(l10n).toUpperCase(),
+    _ => '${tap.filter!.icon} ${tap.filter!.localizedLabel(l10n)}',
+  }, skipOffstage: skipOffstage);
 }
 
 /// Starts a scroll of the filter row that brings [tap]'s chip on screen;
@@ -342,7 +388,10 @@ void _reveal(WidgetTester tester, _Tap tap) {
       of: find.byType(FilterStrip),
       matching: find.byType(Scrollable),
     );
-    final position = tester.state<ScrollableState>(row.last).position;
+    // Rows: tabs, packs (while the Packs tab is open), filters.
+    final position = tester
+        .state<ScrollableState>(tap.pack != null ? row.at(1) : row.last)
+        .position;
     position.animateTo(
       position.maxScrollExtent,
       duration: duration,
