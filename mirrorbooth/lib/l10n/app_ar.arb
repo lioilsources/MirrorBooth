@@ -107,5 +107,8 @@
   "a11yClose": "إغلاق",
   "a11yToggleLog": "إظهار السجل أو إخفاؤه",
   "unlockAllFor": "كل الفلاتر مقابل {price}",
-  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}"
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}",
+  "a11ySettings": "الإعدادات",
+  "statsToggle": "إحصاءات استخدام مجهولة",
+  "statsToggleHint": "تساعد على تحسين التطبيق. فقط الميزات المستخدمة ومدة استخدامها، ولا تشمل صورك أو أي شيء يحدد هويتك أبدًا."
 }

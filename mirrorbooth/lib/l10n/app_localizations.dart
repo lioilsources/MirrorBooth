@@ -767,6 +767,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{You already own 1 collection, we\'ve credited it} other{You already own {count} collections, we\'ve credited them}}'**
   String bundleCredited(int count);
+
+  /// Screen-reader label of the settings button (shown only in builds that collect anonymous statistics)
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get a11ySettings;
+
+  /// Settings switch that turns anonymous usage statistics on or off
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous usage statistics'**
+  String get statsToggle;
+
+  /// Explanation under the anonymous statistics switch
+  ///
+  /// In en, this message translates to:
+  /// **'Helps improve the app. Only which features are used and how long, never your photos or anything that identifies you.'**
+  String get statsToggleHint;
 }
 
 class _AppLocalizationsDelegate

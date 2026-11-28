@@ -107,5 +107,8 @@
   "a11yClose": "閉じる",
   "a11yToggleLog": "ログの表示/非表示",
   "unlockAllFor": "全フィルター {price}",
-  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}"
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}",
+  "a11ySettings": "設定",
+  "statsToggle": "匿名の利用統計",
+  "statsToggleHint": "アプリの改善に役立ちます。どの機能をどれくらい使ったかだけで、写真やあなたを特定する情報は一切含みません。"
 }

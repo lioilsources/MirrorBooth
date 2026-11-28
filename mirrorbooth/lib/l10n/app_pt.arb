@@ -107,5 +107,8 @@
   "a11yClose": "Fechar",
   "a11yToggleLog": "Mostrar ou ocultar o registro",
   "unlockAllFor": "Todos os filtros por {price}",
-  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}"
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}",
+  "a11ySettings": "Definições",
+  "statsToggle": "Estatísticas de uso anónimas",
+  "statsToggleHint": "Ajudam a melhorar a app. Apenas que funções são usadas e durante quanto tempo, nunca as suas fotos nem nada que o identifique."
 }

@@ -358,4 +358,14 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get a11ySettings => 'الإعدادات';
+
+  @override
+  String get statsToggle => 'إحصاءات استخدام مجهولة';
+
+  @override
+  String get statsToggleHint =>
+      'تساعد على تحسين التطبيق. فقط الميزات المستخدمة ومدة استخدامها، ولا تشمل صورك أو أي شيء يحدد هويتك أبدًا.';
 }

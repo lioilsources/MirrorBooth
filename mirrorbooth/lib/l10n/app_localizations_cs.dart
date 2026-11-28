@@ -362,4 +362,14 @@ class AppLocalizationsCs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get a11ySettings => 'Nastavení';
+
+  @override
+  String get statsToggle => 'Anonymní statistiky používání';
+
+  @override
+  String get statsToggleHint =>
+      'Pomáhají zlepšovat aplikaci. Jen které funkce se používají a jak dlouho, nikdy vaše fotky ani nic, co by vás identifikovalo.';
 }

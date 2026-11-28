@@ -358,4 +358,14 @@ class AppLocalizationsId extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get a11ySettings => 'Pengaturan';
+
+  @override
+  String get statsToggle => 'Statistik penggunaan anonim';
+
+  @override
+  String get statsToggleHint =>
+      'Membantu meningkatkan aplikasi. Hanya fitur mana yang dipakai dan berapa lama, tidak pernah foto Anda atau apa pun yang mengidentifikasi Anda.';
 }

@@ -364,4 +364,14 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get a11ySettings => 'Ajustes';
+
+  @override
+  String get statsToggle => 'Estadísticas de uso anónimas';
+
+  @override
+  String get statsToggleHint =>
+      'Ayudan a mejorar la app. Solo qué funciones se usan y durante cuánto tiempo, nunca tus fotos ni nada que te identifique.';
 }

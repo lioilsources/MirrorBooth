@@ -12,6 +12,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
+import 'package:ol1n_telemetry/ol1n_telemetry.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../core/jpeg_encode_utils.dart';
@@ -21,8 +22,10 @@ import '../../l10n/l10n.dart';
 import '../../services/deep_link.dart';
 import '../../services/review_prompter.dart';
 import '../../services/shutter_button_channel.dart';
+import '../../telemetry/telemetry_dictionary.dart';
 import '../paywall/entitlement_controller.dart';
 import '../paywall/paywall_sheet.dart';
+import '../settings/settings_sheet.dart';
 import '../video_recording/recording_overlay.dart';
 import '../video_recording/video_playback_screen.dart';
 import '../video_recording/video_recording_notifier.dart';
@@ -65,6 +68,9 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   bool _shutterClaimed = false;
   bool _shutterSupported = false;
 
+  /// The recording being measured (`video_record_*`), null when none.
+  TelemetryFlow? _recordFlow;
+
   // Rotation drag bookkeeping.
   Offset _rotCenter = Offset.zero;
   double _lastGestureAngle = 0.0;
@@ -86,6 +92,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(mirrorPreviewProvider.notifier).onForceStop = () {
+        _endRecordFlow('background');
         _stopRecordingTicker();
         ref.read(videoRecordingProvider.notifier).forceStop();
       };
@@ -123,6 +130,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
   void _onShutterPress(ShutterPress press) {
     if (!mounted) return;
+    Telemetry.feature('volume_shutter');
     final phase = ref.read(videoRecordingProvider).phase;
     if (phase == RecordingPhase.recording) {
       _toggleRecording();
@@ -158,6 +166,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
         ref.read(mirrorPreviewProvider).selectedFilter.collection;
     if (collection == null) return true;
     if (ref.read(entitlementProvider).owns(collection)) return true;
+    Telemetry.lockedTap(collection.name);
     showPaywallSheet(context, collection);
     return false;
   }
@@ -167,6 +176,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     if (!_ensureEntitledForCapture()) return;
     setState(() => _isSaving = true);
     _log('PHOTO');
+    final flow = Telemetry.flow('photo_save', {
+      'collection': collectionValue(
+          ref.read(mirrorPreviewProvider).selectedFilter.collection),
+    });
+    var fallback = false;
 
     File? tempFile;
     try {
@@ -174,6 +188,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       try {
         image = await _composeHighResPhoto();
       } catch (e) {
+        fallback = true;
         _log('still capture failed: $e');
         _log('falling back to screen capture');
         image = await _captureBoundaryImage();
@@ -202,6 +217,8 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
       await Gal.putImage(tempFile.path);
       _log('Gal.putImage OK ✓');
+      flow.end('ok', {'fallback': fallback});
+      Telemetry.activation();
       _flashController.forward(from: 0.0);
       ref.read(reviewPrompterProvider).photoDone().ignore();
       if (ShareService.isSupported) {
@@ -210,11 +227,19 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       }
     } on GalException catch (e) {
       _log('GalException: ${e.type.code}');
-      _showError((l) => galErrorMessage(l, e.type));
+      final (result, kind) = switch (e.type) {
+        GalExceptionType.accessDenied => ('denied', 'gallery_denied'),
+        GalExceptionType.notEnoughSpace => ('no_space', 'gallery_space'),
+        GalExceptionType.notSupportedFormat => ('error', 'gallery_format'),
+        _ => ('error', 'photo_failed'),
+      };
+      flow.end(result, {'fallback': fallback});
+      _showError(kind, (l) => galErrorMessage(l, e.type));
     } catch (e, st) {
       _log('ERROR: $e');
       debugPrint(st.toString());
-      _showError((l) => l.genericError);
+      flow.end('error', {'fallback': fallback});
+      _showError('photo_failed', (l) => l.genericError);
     } finally {
       tempFile?.delete().ignore();
       if (mounted) setState(() => _isSaving = false);
@@ -246,17 +271,21 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
   Future<void> _shareSavedPhoto(File photo) async {
     final size = MediaQuery.sizeOf(context);
     final message = context.l10n.shareMessage(ShareService.storeUrl);
+    final flow = Telemetry.flow('share', {'media': 'photo'});
     try {
-      await ShareService.sharePhoto(
+      final status = await ShareService.sharePhoto(
         photo.path,
         message: message,
         origin: Rect.fromCenter(
             center: size.center(Offset.zero), width: 1, height: 1),
       );
+      flow.end(shareResult(status.name));
+      if (status.name != 'dismissed') Telemetry.activation();
       ref.read(reviewPrompterProvider).photoDone().ignore();
     } catch (e) {
       _log('share failed: $e');
-      _showError((l) => l.genericError);
+      flow.end('error');
+      _showError('share_failed', (l) => l.genericError);
     }
   }
 
@@ -319,9 +348,21 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     if (phase == RecordingPhase.idle) {
       // Gate only starting — stopping a recording must never be blocked.
       if (!_ensureEntitledForCapture()) return;
+      Telemetry.feature('video');
+      _endRecordFlow('cancel');
+      final flow = _recordFlow = Telemetry.flow('video_record', {
+        'collection': collectionValue(
+            ref.read(mirrorPreviewProvider).selectedFilter.collection),
+      });
       final notifier = ref.read(videoRecordingProvider.notifier);
       await notifier.startRecording();
-      if (ref.read(videoRecordingProvider).phase != RecordingPhase.recording) {
+      final started = ref.read(videoRecordingProvider);
+      if (started.phase != RecordingPhase.recording) {
+        if (identical(_recordFlow, flow)) {
+          _endRecordFlow(started.error == RecordingError.micPermission
+              ? 'denied'
+              : 'error');
+        }
         return;
       }
       HapticFeedback.mediumImpact();
@@ -332,6 +373,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
       HapticFeedback.mediumImpact();
       await ref.read(videoRecordingProvider.notifier).stopRecording();
     }
+  }
+
+  void _endRecordFlow(String result) {
+    _recordFlow?.end(result);
+    _recordFlow = null;
   }
 
   void _stopRecordingTicker() {
@@ -370,6 +416,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     // outer composition.
     final innerRadius = size.shortestSide * _innerRingDiameterFrac / 2;
     _draggingInnerRing = v.distance <= innerRadius + 16.0;
+    Telemetry.feature(_draggingInnerRing ? 'mirror_axis' : 'rotate');
     _lastGestureAngle = atan2(v.dy, v.dx);
   }
 
@@ -417,7 +464,24 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     }
   }
 
-  void _showError(String Function(AppLocalizations l) message) {
+  /// The filter strip's pick, measured before it is applied.
+  void _selectFilter(MirrorFilter filter) {
+    final collection = filter.collection;
+    if (collectionFeature(collection) case final feature?) {
+      Telemetry.feature(feature);
+    }
+    Telemetry.track('filter_select', {
+      'filter': filter.name,
+      'collection': collectionValue(collection),
+      'locked': collection != null &&
+          !ref.read(entitlementProvider).owns(collection),
+    });
+    ref.read(mirrorPreviewProvider.notifier).setFilter(filter);
+  }
+
+  /// [kind] is the `error_shown` kind.
+  void _showError(String kind, String Function(AppLocalizations l) message) {
+    Telemetry.errorShown(kind);
     ref.read(reviewPrompterProvider).errorShown();
     if (!mounted) return;
     showDialog<void>(
@@ -449,7 +513,25 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
     });
     ref.listen<EntitlementState>(entitlementProvider, _openUnlocked);
 
-    ref.listen<VideoRecordingState>(videoRecordingProvider, (_, next) {
+    ref.listen<VideoRecordingState>(videoRecordingProvider, (prev, next) {
+      // The playback screen is a state of this one, not a route.
+      final wasPlayback = _isPlayback(prev?.phase);
+      if (_isPlayback(next.phase) != wasPlayback) {
+        Telemetry.screen(wasPlayback ? 'camera' : kScreenPlayback);
+      }
+      // Ends the measured recording however it stopped (button, volume key,
+      // the 60 s limit). Going to the background ends it in onForceStop.
+      if (prev != null && prev.phase != next.phase) {
+        if (next.phase == RecordingPhase.playback) {
+          _endRecordFlow('ok');
+        } else if (next.phase == RecordingPhase.idle) {
+          _endRecordFlow(
+              next.error == RecordingError.tooShort ? 'short' : 'error');
+        }
+      }
+      if (next.error case final error? when error != prev?.error) {
+        Telemetry.errorShown(recordingErrorKind(error));
+      }
       // Hand the volume keys back while the playback screen is up so they
       // control playback volume as usual.
       _setShutterClaimed(next.phase == RecordingPhase.idle ||
@@ -610,7 +692,7 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
             right: 0,
             child: FilterStrip(
               selected: state.selectedFilter,
-              onSelect: notifier.setFilter,
+              onSelect: _selectFilter,
               ownedCollections: ref.watch(entitlementProvider).owned,
             ),
           ),
@@ -656,6 +738,11 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
                 // release builds would show a button that can never connect.
                 if (kDebugMode) ...[
                   _CallButton(),
+                  const SizedBox(height: 12),
+                ],
+                // Only builds that can measure have anything to switch off.
+                if (Telemetry.isConfigured) ...[
+                  _SettingsButton(),
                   const SizedBox(height: 12),
                 ],
                 Semantics(
@@ -765,6 +852,9 @@ class _MirrorPreviewScreenState extends ConsumerState<MirrorPreviewScreen>
 
 // ── Small helpers ────────────────────────────────────────────────────────────
 
+bool _isPlayback(RecordingPhase? phase) =>
+    phase == RecordingPhase.assembling || phase == RecordingPhase.playback;
+
 /// Whole degrees in 0…359, for screen-reader values.
 int _wrapDegrees(double deg) => deg.round() % 360;
 
@@ -864,6 +954,30 @@ class _CallButton extends StatelessWidget {
           border: Border.all(color: Colors.white30, width: 1.5),
         ),
         child: const Icon(Icons.video_call_rounded, color: Colors.white, size: 26),
+      ),
+    );
+  }
+}
+
+class _SettingsButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: context.l10n.a11ySettings,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: () => showSettingsSheet(context),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white24, width: 1),
+          ),
+          child: const Icon(Icons.settings, color: Colors.white70, size: 20),
+        ),
       ),
     );
   }

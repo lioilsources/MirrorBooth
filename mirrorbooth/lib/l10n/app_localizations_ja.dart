@@ -355,4 +355,14 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get a11ySettings => '設定';
+
+  @override
+  String get statsToggle => '匿名の利用統計';
+
+  @override
+  String get statsToggleHint =>
+      'アプリの改善に役立ちます。どの機能をどれくらい使ったかだけで、写真やあなたを特定する情報は一切含みません。';
 }

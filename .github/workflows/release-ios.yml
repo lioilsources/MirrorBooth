@@ -93,7 +93,7 @@ jobs:
 
       - name: Build Flutter iOS (no codesign)
         working-directory: mirrorbooth
-        run: flutter build ios --release --no-codesign ${{ inputs.lab && '--dart-define=MB_LAB=true' || '' }}
+        run: flutter build ios --release --no-codesign --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }} ${{ inputs.lab && '--dart-define=MB_LAB=true' || '' }}
 
       - name: Archive with manual signing
         working-directory: mirrorbooth

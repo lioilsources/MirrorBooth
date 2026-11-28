@@ -363,4 +363,14 @@ class AppLocalizationsHi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get a11ySettings => 'सेटिंग्स';
+
+  @override
+  String get statsToggle => 'अनाम उपयोग आँकड़े';
+
+  @override
+  String get statsToggleHint =>
+      'ऐप को बेहतर बनाने में मदद करते हैं। केवल कौन-सी सुविधाएँ कितनी देर इस्तेमाल हुईं, कभी आपकी फ़ोटो या आपकी पहचान बताने वाली कोई चीज़ नहीं।';
 }
