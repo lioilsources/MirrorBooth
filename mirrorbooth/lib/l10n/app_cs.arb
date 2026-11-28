@@ -107,6 +107,7 @@
   "a11yClose": "Zavřít",
   "a11yToggleLog": "Zobrazit nebo skrýt log",
   "unlockAllFor": "Všechny filtry za {price}",
+  "bundleCredited": "{count, plural, =1{Už máš 1 kolekci, odečetli jsme ji} few{Už máš {count} kolekce, odečetli jsme je} other{Už máš {count} kolekcí, odečetli jsme je}}",
   "a11ySettings": "Nastavení",
   "statsToggle": "Anonymní statistiky používání",
   "statsToggleHint": "Pomáhají zlepšovat aplikaci. Jen které funkce se používají a jak dlouho, nikdy vaše fotky ani nic, co by vás identifikovalo."

@@ -36,9 +36,9 @@ mirrorbooth/
       mirror_channel.dart      # Platform channel for native mirror
       webrtc_service.dart      # WebRTC session management
   shaders/                     # GLSL fragment shaders
-  signaling_server/            # WebRTC signaling backend (Go or similar)
+  signaling_server/            # WebRTC signaling backend (Node.js, Express + socket.io)
 
-pipeline/                      # Asset pipeline (separate from Flutter app)
+pipeline/                      # ShaderGen: Python dev tool that generates GLSL filters (not part of the Flutter build)
 ```
 
 ## Key Features

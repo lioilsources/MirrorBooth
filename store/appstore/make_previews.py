@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render the App Store preview clips (886x1920, 26 s, 30 fps, silent stereo).
 
-    python3 store/appstore/make_previews.py [--lang en|pt|es|fr] [--short] [name ...]
+    python3 store/appstore/make_previews.py [--lang en|pt|es|fr|cs] [--short] [name ...]
 
 --short renders the ~17 s App Store cut (<name>_short.mp4): it opens on the
 mirrored face and leaves out the image rotation.
@@ -69,6 +69,24 @@ CAPTIONS = {
           "Elige un filtro|Gira el eje del espejo|Gira la imagen|Mirror Booth",
     "fr": "Ton vrai visage|Gauche + gauche|Droite + droite|"
           "Choisis un filtre|Tourne l'axe du miroir|Tourne l'image|Mirror Booth",
+    "cs": "Vaše skutečná tvář|Levá + levá|Pravá + pravá|"
+          "Vyberte filtr|Otočte osu zrcadla|Otočte obraz|Mirror Booth",
+}
+
+# Per-clip opening caption for a language, in place of its first caption
+# (the character clips open on a cat, a plushie, ... rather than a face).
+FIRST_CAPTION = {
+    "cs": {
+        "05_cat_oil": "Vaše skutečná kočka",
+        "06_dog_comic": "Váš skutečný pejsek",
+        "07_bear_pencil": "Váš medvídek",
+        "08_bunny_frozen": "Váš plyšák",
+        "09_fashiondoll_pop": "Vaše panenka",
+        "10_porcelain_ghost": "Vaše panenka",
+        "11_chibi_glitch": "I kreslené postavičky",
+        "12_comic_demon": "I komiksoví hrdinové",
+        "13_alien_cyborg": "I mimozemšťané",
+    },
 }
 
 
@@ -96,7 +114,11 @@ def main():
                    PREVIEW_FILTERS=filters,
                    PREVIEW_LOCALE=lang)
         if CAPTIONS[lang]:
-            env["PREVIEW_CAPTIONS"] = CAPTIONS[lang]
+            captions = CAPTIONS[lang].split("|")
+            first = FIRST_CAPTION.get(lang, {}).get(name)
+            if first:
+                captions[0] = first
+            env["PREVIEW_CAPTIONS"] = "|".join(captions)
         elif own:
             env["PREVIEW_CAPTIONS"] = own[0]
         log = out / f"{name}{'_short' if short else ''}.log"

@@ -272,6 +272,15 @@
       }
     }
   },
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}",
+  "@bundleCredited": {
+    "description": "Paywall: under a discounted 'All filters' price, the collections already bought were subtracted from it",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "a11ySettings": "Settings",
   "@a11ySettings": {
     "description": "Screen-reader label of the settings button (shown only in builds that collect anonymous statistics)"

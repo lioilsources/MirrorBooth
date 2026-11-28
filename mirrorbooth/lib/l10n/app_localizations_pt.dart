@@ -353,6 +353,17 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String bundleCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count collections, we\'ve credited them',
+      one: 'You already own 1 collection, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get a11ySettings => 'Definições';
 
   @override

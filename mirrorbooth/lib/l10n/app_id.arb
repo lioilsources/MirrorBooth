@@ -107,6 +107,7 @@
   "a11yClose": "Tutup",
   "a11yToggleLog": "Tampilkan atau sembunyikan log",
   "unlockAllFor": "Semua filter seharga {price}",
+  "bundleCredited": "{count, plural, =1{You already own 1 collection, we've credited it} other{You already own {count} collections, we've credited them}}",
   "a11ySettings": "Pengaturan",
   "statsToggle": "Statistik penggunaan anonim",
   "statsToggleHint": "Membantu meningkatkan aplikasi. Hanya fitur mana yang dipakai dan berapa lama, tidak pernah foto Anda atau apa pun yang mengidentifikasi Anda."
